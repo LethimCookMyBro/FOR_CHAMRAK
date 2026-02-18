@@ -1,0 +1,18 @@
+[
+    {
+        "outtypeID":  "11",
+        "outtypename":  "จำหน่าย"
+    },
+    {
+        "outtypeID":  "22",
+        "outtypename":  "ขอยืม"
+    },
+    {
+        "outtypeID":  "33",
+        "outtypename":  "รับคืน"
+    },
+    {
+        "outtypeID":  "44",
+        "outtypename":  "ชำรุด"
+    }
+]

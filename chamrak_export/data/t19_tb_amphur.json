@@ -1,0 +1,7426 @@
+[
+    {
+        "amphur_id":  1,
+        "amphur_code":  1001,
+        "amphur_th":  "เขตพระนคร",
+        "amphur_en":  "Phranakhon",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  2,
+        "amphur_code":  1002,
+        "amphur_th":  "เขตดุสิต",
+        "amphur_en":  "Dusit",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  3,
+        "amphur_code":  1003,
+        "amphur_th":  "เขตหนองจอก",
+        "amphur_en":  "Nong chokn",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  4,
+        "amphur_code":  1004,
+        "amphur_th":  "เขตบางรัก",
+        "amphur_en":  "Bangrak",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  5,
+        "amphur_code":  1005,
+        "amphur_th":  "เขตบางเขน",
+        "amphur_en":  "Bang khen",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  6,
+        "amphur_code":  1006,
+        "amphur_th":  "เขตบางกะปิ",
+        "amphur_en":  "Bangkapi",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  7,
+        "amphur_code":  1007,
+        "amphur_th":  "เขตปทุมวัน",
+        "amphur_en":  "Patumwan",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  8,
+        "amphur_code":  1008,
+        "amphur_th":  "เขตป้อมปราบศัตรูพ่าย",
+        "amphur_en":  "Pom prap",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  9,
+        "amphur_code":  1009,
+        "amphur_th":  "เขตพระโขนง",
+        "amphur_en":  "Prakanong",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  10,
+        "amphur_code":  1010,
+        "amphur_th":  "เขตมีนบุรี",
+        "amphur_en":  "Minburi",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  11,
+        "amphur_code":  1011,
+        "amphur_th":  "เขตลาดกระบัง",
+        "amphur_en":  "Lat Krabang",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  12,
+        "amphur_code":  1012,
+        "amphur_th":  "เขตยานนาวา",
+        "amphur_en":  "Yannawa",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  13,
+        "amphur_code":  1013,
+        "amphur_th":  "เขตสัมพันธวงศ์",
+        "amphur_en":  "Samphanthawongse",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  14,
+        "amphur_code":  1014,
+        "amphur_th":  "เขตพญาไท",
+        "amphur_en":  "Payathai",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  15,
+        "amphur_code":  1015,
+        "amphur_th":  "เขตธนบุรี",
+        "amphur_en":  "Thon buri",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  16,
+        "amphur_code":  1016,
+        "amphur_th":  "เขตบางกอกใหญ่",
+        "amphur_en":  "Bangkok yai",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  17,
+        "amphur_code":  1017,
+        "amphur_th":  "เขตห้วยขวาง",
+        "amphur_en":  "Huai khwang",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  18,
+        "amphur_code":  1018,
+        "amphur_th":  "เขตคลองสาน",
+        "amphur_en":  "Klongsan",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  19,
+        "amphur_code":  1019,
+        "amphur_th":  "เขตตลิ่งชัน",
+        "amphur_en":  "Taling chan",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  20,
+        "amphur_code":  1020,
+        "amphur_th":  "เขตบางกอกน้อย",
+        "amphur_en":  "Bangkok noi",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  21,
+        "amphur_code":  1021,
+        "amphur_th":  "เขตบางขุนเทียน",
+        "amphur_en":  "Bangkuntien",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  22,
+        "amphur_code":  1022,
+        "amphur_th":  "เขตภาษีเจริญ",
+        "amphur_en":  "Pasricharoen",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  23,
+        "amphur_code":  1023,
+        "amphur_th":  "เขตหนองแขม",
+        "amphur_en":  "Nongkhaem",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  24,
+        "amphur_code":  1024,
+        "amphur_th":  "เขตราษฎร์บูรณะ",
+        "amphur_en":  "Radburana",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  25,
+        "amphur_code":  1025,
+        "amphur_th":  "เขตบางพลัด",
+        "amphur_en":  "Bangplad",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  26,
+        "amphur_code":  1026,
+        "amphur_th":  "เขตดินแดง",
+        "amphur_en":  "Dindaeng",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  27,
+        "amphur_code":  1027,
+        "amphur_th":  "เขตบึงกุ่ม",
+        "amphur_en":  "Bung kum",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  28,
+        "amphur_code":  1028,
+        "amphur_th":  "เขตสาทร",
+        "amphur_en":  "Sathorn",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  29,
+        "amphur_code":  1029,
+        "amphur_th":  "เขตบางซื่อ",
+        "amphur_en":  "Bangsue",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  30,
+        "amphur_code":  1030,
+        "amphur_th":  "เขตจตุจักร",
+        "amphur_en":  "Jatujak",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  31,
+        "amphur_code":  1031,
+        "amphur_th":  "เขตบางคอแหลม",
+        "amphur_en":  "Bangkholam",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  32,
+        "amphur_code":  1032,
+        "amphur_th":  "เขตประเวศ",
+        "amphur_en":  "Prawet",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  33,
+        "amphur_code":  1033,
+        "amphur_th":  "เขตคลองเตย",
+        "amphur_en":  "Klongtoey",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  34,
+        "amphur_code":  1034,
+        "amphur_th":  "เขตสวนหลวง",
+        "amphur_en":  "Suanluang",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  35,
+        "amphur_code":  1035,
+        "amphur_th":  "เขตจอมทอง",
+        "amphur_en":  "Chomthong",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  36,
+        "amphur_code":  1036,
+        "amphur_th":  "เขตดอนเมือง",
+        "amphur_en":  "Don Mueang",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  37,
+        "amphur_code":  1037,
+        "amphur_th":  "เขตราชเทวี",
+        "amphur_en":  "Ratchathervi",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  38,
+        "amphur_code":  1038,
+        "amphur_th":  "เขตลาดพร้าว",
+        "amphur_en":  "Lat Phrao",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  39,
+        "amphur_code":  1039,
+        "amphur_th":  "เขตวัฒนา",
+        "amphur_en":  "Watthana",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  40,
+        "amphur_code":  1040,
+        "amphur_th":  "เขตบางแค",
+        "amphur_en":  "Bangkhae",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  41,
+        "amphur_code":  1041,
+        "amphur_th":  "เขตหลักสี่",
+        "amphur_en":  "Laksi",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  42,
+        "amphur_code":  1042,
+        "amphur_th":  "เขตสายไหม",
+        "amphur_en":  "Saimai",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  43,
+        "amphur_code":  1043,
+        "amphur_th":  "เขตคันนายาว",
+        "amphur_en":  "Kannayao",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  44,
+        "amphur_code":  1044,
+        "amphur_th":  "เขตสะพานสูง",
+        "amphur_en":  "Saphansung",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  45,
+        "amphur_code":  1045,
+        "amphur_th":  "เขตวังทองหลาง",
+        "amphur_en":  "Wang thonglang",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  46,
+        "amphur_code":  1046,
+        "amphur_th":  "เขตคลองสามวา",
+        "amphur_en":  "Klongsamwa",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  47,
+        "amphur_code":  1047,
+        "amphur_th":  "เขตบางนา",
+        "amphur_en":  "Bangna",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  48,
+        "amphur_code":  1048,
+        "amphur_th":  "เขตทวีวัฒนา",
+        "amphur_en":  "Thawiwatthana",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  49,
+        "amphur_code":  1049,
+        "amphur_th":  "เขตทุ่งครุ",
+        "amphur_en":  "Thung khru",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  50,
+        "amphur_code":  1050,
+        "amphur_th":  "เขตบางบอน",
+        "amphur_en":  "Bangbon",
+        "province_id":  1,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  51,
+        "amphur_code":  1101,
+        "amphur_th":  "เมืองสมุทรปราการ",
+        "amphur_en":  "Mueang samutprakan",
+        "province_id":  2,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  52,
+        "amphur_code":  1102,
+        "amphur_th":  "บางบ่อ",
+        "amphur_en":  "Bang bo",
+        "province_id":  2,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  53,
+        "amphur_code":  1103,
+        "amphur_th":  "บางพลี",
+        "amphur_en":  "Bang phle",
+        "province_id":  2,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  54,
+        "amphur_code":  1104,
+        "amphur_th":  "พระประแดง",
+        "amphur_en":  "Phra pradaeng",
+        "province_id":  2,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  55,
+        "amphur_code":  1105,
+        "amphur_th":  "พระสมุทรเจดีย์",
+        "amphur_en":  "Phra samutjede",
+        "province_id":  2,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  56,
+        "amphur_code":  1106,
+        "amphur_th":  "บางเสาธง",
+        "amphur_en":  "Bang sao thong",
+        "province_id":  2,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  57,
+        "amphur_code":  1201,
+        "amphur_th":  "เมืองนนทบุรี",
+        "amphur_en":  "Mueang nonthaburi",
+        "province_id":  3,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  58,
+        "amphur_code":  1202,
+        "amphur_th":  "บางกรวย",
+        "amphur_en":  "Bang kruai",
+        "province_id":  3,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  59,
+        "amphur_code":  1203,
+        "amphur_th":  "บางใหญ่",
+        "amphur_en":  "Bang yai",
+        "province_id":  3,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  60,
+        "amphur_code":  1204,
+        "amphur_th":  "บางบัวทอง",
+        "amphur_en":  "Bang bua thong",
+        "province_id":  3,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  61,
+        "amphur_code":  1205,
+        "amphur_th":  "ไทรน้อย",
+        "amphur_en":  "Sai noi",
+        "province_id":  3,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  62,
+        "amphur_code":  1206,
+        "amphur_th":  "ปากเกร็ด",
+        "amphur_en":  "Pakkred",
+        "province_id":  3,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  63,
+        "amphur_code":  1301,
+        "amphur_th":  "เมืองปทุมธานี",
+        "amphur_en":  "Mung pathum thani",
+        "province_id":  4,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  64,
+        "amphur_code":  1302,
+        "amphur_th":  "คลองหลวง",
+        "amphur_en":  "Klongluang",
+        "province_id":  4,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  65,
+        "amphur_code":  1303,
+        "amphur_th":  "ธัญบุรี",
+        "amphur_en":  "Thanyaburi",
+        "province_id":  4,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  66,
+        "amphur_code":  1304,
+        "amphur_th":  "หนองเสือ",
+        "amphur_en":  "Nong sua",
+        "province_id":  4,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  67,
+        "amphur_code":  1305,
+        "amphur_th":  "ลาดหลุมแก้ว",
+        "amphur_en":  "Lat lum kaeo",
+        "province_id":  4,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  68,
+        "amphur_code":  1306,
+        "amphur_th":  "ลำลูกกา",
+        "amphur_en":  "Lam luk ka",
+        "province_id":  4,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  69,
+        "amphur_code":  1307,
+        "amphur_th":  "สามโคก",
+        "amphur_en":  "Sam khok",
+        "province_id":  4,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  70,
+        "amphur_code":  1401,
+        "amphur_th":  "พระนครศรีอยุธยา",
+        "amphur_en":  "Phranakhon si ayutthaya",
+        "province_id":  5,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  71,
+        "amphur_code":  1402,
+        "amphur_th":  "ท่าเรือ",
+        "amphur_en":  "Tha rua",
+        "province_id":  5,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  72,
+        "amphur_code":  1403,
+        "amphur_th":  "นครหลวง",
+        "amphur_en":  "Nakhon luang",
+        "province_id":  5,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  73,
+        "amphur_code":  1404,
+        "amphur_th":  "บางไทร",
+        "amphur_en":  "Bang sai",
+        "province_id":  5,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  74,
+        "amphur_code":  1405,
+        "amphur_th":  "บางบาล",
+        "amphur_en":  "Bang ban",
+        "province_id":  5,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  75,
+        "amphur_code":  1406,
+        "amphur_th":  "บางปะอิน",
+        "amphur_en":  "Bang pa-in",
+        "province_id":  5,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  76,
+        "amphur_code":  1407,
+        "amphur_th":  "บางปะหัน",
+        "amphur_en":  "Bang pahan",
+        "province_id":  5,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  77,
+        "amphur_code":  1408,
+        "amphur_th":  "ผักไห่",
+        "amphur_en":  "Phak hai",
+        "province_id":  5,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  78,
+        "amphur_code":  1409,
+        "amphur_th":  "ภาชี",
+        "amphur_en":  "Phachi",
+        "province_id":  5,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  79,
+        "amphur_code":  1410,
+        "amphur_th":  "ลาดบัวหลวง",
+        "amphur_en":  "Lat bua luang",
+        "province_id":  5,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  80,
+        "amphur_code":  1411,
+        "amphur_th":  "วังน้อย",
+        "amphur_en":  "Wang noi",
+        "province_id":  5,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  81,
+        "amphur_code":  1412,
+        "amphur_th":  "เสนา",
+        "amphur_en":  "Sena",
+        "province_id":  5,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  82,
+        "amphur_code":  1413,
+        "amphur_th":  "บางซ้าย",
+        "amphur_en":  "Bang sai",
+        "province_id":  5,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  83,
+        "amphur_code":  1414,
+        "amphur_th":  "อุทัย",
+        "amphur_en":  "Uthai",
+        "province_id":  5,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  84,
+        "amphur_code":  1415,
+        "amphur_th":  "มหาราช",
+        "amphur_en":  "Maharat",
+        "province_id":  5,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  85,
+        "amphur_code":  1416,
+        "amphur_th":  "บ้านแพรก",
+        "amphur_en":  "Ban phraek",
+        "province_id":  5,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  86,
+        "amphur_code":  1501,
+        "amphur_th":  "เมืองอ่างทอง",
+        "amphur_en":  "Mueang angthong",
+        "province_id":  6,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  87,
+        "amphur_code":  1502,
+        "amphur_th":  "ไชโย",
+        "amphur_en":  "Chai yo",
+        "province_id":  6,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  88,
+        "amphur_code":  1503,
+        "amphur_th":  "ป่าโมก",
+        "amphur_en":  "Pamok",
+        "province_id":  6,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  89,
+        "amphur_code":  1504,
+        "amphur_th":  "โพธิ์ทอง",
+        "amphur_en":  "Po thong",
+        "province_id":  6,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  90,
+        "amphur_code":  1505,
+        "amphur_th":  "แสวงหา",
+        "amphur_en":  "Sawaengha",
+        "province_id":  6,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  91,
+        "amphur_code":  1506,
+        "amphur_th":  "วิเศษชัยชาญ",
+        "amphur_en":  "Wiset chai chan",
+        "province_id":  6,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  92,
+        "amphur_code":  1507,
+        "amphur_th":  "สามโก้",
+        "amphur_en":  "Sam ko",
+        "province_id":  6,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  93,
+        "amphur_code":  1601,
+        "amphur_th":  "เมืองลพบุรี",
+        "amphur_en":  "Mueang lopburi",
+        "province_id":  7,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  94,
+        "amphur_code":  1602,
+        "amphur_th":  "พัฒนานิคม",
+        "amphur_en":  "Phatthana nikhom",
+        "province_id":  7,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  95,
+        "amphur_code":  1603,
+        "amphur_th":  "โคกสำโรง",
+        "amphur_en":  "Khok samrong",
+        "province_id":  7,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  96,
+        "amphur_code":  1604,
+        "amphur_th":  "ชัยบาดาล",
+        "amphur_en":  "Chai badan",
+        "province_id":  7,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  97,
+        "amphur_code":  1605,
+        "amphur_th":  "ท่าวุ้ง",
+        "amphur_en":  "Tha wong",
+        "province_id":  7,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  98,
+        "amphur_code":  1606,
+        "amphur_th":  "บ้านหมี่",
+        "amphur_en":  "Ban mi",
+        "province_id":  7,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  99,
+        "amphur_code":  1607,
+        "amphur_th":  "ท่าหลวง",
+        "amphur_en":  "Tha luang",
+        "province_id":  7,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  100,
+        "amphur_code":  1608,
+        "amphur_th":  "สระโบสถ์",
+        "amphur_en":  "Sa Bot",
+        "province_id":  7,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  101,
+        "amphur_code":  1609,
+        "amphur_th":  "โคกเจริญ",
+        "amphur_en":  "Khok charoen",
+        "province_id":  7,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  102,
+        "amphur_code":  1610,
+        "amphur_th":  "ลำสนธิ",
+        "amphur_en":  "Lam Sonthi",
+        "province_id":  7,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  103,
+        "amphur_code":  1611,
+        "amphur_th":  "หนองม่วง",
+        "amphur_en":  "Nong Mueang kai",
+        "province_id":  7,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  104,
+        "amphur_code":  1701,
+        "amphur_th":  "เมืองสิงห์บุรี",
+        "amphur_en":  "Mueang singburi",
+        "province_id":  8,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  105,
+        "amphur_code":  1702,
+        "amphur_th":  "บางระจัน",
+        "amphur_en":  "Bangrachan",
+        "province_id":  8,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  106,
+        "amphur_code":  1703,
+        "amphur_th":  "ค่ายบางระจัน",
+        "amphur_en":  "Khai bang rachan",
+        "province_id":  8,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  107,
+        "amphur_code":  1704,
+        "amphur_th":  "พรหมบุรี",
+        "amphur_en":  "Phrom buri",
+        "province_id":  8,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  108,
+        "amphur_code":  1705,
+        "amphur_th":  "ท่าช้าง",
+        "amphur_en":  "Tha chang",
+        "province_id":  8,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  109,
+        "amphur_code":  1706,
+        "amphur_th":  "อินทร์บุรี",
+        "amphur_en":  "In buri",
+        "province_id":  8,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  110,
+        "amphur_code":  1801,
+        "amphur_th":  "เมืองชัยนาท",
+        "amphur_en":  "Mueang chai nat",
+        "province_id":  9,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  111,
+        "amphur_code":  1802,
+        "amphur_th":  "มโนรมย์",
+        "amphur_en":  "Manorom",
+        "province_id":  9,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  112,
+        "amphur_code":  1803,
+        "amphur_th":  "วัดสิงห์",
+        "amphur_en":  "Wat singh",
+        "province_id":  9,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  113,
+        "amphur_code":  1804,
+        "amphur_th":  "สรรพยา",
+        "amphur_en":  "Sappraya",
+        "province_id":  9,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  114,
+        "amphur_code":  1805,
+        "amphur_th":  "สรรคบุรี",
+        "amphur_en":  "Sankhaburi",
+        "province_id":  9,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  115,
+        "amphur_code":  1806,
+        "amphur_th":  "หันคา",
+        "amphur_en":  "Hankha",
+        "province_id":  9,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  116,
+        "amphur_code":  1807,
+        "amphur_th":  "หนองมะโมง",
+        "amphur_en":  "Nongmanong",
+        "province_id":  9,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  117,
+        "amphur_code":  1808,
+        "amphur_th":  "เนินขาม",
+        "amphur_en":  "Noen kham",
+        "province_id":  9,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  118,
+        "amphur_code":  1901,
+        "amphur_th":  "เมืองสระบุรี",
+        "amphur_en":  "Mueang saraburi",
+        "province_id":  10,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  119,
+        "amphur_code":  1902,
+        "amphur_th":  "แก่งคอย",
+        "amphur_en":  "Kaeng khoy",
+        "province_id":  10,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  120,
+        "amphur_code":  1903,
+        "amphur_th":  "หนองแค",
+        "amphur_en":  "Nong khae",
+        "province_id":  10,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  121,
+        "amphur_code":  1904,
+        "amphur_th":  "วิหารแดง",
+        "amphur_en":  "Wihan daeng",
+        "province_id":  10,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  122,
+        "amphur_code":  1905,
+        "amphur_th":  "หนองแซง",
+        "amphur_en":  "Nong saeng",
+        "province_id":  10,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  123,
+        "amphur_code":  1906,
+        "amphur_th":  "บ้านหมอ",
+        "amphur_en":  "Ban mo",
+        "province_id":  10,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  124,
+        "amphur_code":  1907,
+        "amphur_th":  "ดอนพุด",
+        "amphur_en":  "Don phut",
+        "province_id":  10,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  125,
+        "amphur_code":  1908,
+        "amphur_th":  "หนองโดน",
+        "amphur_en":  "Nong don",
+        "province_id":  10,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  126,
+        "amphur_code":  1909,
+        "amphur_th":  "พระพุทธบาท",
+        "amphur_en":  "Phra phutthabat",
+        "province_id":  10,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  127,
+        "amphur_code":  1910,
+        "amphur_th":  "เสาไห้",
+        "amphur_en":  "Sao Hai",
+        "province_id":  10,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  128,
+        "amphur_code":  1911,
+        "amphur_th":  "มวกเหล็ก",
+        "amphur_en":  "Muak lek",
+        "province_id":  10,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  129,
+        "amphur_code":  1912,
+        "amphur_th":  "วังม่วง",
+        "amphur_en":  "Wang Mueang",
+        "province_id":  10,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  130,
+        "amphur_code":  1913,
+        "amphur_th":  "เฉลิมพระเกียรติ",
+        "amphur_en":  "Chaloem phrakiat",
+        "province_id":  10,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  131,
+        "amphur_code":  2001,
+        "amphur_th":  "เมืองชลบุรี",
+        "amphur_en":  "Mueang chon buri",
+        "province_id":  11,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  132,
+        "amphur_code":  2002,
+        "amphur_th":  "บ้านบึง",
+        "amphur_en":  "Ban bung",
+        "province_id":  11,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  133,
+        "amphur_code":  2003,
+        "amphur_th":  "หนองใหญ่",
+        "amphur_en":  "Nong Yai",
+        "province_id":  11,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  134,
+        "amphur_code":  2004,
+        "amphur_th":  "บางละมุง",
+        "amphur_en":  "Bang lamung",
+        "province_id":  11,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  135,
+        "amphur_code":  2005,
+        "amphur_th":  "พานทอง",
+        "amphur_en":  "Phan thong",
+        "province_id":  11,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  136,
+        "amphur_code":  2006,
+        "amphur_th":  "พนัสนิคม",
+        "amphur_en":  "Phanat nikhom",
+        "province_id":  11,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  137,
+        "amphur_code":  2007,
+        "amphur_th":  "ศรีราชา",
+        "amphur_en":  "Siracha",
+        "province_id":  11,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  138,
+        "amphur_code":  2008,
+        "amphur_th":  "เกาะสีชัง",
+        "amphur_en":  "Ko sichang",
+        "province_id":  11,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  139,
+        "amphur_code":  2009,
+        "amphur_th":  "สัตหีบ",
+        "amphur_en":  "Sattahip",
+        "province_id":  11,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  140,
+        "amphur_code":  2010,
+        "amphur_th":  "บ่อทอง",
+        "amphur_en":  "Bo thong",
+        "province_id":  11,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  141,
+        "amphur_code":  2011,
+        "amphur_th":  "เกาะจันทร์",
+        "amphur_en":  "Ko chan",
+        "province_id":  11,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  142,
+        "amphur_code":  2101,
+        "amphur_th":  "เมืองระยอง",
+        "amphur_en":  "Mueang rayong",
+        "province_id":  12,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  143,
+        "amphur_code":  2102,
+        "amphur_th":  "บ้านฉาง",
+        "amphur_en":  "Ban chang",
+        "province_id":  12,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  144,
+        "amphur_code":  2103,
+        "amphur_th":  "แกลง",
+        "amphur_en":  "Klaeng",
+        "province_id":  12,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  145,
+        "amphur_code":  2104,
+        "amphur_th":  "วังจันทร์",
+        "amphur_en":  "Wang chan",
+        "province_id":  12,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  146,
+        "amphur_code":  2105,
+        "amphur_th":  "บ้านค่าย",
+        "amphur_en":  "Ban khai",
+        "province_id":  12,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  147,
+        "amphur_code":  2106,
+        "amphur_th":  "ปลวกแดง",
+        "amphur_en":  "Pluak daeng",
+        "province_id":  12,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  148,
+        "amphur_code":  2107,
+        "amphur_th":  "เขาชะเมา",
+        "amphur_en":  "khao chamao",
+        "province_id":  12,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  149,
+        "amphur_code":  2108,
+        "amphur_th":  "นิคมพัฒนา",
+        "amphur_en":  "Nikhom phathana",
+        "province_id":  12,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  150,
+        "amphur_code":  2201,
+        "amphur_th":  "เมืองจันทบุรี",
+        "amphur_en":  "Mueang chanthaburi",
+        "province_id":  13,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  151,
+        "amphur_code":  2202,
+        "amphur_th":  "ขลุง",
+        "amphur_en":  "Khlung",
+        "province_id":  13,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  152,
+        "amphur_code":  2203,
+        "amphur_th":  "ท่าใหม่",
+        "amphur_en":  "Tha mai",
+        "province_id":  13,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  153,
+        "amphur_code":  2204,
+        "amphur_th":  "โป่งน้ำร้อน",
+        "amphur_en":  "Pong nam ron",
+        "province_id":  13,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  154,
+        "amphur_code":  2205,
+        "amphur_th":  "มะขาม",
+        "amphur_en":  "Makham",
+        "province_id":  13,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  155,
+        "amphur_code":  2206,
+        "amphur_th":  "แหลมสิงห์",
+        "amphur_en":  "Laem sing",
+        "province_id":  13,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  156,
+        "amphur_code":  2207,
+        "amphur_th":  "สอยดาว",
+        "amphur_en":  "Soi dao",
+        "province_id":  13,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  157,
+        "amphur_code":  2208,
+        "amphur_th":  "แก่งหางแมว",
+        "amphur_en":  "Kaeng hang maeo",
+        "province_id":  13,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  158,
+        "amphur_code":  2209,
+        "amphur_th":  "นายายอาม",
+        "amphur_en":  "Na yai am",
+        "province_id":  13,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  159,
+        "amphur_code":  2210,
+        "amphur_th":  "เขาคิชฌกูฏ",
+        "amphur_en":  "Khao Khitchakut",
+        "province_id":  13,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  160,
+        "amphur_code":  2301,
+        "amphur_th":  "เมืองตราด",
+        "amphur_en":  "Mueang trat",
+        "province_id":  14,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  161,
+        "amphur_code":  2302,
+        "amphur_th":  "คลองใหญ่",
+        "amphur_en":  "Khlong yai",
+        "province_id":  14,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  162,
+        "amphur_code":  2303,
+        "amphur_th":  "เขาสมิง",
+        "amphur_en":  "Khao saming",
+        "province_id":  14,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  163,
+        "amphur_code":  2304,
+        "amphur_th":  "บ่อไร่",
+        "amphur_en":  "Bo rai",
+        "province_id":  14,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  164,
+        "amphur_code":  2305,
+        "amphur_th":  "แหลมงอบ",
+        "amphur_en":  "Laem ngob",
+        "province_id":  14,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  165,
+        "amphur_code":  2306,
+        "amphur_th":  "เกาะกูด",
+        "amphur_en":  "Kut island",
+        "province_id":  14,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  166,
+        "amphur_code":  2307,
+        "amphur_th":  "เกาะช้าง",
+        "amphur_en":  "Chang island",
+        "province_id":  14,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  167,
+        "amphur_code":  2401,
+        "amphur_th":  "เมืองฉะเชิงเทรา",
+        "amphur_en":  "Mueang Chachoengsao",
+        "province_id":  15,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  168,
+        "amphur_code":  2402,
+        "amphur_th":  "บางคล้า",
+        "amphur_en":  "Bang khla",
+        "province_id":  15,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  169,
+        "amphur_code":  2403,
+        "amphur_th":  "บางน้ำเปรี้ยว",
+        "amphur_en":  "Bang nam prieo",
+        "province_id":  15,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  170,
+        "amphur_code":  2404,
+        "amphur_th":  "บางปะกง",
+        "amphur_en":  "Bangprakong",
+        "province_id":  15,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  171,
+        "amphur_code":  2405,
+        "amphur_th":  "บ้านโพธิ์",
+        "amphur_en":  "Ban pho",
+        "province_id":  15,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  172,
+        "amphur_code":  2406,
+        "amphur_th":  "พนมสารคาม",
+        "amphur_en":  "Phanom sarakham",
+        "province_id":  15,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  173,
+        "amphur_code":  2407,
+        "amphur_th":  "ราชสาส์น",
+        "amphur_en":  "Ratchasan",
+        "province_id":  15,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  174,
+        "amphur_code":  2408,
+        "amphur_th":  "สนามชัยเขต",
+        "amphur_en":  "Sanam chai khet",
+        "province_id":  15,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  175,
+        "amphur_code":  2409,
+        "amphur_th":  "แปลงยาว",
+        "amphur_en":  "Piaeng yao",
+        "province_id":  15,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  176,
+        "amphur_code":  2410,
+        "amphur_th":  "ท่าตะเกียบ",
+        "amphur_en":  "Tha takep",
+        "province_id":  15,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  177,
+        "amphur_code":  2411,
+        "amphur_th":  "คลองเขื่อน",
+        "amphur_en":  "Khlong Khuean",
+        "province_id":  15,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  178,
+        "amphur_code":  2501,
+        "amphur_th":  "เมืองปราจีนบุรี",
+        "amphur_en":  "Mueang prachinburi",
+        "province_id":  16,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  179,
+        "amphur_code":  2502,
+        "amphur_th":  "กบินทร์บุรี",
+        "amphur_en":  "Kabin buri",
+        "province_id":  16,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  180,
+        "amphur_code":  2503,
+        "amphur_th":  "นาดี",
+        "amphur_en":  "Nadi",
+        "province_id":  16,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  181,
+        "amphur_code":  2504,
+        "amphur_th":  "บ้านสร้าง",
+        "amphur_en":  "Ban Sang",
+        "province_id":  16,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  182,
+        "amphur_code":  2505,
+        "amphur_th":  "ประจันตคาม",
+        "amphur_en":  "Prachantakham",
+        "province_id":  16,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  183,
+        "amphur_code":  2506,
+        "amphur_th":  "ศรีมหาโพธิ",
+        "amphur_en":  "Si maha phot",
+        "province_id":  16,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  184,
+        "amphur_code":  2507,
+        "amphur_th":  "ศรีมโหสถ",
+        "amphur_en":  "Sri maho sot",
+        "province_id":  16,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  185,
+        "amphur_code":  2601,
+        "amphur_th":  "เมืองนครนายก",
+        "amphur_en":  "Mueang nakhon nayok",
+        "province_id":  17,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  186,
+        "amphur_code":  2602,
+        "amphur_th":  "ปากพลี",
+        "amphur_en":  "Pak phli",
+        "province_id":  17,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  187,
+        "amphur_code":  2603,
+        "amphur_th":  "บ้านนา",
+        "amphur_en":  "Ban na",
+        "province_id":  17,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  188,
+        "amphur_code":  2604,
+        "amphur_th":  "องครักษ์",
+        "amphur_en":  "Ongkharak",
+        "province_id":  17,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  189,
+        "amphur_code":  2701,
+        "amphur_th":  "เมืองสระแก้ว",
+        "amphur_en":  "Mueang sra kaeo",
+        "province_id":  18,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  190,
+        "amphur_code":  2702,
+        "amphur_th":  "คลองหาด",
+        "amphur_en":  "Khlong hat",
+        "province_id":  18,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  191,
+        "amphur_code":  2703,
+        "amphur_th":  "ตาพระยา",
+        "amphur_en":  "Ta phraya",
+        "province_id":  18,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  192,
+        "amphur_code":  2704,
+        "amphur_th":  "วังน้ำเย็น",
+        "amphur_en":  "Wang namyen",
+        "province_id":  18,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  193,
+        "amphur_code":  2705,
+        "amphur_th":  "วัฒนานคร",
+        "amphur_en":  "Wattana nakhon",
+        "province_id":  18,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  194,
+        "amphur_code":  2706,
+        "amphur_th":  "อรัญประเทศ",
+        "amphur_en":  "Aranyaprathat",
+        "province_id":  18,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  195,
+        "amphur_code":  2707,
+        "amphur_th":  "เขาฉกรรจ์",
+        "amphur_en":  "Khao Chakan",
+        "province_id":  18,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  196,
+        "amphur_code":  2708,
+        "amphur_th":  "โคกสูง",
+        "amphur_en":  "Khok sung",
+        "province_id":  18,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  197,
+        "amphur_code":  2709,
+        "amphur_th":  "วังสมบูรณ์",
+        "amphur_en":  "Wang somboon",
+        "province_id":  18,
+        "geo_id":  5
+    },
+    {
+        "amphur_id":  198,
+        "amphur_code":  3001,
+        "amphur_th":  "เมืองนครราชสีมา",
+        "amphur_en":  "Mueang nakhon ratchasima",
+        "province_id":  19,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  199,
+        "amphur_code":  3002,
+        "amphur_th":  "ครบุรี",
+        "amphur_en":  "Khon buri",
+        "province_id":  19,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  200,
+        "amphur_code":  3003,
+        "amphur_th":  "เสิงสาง",
+        "amphur_en":  "Soeng sang",
+        "province_id":  19,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  201,
+        "amphur_code":  3004,
+        "amphur_th":  "คง",
+        "amphur_en":  "Khong",
+        "province_id":  19,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  202,
+        "amphur_code":  3005,
+        "amphur_th":  "บ้านเหลื่อม",
+        "amphur_en":  "Ban luarm",
+        "province_id":  19,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  203,
+        "amphur_code":  3006,
+        "amphur_th":  "จักราช",
+        "amphur_en":  "Chakarat",
+        "province_id":  19,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  204,
+        "amphur_code":  3007,
+        "amphur_th":  "โชคชัย",
+        "amphur_en":  "Chok chai",
+        "province_id":  19,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  205,
+        "amphur_code":  3008,
+        "amphur_th":  "ด่านขุนทด",
+        "amphur_en":  "Dan khunthot",
+        "province_id":  19,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  206,
+        "amphur_code":  3009,
+        "amphur_th":  "โนนไทย",
+        "amphur_en":  "Non thai",
+        "province_id":  19,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  207,
+        "amphur_code":  3010,
+        "amphur_th":  "โนนสูง",
+        "amphur_en":  "Non sung",
+        "province_id":  19,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  208,
+        "amphur_code":  3011,
+        "amphur_th":  "ขามสะแกแสง",
+        "amphur_en":  "Kham sakae saeng",
+        "province_id":  19,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  209,
+        "amphur_code":  3012,
+        "amphur_th":  "บัวใหญ่",
+        "amphur_en":  "Bua yai",
+        "province_id":  19,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  210,
+        "amphur_code":  3013,
+        "amphur_th":  "ประทาย",
+        "amphur_en":  "Pra thai",
+        "province_id":  19,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  211,
+        "amphur_code":  3014,
+        "amphur_th":  "ปักธงชัย",
+        "amphur_en":  "Pak thong chai",
+        "province_id":  19,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  212,
+        "amphur_code":  3015,
+        "amphur_th":  "พิมาย",
+        "amphur_en":  "Phimai",
+        "province_id":  19,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  213,
+        "amphur_code":  3016,
+        "amphur_th":  "ห้วยแถลง",
+        "amphur_en":  "Huai thalaeng",
+        "province_id":  19,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  214,
+        "amphur_code":  3017,
+        "amphur_th":  "ชุมพวง",
+        "amphur_en":  "Chum phuang",
+        "province_id":  19,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  215,
+        "amphur_code":  3018,
+        "amphur_th":  "สูงเนิน",
+        "amphur_en":  "Sung noe",
+        "province_id":  19,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  216,
+        "amphur_code":  3019,
+        "amphur_th":  "ขามทะเลสอ",
+        "amphur_en":  "Kham thaie so",
+        "province_id":  19,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  217,
+        "amphur_code":  3020,
+        "amphur_th":  "สีคิ้ว",
+        "amphur_en":  "Sikhui",
+        "province_id":  19,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  218,
+        "amphur_code":  3021,
+        "amphur_th":  "ปากช่อง",
+        "amphur_en":  "Pak chong",
+        "province_id":  19,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  219,
+        "amphur_code":  3022,
+        "amphur_th":  "หนองบุญมาก",
+        "amphur_en":  "Nong Bun Mak",
+        "province_id":  19,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  220,
+        "amphur_code":  3023,
+        "amphur_th":  "แก้งสนามนาง",
+        "amphur_en":  "Kaeng snam nang",
+        "province_id":  19,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  221,
+        "amphur_code":  3024,
+        "amphur_th":  "โนนแดง",
+        "amphur_en":  "Non daeng",
+        "province_id":  19,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  222,
+        "amphur_code":  3025,
+        "amphur_th":  "วังน้ำเขียว",
+        "amphur_en":  "Wong namkhieo",
+        "province_id":  19,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  223,
+        "amphur_code":  3026,
+        "amphur_th":  "เทพารักษ์",
+        "amphur_en":  "Tepharak",
+        "province_id":  19,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  224,
+        "amphur_code":  3027,
+        "amphur_th":  "เมืองยาง",
+        "amphur_en":  "Mueang yang",
+        "province_id":  19,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  225,
+        "amphur_code":  3028,
+        "amphur_th":  "พระทองคำ",
+        "amphur_en":  "Phra thorngkham",
+        "province_id":  19,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  226,
+        "amphur_code":  3029,
+        "amphur_th":  "ลำทะเมนชัย",
+        "amphur_en":  "Lum thamen chai",
+        "province_id":  19,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  227,
+        "amphur_code":  3030,
+        "amphur_th":  "บัวลาย",
+        "amphur_en":  "Bua lai",
+        "province_id":  19,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  228,
+        "amphur_code":  3031,
+        "amphur_th":  "สีดา",
+        "amphur_en":  "Sida",
+        "province_id":  19,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  229,
+        "amphur_code":  3032,
+        "amphur_th":  "เฉลิมพระเกียรติ",
+        "amphur_en":  "Chaloem phrakiat",
+        "province_id":  19,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  230,
+        "amphur_code":  3101,
+        "amphur_th":  "เมืองบุรีรัมย์",
+        "amphur_en":  "Mueang buri ram",
+        "province_id":  20,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  231,
+        "amphur_code":  3102,
+        "amphur_th":  "คูเมือง",
+        "amphur_en":  "Khu Mueang",
+        "province_id":  20,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  232,
+        "amphur_code":  3103,
+        "amphur_th":  "กระสัง",
+        "amphur_en":  "Krasang",
+        "province_id":  20,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  233,
+        "amphur_code":  3104,
+        "amphur_th":  "นางรอง",
+        "amphur_en":  "Nang rong",
+        "province_id":  20,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  234,
+        "amphur_code":  3105,
+        "amphur_th":  "หนองกี่",
+        "amphur_en":  "Nong ki",
+        "province_id":  20,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  235,
+        "amphur_code":  3106,
+        "amphur_th":  "ละหานทราย",
+        "amphur_en":  "Lahan sai",
+        "province_id":  20,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  236,
+        "amphur_code":  3107,
+        "amphur_th":  "ประโคนชัย",
+        "amphur_en":  "Phakhon chai",
+        "province_id":  20,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  237,
+        "amphur_code":  3108,
+        "amphur_th":  "บ้านกรวด",
+        "amphur_en":  "Ban kruat",
+        "province_id":  20,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  238,
+        "amphur_code":  3109,
+        "amphur_th":  "พุทไธสง",
+        "amphur_en":  "Phutthaisong",
+        "province_id":  20,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  239,
+        "amphur_code":  3110,
+        "amphur_th":  "ลำปลายมาศ",
+        "amphur_en":  "Lam plai mat",
+        "province_id":  20,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  240,
+        "amphur_code":  3111,
+        "amphur_th":  "สตึก",
+        "amphur_en":  "Satuk",
+        "province_id":  20,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  241,
+        "amphur_code":  3112,
+        "amphur_th":  "ปะคำ",
+        "amphur_en":  "Pa kham",
+        "province_id":  20,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  242,
+        "amphur_code":  3113,
+        "amphur_th":  "นาโพธิ์",
+        "amphur_en":  "Na pho",
+        "province_id":  20,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  243,
+        "amphur_code":  3114,
+        "amphur_th":  "หนองหงส์",
+        "amphur_en":  "Nong hong",
+        "province_id":  20,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  244,
+        "amphur_code":  3115,
+        "amphur_th":  "พลับพลาชัย",
+        "amphur_en":  "Phlapphachai",
+        "province_id":  20,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  245,
+        "amphur_code":  3116,
+        "amphur_th":  "ห้วยราช",
+        "amphur_en":  "Huai rat",
+        "province_id":  20,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  246,
+        "amphur_code":  3117,
+        "amphur_th":  "โนนสุวรรณ",
+        "amphur_en":  "Non suwan",
+        "province_id":  20,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  247,
+        "amphur_code":  3118,
+        "amphur_th":  "ชำนิ",
+        "amphur_en":  "Cham ni",
+        "province_id":  20,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  248,
+        "amphur_code":  3119,
+        "amphur_th":  "บ้านใหม่ไชยพจน์",
+        "amphur_en":  "Ban mai chaiyapot",
+        "province_id":  20,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  249,
+        "amphur_code":  3120,
+        "amphur_th":  "โนนดินแดง",
+        "amphur_en":  "Non din daeng",
+        "province_id":  20,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  250,
+        "amphur_code":  3121,
+        "amphur_th":  "บ้านด่าน",
+        "amphur_en":  "Ban dan",
+        "province_id":  20,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  251,
+        "amphur_code":  3122,
+        "amphur_th":  "แคนดง",
+        "amphur_en":  "Can dong",
+        "province_id":  20,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  252,
+        "amphur_code":  3123,
+        "amphur_th":  "เฉลิมพระเกียรติ",
+        "amphur_en":  "Chaloem phrakiat",
+        "province_id":  20,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  253,
+        "amphur_code":  3201,
+        "amphur_th":  "เมืองสุรินทร์",
+        "amphur_en":  "Mueang surin",
+        "province_id":  21,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  254,
+        "amphur_code":  3202,
+        "amphur_th":  "ชุมพลบุรี",
+        "amphur_en":  "Chumphon buri",
+        "province_id":  21,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  255,
+        "amphur_code":  3203,
+        "amphur_th":  "ท่าตูม",
+        "amphur_en":  "Tha tum",
+        "province_id":  21,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  256,
+        "amphur_code":  3204,
+        "amphur_th":  "จอมพระ",
+        "amphur_en":  "Chom phra",
+        "province_id":  21,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  257,
+        "amphur_code":  3205,
+        "amphur_th":  "ปราสาท",
+        "amphur_en":  "Pra sat",
+        "province_id":  21,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  258,
+        "amphur_code":  3206,
+        "amphur_th":  "กาบเชิง",
+        "amphur_en":  "Kap choeng",
+        "province_id":  21,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  259,
+        "amphur_code":  3207,
+        "amphur_th":  "รัตนบุรี",
+        "amphur_en":  "Rattana buri",
+        "province_id":  21,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  260,
+        "amphur_code":  3208,
+        "amphur_th":  "สนม",
+        "amphur_en":  "Sanom",
+        "province_id":  21,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  261,
+        "amphur_code":  3209,
+        "amphur_th":  "ศีขรภูมิ",
+        "amphur_en":  "Sikhoraphum",
+        "province_id":  21,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  262,
+        "amphur_code":  3210,
+        "amphur_th":  "สังขะ",
+        "amphur_en":  "Sang kha",
+        "province_id":  21,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  263,
+        "amphur_code":  3211,
+        "amphur_th":  "ลำดวน",
+        "amphur_en":  "Lam duon",
+        "province_id":  21,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  264,
+        "amphur_code":  3212,
+        "amphur_th":  "สำโรงทาบ",
+        "amphur_en":  "Samrong thap",
+        "province_id":  21,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  265,
+        "amphur_code":  3213,
+        "amphur_th":  "บัวเชด",
+        "amphur_en":  "Buachet",
+        "province_id":  21,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  266,
+        "amphur_code":  3214,
+        "amphur_th":  "พนมดงรัก",
+        "amphur_en":  "Phanom dong rak",
+        "province_id":  21,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  267,
+        "amphur_code":  3215,
+        "amphur_th":  "ศรีณรงค์",
+        "amphur_en":  "Sri narong",
+        "province_id":  21,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  268,
+        "amphur_code":  3216,
+        "amphur_th":  "เขวาสินรินทร์",
+        "amphur_en":  "Khwaosinrin",
+        "province_id":  21,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  269,
+        "amphur_code":  3217,
+        "amphur_th":  "โนนนารายณ์",
+        "amphur_en":  "Nhon narai",
+        "province_id":  21,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  270,
+        "amphur_code":  3301,
+        "amphur_th":  "เมืองศรีสะเกษ",
+        "amphur_en":  "Mueang Si Sa Ket",
+        "province_id":  22,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  271,
+        "amphur_code":  3302,
+        "amphur_th":  "ยางชุมน้อย",
+        "amphur_en":  "Yang chumnoi",
+        "province_id":  22,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  272,
+        "amphur_code":  3303,
+        "amphur_th":  "กันทรารมย์",
+        "amphur_en":  "Kanthararom",
+        "province_id":  22,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  273,
+        "amphur_code":  3304,
+        "amphur_th":  "กันทรลักษ์",
+        "amphur_en":  "Kantharalak",
+        "province_id":  22,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  274,
+        "amphur_code":  3305,
+        "amphur_th":  "ขุขันธ์",
+        "amphur_en":  "Khokhon",
+        "province_id":  22,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  275,
+        "amphur_code":  3306,
+        "amphur_th":  "ไพรบึง",
+        "amphur_en":  "Phai bung",
+        "province_id":  22,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  276,
+        "amphur_code":  3307,
+        "amphur_th":  "ปรางค์กู่",
+        "amphur_en":  "Prang ku",
+        "province_id":  22,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  277,
+        "amphur_code":  3308,
+        "amphur_th":  "ขุนหาญ",
+        "amphur_en":  "Khun han",
+        "province_id":  22,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  278,
+        "amphur_code":  3309,
+        "amphur_th":  "ราษีไศล",
+        "amphur_en":  "Rasi sala",
+        "province_id":  22,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  279,
+        "amphur_code":  3310,
+        "amphur_th":  "อุทุมพรพิสัย",
+        "amphur_en":  "Uthum phon phisai",
+        "province_id":  22,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  280,
+        "amphur_code":  3311,
+        "amphur_th":  "บึงบูรพ์",
+        "amphur_en":  "Bang bun",
+        "province_id":  22,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  281,
+        "amphur_code":  3312,
+        "amphur_th":  "ห้วยทับทัน",
+        "amphur_en":  "Huai thap than",
+        "province_id":  22,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  282,
+        "amphur_code":  3313,
+        "amphur_th":  "โนนคูณ",
+        "amphur_en":  "Non khan",
+        "province_id":  22,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  283,
+        "amphur_code":  3314,
+        "amphur_th":  "ศรีรัตนะ",
+        "amphur_en":  "Sirattana",
+        "province_id":  22,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  284,
+        "amphur_code":  3315,
+        "amphur_th":  "น้ำเกลี้ยง",
+        "amphur_en":  "Nam kliang",
+        "province_id":  22,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  285,
+        "amphur_code":  3316,
+        "amphur_th":  "วังหิน",
+        "amphur_en":  "Wang hin",
+        "province_id":  22,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  286,
+        "amphur_code":  3317,
+        "amphur_th":  "ภูสิงห์",
+        "amphur_en":  "Phu sing",
+        "province_id":  22,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  287,
+        "amphur_code":  3318,
+        "amphur_th":  "เมืองจันทร์",
+        "amphur_en":  "Mueang chan",
+        "province_id":  22,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  288,
+        "amphur_code":  3319,
+        "amphur_th":  "เบญจลักษ์",
+        "amphur_en":  "Benchalak",
+        "province_id":  22,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  289,
+        "amphur_code":  3320,
+        "amphur_th":  "พยุห์",
+        "amphur_en":  "Phayu",
+        "province_id":  22,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  290,
+        "amphur_code":  3321,
+        "amphur_th":  "โพธิ์ศรีสุวรรณ",
+        "amphur_en":  "Pho si suwan",
+        "province_id":  22,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  291,
+        "amphur_code":  3322,
+        "amphur_th":  "ศิลาลาด",
+        "amphur_en":  "Silalat",
+        "province_id":  22,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  292,
+        "amphur_code":  3401,
+        "amphur_th":  "เมืองอุบลราชธานี",
+        "amphur_en":  "Mueang uboratchathani",
+        "province_id":  23,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  293,
+        "amphur_code":  3402,
+        "amphur_th":  "ศรีเมืองใหม่",
+        "amphur_en":  "Si Mueang mai",
+        "province_id":  23,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  294,
+        "amphur_code":  3403,
+        "amphur_th":  "โขงเจียม",
+        "amphur_en":  "Khong chiam",
+        "province_id":  23,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  295,
+        "amphur_code":  3404,
+        "amphur_th":  "เขื่องใน",
+        "amphur_en":  "Khuang nai",
+        "province_id":  23,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  296,
+        "amphur_code":  3405,
+        "amphur_th":  "เขมราฐ",
+        "amphur_en":  "Khemarat",
+        "province_id":  23,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  297,
+        "amphur_code":  3407,
+        "amphur_th":  "เดชอุดม",
+        "amphur_en":  "Deti udom",
+        "province_id":  23,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  298,
+        "amphur_code":  3408,
+        "amphur_th":  "นาจะหลวย",
+        "amphur_en":  "No chaluai",
+        "province_id":  23,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  299,
+        "amphur_code":  3409,
+        "amphur_th":  "น้ำยืน",
+        "amphur_en":  "Nam yun",
+        "province_id":  23,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  300,
+        "amphur_code":  3410,
+        "amphur_th":  "บุณฑริก",
+        "amphur_en":  "Bun tharik",
+        "province_id":  23,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  301,
+        "amphur_code":  3411,
+        "amphur_th":  "ตระการพืชผล",
+        "amphur_en":  "Trakan phut phon",
+        "province_id":  23,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  302,
+        "amphur_code":  3412,
+        "amphur_th":  "กุดข้าวปุ้น",
+        "amphur_en":  "Kut khao pun",
+        "province_id":  23,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  303,
+        "amphur_code":  3413,
+        "amphur_th":  "ม่วงสามสิบ",
+        "amphur_en":  "Mueang samsip",
+        "province_id":  23,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  304,
+        "amphur_code":  3414,
+        "amphur_th":  "วารินชำราบ",
+        "amphur_en":  "Warin shamrap",
+        "province_id":  23,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  305,
+        "amphur_code":  3415,
+        "amphur_th":  "พิบูลมังสาหาร",
+        "amphur_en":  "Phibun mangsahan",
+        "province_id":  23,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  306,
+        "amphur_code":  3416,
+        "amphur_th":  "ตาลสุม",
+        "amphur_en":  "Tan sum",
+        "province_id":  23,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  307,
+        "amphur_code":  3417,
+        "amphur_th":  "โพธิ์ไทร",
+        "amphur_en":  "Pho sai",
+        "province_id":  23,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  308,
+        "amphur_code":  3418,
+        "amphur_th":  "สำโรง",
+        "amphur_en":  "sam rong",
+        "province_id":  23,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  309,
+        "amphur_code":  3419,
+        "amphur_th":  "ดอนมดแดง",
+        "amphur_en":  "Don mot daeng",
+        "province_id":  23,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  310,
+        "amphur_code":  3420,
+        "amphur_th":  "สิรินธร",
+        "amphur_en":  "Sirinthon",
+        "province_id":  23,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  311,
+        "amphur_code":  3421,
+        "amphur_th":  "ทุ่งศรีอุดม",
+        "amphur_en":  "Thung si udom",
+        "province_id":  23,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  312,
+        "amphur_code":  3422,
+        "amphur_th":  "นาเยีย",
+        "amphur_en":  "Na Yia",
+        "province_id":  23,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  313,
+        "amphur_code":  3423,
+        "amphur_th":  "นาตาล",
+        "amphur_en":  "Natan",
+        "province_id":  23,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  314,
+        "amphur_code":  3424,
+        "amphur_th":  "เหล่าเสือโก้ก",
+        "amphur_en":  "Lao Suea Kok",
+        "province_id":  23,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  315,
+        "amphur_code":  3425,
+        "amphur_th":  "สว่างวีระวงศ์",
+        "amphur_en":  "Swang weerawong",
+        "province_id":  23,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  316,
+        "amphur_code":  3426,
+        "amphur_th":  "น้ำขุ่น",
+        "amphur_en":  "Nam Khun",
+        "province_id":  23,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  317,
+        "amphur_code":  3501,
+        "amphur_th":  "เมืองยโสธร",
+        "amphur_en":  "Mueang yasothon",
+        "province_id":  24,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  318,
+        "amphur_code":  3502,
+        "amphur_th":  "ทรายมูล",
+        "amphur_en":  "Sai mun",
+        "province_id":  24,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  319,
+        "amphur_code":  3503,
+        "amphur_th":  "กุดชุม",
+        "amphur_en":  "Kut chum",
+        "province_id":  24,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  320,
+        "amphur_code":  3504,
+        "amphur_th":  "คำเขื่อนแก้ว",
+        "amphur_en":  "Kham khuan kaeo",
+        "province_id":  24,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  321,
+        "amphur_code":  3505,
+        "amphur_th":  "ป่าติ้ว",
+        "amphur_en":  "Pa tiu",
+        "province_id":  24,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  322,
+        "amphur_code":  3506,
+        "amphur_th":  "มหาชนะชัย",
+        "amphur_en":  "Maha chana chai",
+        "province_id":  24,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  323,
+        "amphur_code":  3507,
+        "amphur_th":  "ค้อวัง",
+        "amphur_en":  "Kho wang",
+        "province_id":  24,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  324,
+        "amphur_code":  3508,
+        "amphur_th":  "เลิงนกทา",
+        "amphur_en":  "Loeng nok tha",
+        "province_id":  24,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  325,
+        "amphur_code":  3509,
+        "amphur_th":  "ไทยเจริญ",
+        "amphur_en":  "Thai charoen",
+        "province_id":  24,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  326,
+        "amphur_code":  3601,
+        "amphur_th":  "เมืองชัยภูมิ",
+        "amphur_en":  "Mueang chai yaphum",
+        "province_id":  25,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  327,
+        "amphur_code":  3602,
+        "amphur_th":  "บ้านเขว้า",
+        "amphur_en":  "Ban klwao",
+        "province_id":  25,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  328,
+        "amphur_code":  3603,
+        "amphur_th":  "คอนสวรรค์",
+        "amphur_en":  "Khon sawan",
+        "province_id":  25,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  329,
+        "amphur_code":  3604,
+        "amphur_th":  "เกษตรสมบูรณ์",
+        "amphur_en":  "Kaset sombun",
+        "province_id":  25,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  330,
+        "amphur_code":  3605,
+        "amphur_th":  "หนองบัวแดง",
+        "amphur_en":  "Nong bua daeng",
+        "province_id":  25,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  331,
+        "amphur_code":  3606,
+        "amphur_th":  "จัตุรัส",
+        "amphur_en":  "Chatturat",
+        "province_id":  25,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  332,
+        "amphur_code":  3607,
+        "amphur_th":  "บำเหน็จณรงค์",
+        "amphur_en":  "Bamnet narong",
+        "province_id":  25,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  333,
+        "amphur_code":  3608,
+        "amphur_th":  "หนองบัวระเหว",
+        "amphur_en":  "Nong bua rawe",
+        "province_id":  25,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  334,
+        "amphur_code":  3609,
+        "amphur_th":  "เทพสถิต",
+        "amphur_en":  "Thep sathit",
+        "province_id":  25,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  335,
+        "amphur_code":  3610,
+        "amphur_th":  "ภูเขียว",
+        "amphur_en":  "Phu khieo",
+        "province_id":  25,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  336,
+        "amphur_code":  3611,
+        "amphur_th":  "บ้านแท่น",
+        "amphur_en":  "Ban thaen",
+        "province_id":  25,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  337,
+        "amphur_code":  3612,
+        "amphur_th":  "แก้งคร้อ",
+        "amphur_en":  "Kaeng khro",
+        "province_id":  25,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  338,
+        "amphur_code":  3613,
+        "amphur_th":  "คอนสาร",
+        "amphur_en":  "Khon san",
+        "province_id":  25,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  339,
+        "amphur_code":  3614,
+        "amphur_th":  "ภักดีชุมพล",
+        "amphur_en":  "Phakdi chum phon",
+        "province_id":  25,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  340,
+        "amphur_code":  3615,
+        "amphur_th":  "เนินสง่า",
+        "amphur_en":  "Noen sanga",
+        "province_id":  25,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  341,
+        "amphur_code":  3616,
+        "amphur_th":  "ซับใหญ่",
+        "amphur_en":  "Sap yai",
+        "province_id":  25,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  342,
+        "amphur_code":  3701,
+        "amphur_th":  "เมืองอำนาจเจริญ",
+        "amphur_en":  "Mueang amnatcharoen",
+        "province_id":  26,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  343,
+        "amphur_code":  3702,
+        "amphur_th":  "ชานุมาน",
+        "amphur_en":  "Chanu man",
+        "province_id":  26,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  344,
+        "amphur_code":  3703,
+        "amphur_th":  "ปทุมราชวงศา",
+        "amphur_en":  "Pathum rachawongsa",
+        "province_id":  26,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  345,
+        "amphur_code":  3704,
+        "amphur_th":  "พนา",
+        "amphur_en":  "Phana",
+        "province_id":  26,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  346,
+        "amphur_code":  3705,
+        "amphur_th":  "เสนางคนิคม",
+        "amphur_en":  "Senangkhanikhom",
+        "province_id":  26,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  347,
+        "amphur_code":  3706,
+        "amphur_th":  "หัวตะพาน",
+        "amphur_en":  "Hua taphan",
+        "province_id":  26,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  348,
+        "amphur_code":  3707,
+        "amphur_th":  "ลืออำนาจ",
+        "amphur_en":  "Lu amnat",
+        "province_id":  26,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  349,
+        "amphur_code":  3901,
+        "amphur_th":  "เมืองหนองบัวลำภู",
+        "amphur_en":  "Mueang nongbualamphu",
+        "province_id":  28,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  350,
+        "amphur_code":  3902,
+        "amphur_th":  "นากลาง",
+        "amphur_en":  "Na klang",
+        "province_id":  28,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  351,
+        "amphur_code":  3903,
+        "amphur_th":  "โนนสัง",
+        "amphur_en":  "Non sang",
+        "province_id":  28,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  352,
+        "amphur_code":  3904,
+        "amphur_th":  "ศรีบุญเรือง",
+        "amphur_en":  "Si bun ruang",
+        "province_id":  28,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  353,
+        "amphur_code":  3905,
+        "amphur_th":  "สุวรรณคูหา",
+        "amphur_en":  "Suwannakhuha",
+        "province_id":  28,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  354,
+        "amphur_code":  3906,
+        "amphur_th":  "นาวัง",
+        "amphur_en":  "Na wang",
+        "province_id":  28,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  355,
+        "amphur_code":  4001,
+        "amphur_th":  "เมืองขอนแก่น",
+        "amphur_en":  "Mueang khonkean",
+        "province_id":  29,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  356,
+        "amphur_code":  4002,
+        "amphur_th":  "บ้านฝาง",
+        "amphur_en":  "Ban fang",
+        "province_id":  29,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  357,
+        "amphur_code":  4003,
+        "amphur_th":  "พระยืน",
+        "amphur_en":  "Phra yun",
+        "province_id":  29,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  358,
+        "amphur_code":  4004,
+        "amphur_th":  "หนองเรือ",
+        "amphur_en":  "Nong rua",
+        "province_id":  29,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  359,
+        "amphur_code":  4005,
+        "amphur_th":  "ชุมแพ",
+        "amphur_en":  "Chum phae",
+        "province_id":  29,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  360,
+        "amphur_code":  4006,
+        "amphur_th":  "สีชมพู",
+        "amphur_en":  "Si chomphu",
+        "province_id":  29,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  361,
+        "amphur_code":  4007,
+        "amphur_th":  "น้ำพอง",
+        "amphur_en":  "Nam phong",
+        "province_id":  29,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  362,
+        "amphur_code":  4008,
+        "amphur_th":  "อุบลรัตน์",
+        "amphur_en":  "Ubol rat",
+        "province_id":  29,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  363,
+        "amphur_code":  4009,
+        "amphur_th":  "กระนวน",
+        "amphur_en":  "kranuan",
+        "province_id":  29,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  364,
+        "amphur_code":  4010,
+        "amphur_th":  "บ้านไผ่",
+        "amphur_en":  "Ban phai",
+        "province_id":  29,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  365,
+        "amphur_code":  4011,
+        "amphur_th":  "เปือยน้อย",
+        "amphur_en":  "Puai noi",
+        "province_id":  29,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  366,
+        "amphur_code":  4012,
+        "amphur_th":  "พล",
+        "amphur_en":  "Phon",
+        "province_id":  29,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  367,
+        "amphur_code":  4013,
+        "amphur_th":  "แวงใหญ่",
+        "amphur_en":  "Wang yai",
+        "province_id":  29,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  368,
+        "amphur_code":  4014,
+        "amphur_th":  "แวงน้อย",
+        "amphur_en":  "Wang noi",
+        "province_id":  29,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  369,
+        "amphur_code":  4015,
+        "amphur_th":  "หนองสองห้อง",
+        "amphur_en":  "Nong song hong",
+        "province_id":  29,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  370,
+        "amphur_code":  4016,
+        "amphur_th":  "ภูเวียง",
+        "amphur_en":  "Phu wiang",
+        "province_id":  29,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  371,
+        "amphur_code":  4017,
+        "amphur_th":  "มัญจาคีรี",
+        "amphur_en":  "Mancha khiri",
+        "province_id":  29,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  372,
+        "amphur_code":  4018,
+        "amphur_th":  "ชนบท",
+        "amphur_en":  "Chonnabot",
+        "province_id":  29,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  373,
+        "amphur_code":  4019,
+        "amphur_th":  "เขาสวนกวาง",
+        "amphur_en":  "Khao suan kwang",
+        "province_id":  29,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  374,
+        "amphur_code":  4020,
+        "amphur_th":  "ภูผาม่าน",
+        "amphur_en":  "Phu pha man",
+        "province_id":  29,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  375,
+        "amphur_code":  4021,
+        "amphur_th":  "ซำสูง",
+        "amphur_en":  "Sam Sung",
+        "province_id":  29,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  376,
+        "amphur_code":  4022,
+        "amphur_th":  "โคกโพธิ์ไชย",
+        "amphur_en":  "Khok pho chai",
+        "province_id":  29,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  377,
+        "amphur_code":  4023,
+        "amphur_th":  "หนองนาคำ",
+        "amphur_en":  "Nong na kham",
+        "province_id":  29,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  378,
+        "amphur_code":  4024,
+        "amphur_th":  "บ้านแฮด",
+        "amphur_en":  "Ban haak",
+        "province_id":  29,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  379,
+        "amphur_code":  4025,
+        "amphur_th":  "โนนศิลา",
+        "amphur_en":  "Non sila",
+        "province_id":  29,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  380,
+        "amphur_code":  4026,
+        "amphur_th":  "เวียงเก่า",
+        "amphur_en":  "Wiang Kao",
+        "province_id":  29,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  381,
+        "amphur_code":  4101,
+        "amphur_th":  "เมืองอุดรธานี",
+        "amphur_en":  "Mueang udonthani",
+        "province_id":  30,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  382,
+        "amphur_code":  4102,
+        "amphur_th":  "กุดจับ",
+        "amphur_en":  "kut chap",
+        "province_id":  30,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  383,
+        "amphur_code":  4103,
+        "amphur_th":  "หนองวัวซอ",
+        "amphur_en":  "Nong wua so",
+        "province_id":  30,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  384,
+        "amphur_code":  4104,
+        "amphur_th":  "กุมภวาปี",
+        "amphur_en":  "Kumphawapi",
+        "province_id":  30,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  385,
+        "amphur_code":  4105,
+        "amphur_th":  "โนนสะอาด",
+        "amphur_en":  "Non sa-at",
+        "province_id":  30,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  386,
+        "amphur_code":  4106,
+        "amphur_th":  "หนองหาน",
+        "amphur_en":  "Nong han",
+        "province_id":  30,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  387,
+        "amphur_code":  4107,
+        "amphur_th":  "ทุ่งฝน",
+        "amphur_en":  "Thung fon",
+        "province_id":  30,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  388,
+        "amphur_code":  4108,
+        "amphur_th":  "ไชยวาน",
+        "amphur_en":  "Chai wan",
+        "province_id":  30,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  389,
+        "amphur_code":  4109,
+        "amphur_th":  "ศรีธาตุ",
+        "amphur_en":  "Si that",
+        "province_id":  30,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  390,
+        "amphur_code":  4110,
+        "amphur_th":  "วังสามหมอ",
+        "amphur_en":  "Wang sam mo",
+        "province_id":  30,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  391,
+        "amphur_code":  4111,
+        "amphur_th":  "บ้านดุง",
+        "amphur_en":  "Bang dung",
+        "province_id":  30,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  392,
+        "amphur_code":  4112,
+        "amphur_th":  "บ้านผือ",
+        "amphur_en":  "Ban phu",
+        "province_id":  30,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  393,
+        "amphur_code":  4113,
+        "amphur_th":  "น้ำโสม",
+        "amphur_en":  "Nam som",
+        "province_id":  30,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  394,
+        "amphur_code":  4114,
+        "amphur_th":  "เพ็ญ",
+        "amphur_en":  "Phen",
+        "province_id":  30,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  395,
+        "amphur_code":  4115,
+        "amphur_th":  "สร้างคอม",
+        "amphur_en":  "Sang khom",
+        "province_id":  30,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  396,
+        "amphur_code":  4116,
+        "amphur_th":  "หนองแสง",
+        "amphur_en":  "Nong saeng",
+        "province_id":  30,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  397,
+        "amphur_code":  4117,
+        "amphur_th":  "นายูง",
+        "amphur_en":  "Na yung",
+        "province_id":  30,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  398,
+        "amphur_code":  4118,
+        "amphur_th":  "พิบูลย์รักษ์",
+        "amphur_en":  "Pibunrak",
+        "province_id":  30,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  399,
+        "amphur_code":  4119,
+        "amphur_th":  "กู่แก้ว",
+        "amphur_en":  "Ku kaeo",
+        "province_id":  30,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  400,
+        "amphur_code":  4120,
+        "amphur_th":  "ประจักษ์ศิลปาคม",
+        "amphur_en":  "Prachaksinlapakhom",
+        "province_id":  30,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  401,
+        "amphur_code":  4201,
+        "amphur_th":  "เมืองเลย",
+        "amphur_en":  "Mueang loei",
+        "province_id":  31,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  402,
+        "amphur_code":  4202,
+        "amphur_th":  "นาด้วง",
+        "amphur_en":  "Na duang",
+        "province_id":  31,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  403,
+        "amphur_code":  4203,
+        "amphur_th":  "เชียงคาน",
+        "amphur_en":  "Chiang khan",
+        "province_id":  31,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  404,
+        "amphur_code":  4204,
+        "amphur_th":  "ปากชม",
+        "amphur_en":  "Pak chom",
+        "province_id":  31,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  405,
+        "amphur_code":  4205,
+        "amphur_th":  "ด่านซ้าย",
+        "amphur_en":  "Dan sai",
+        "province_id":  31,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  406,
+        "amphur_code":  4206,
+        "amphur_th":  "นาแห้ว",
+        "amphur_en":  "Na haeo",
+        "province_id":  31,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  407,
+        "amphur_code":  4207,
+        "amphur_th":  "ภูเรือ",
+        "amphur_en":  "Phu rua",
+        "province_id":  31,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  408,
+        "amphur_code":  4208,
+        "amphur_th":  "ท่าลี่",
+        "amphur_en":  "Tha li",
+        "province_id":  31,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  409,
+        "amphur_code":  4209,
+        "amphur_th":  "วังสะพุง",
+        "amphur_en":  "Wang saphung",
+        "province_id":  31,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  410,
+        "amphur_code":  4210,
+        "amphur_th":  "ภูกระดึง",
+        "amphur_en":  "Phu kadung",
+        "province_id":  31,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  411,
+        "amphur_code":  4211,
+        "amphur_th":  "ภูหลวง",
+        "amphur_en":  "Phu luang",
+        "province_id":  31,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  412,
+        "amphur_code":  4212,
+        "amphur_th":  "ผาขาว",
+        "amphur_en":  "Pha Khao",
+        "province_id":  31,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  413,
+        "amphur_code":  4213,
+        "amphur_th":  "เอราวัณ",
+        "amphur_en":  "Erawan",
+        "province_id":  31,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  414,
+        "amphur_code":  4214,
+        "amphur_th":  "หนองหิน",
+        "amphur_en":  "Nong hin",
+        "province_id":  31,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  415,
+        "amphur_code":  4301,
+        "amphur_th":  "เมืองหนองคาย",
+        "amphur_en":  "Mueang nongkhai",
+        "province_id":  32,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  416,
+        "amphur_code":  4302,
+        "amphur_th":  "ท่าบ่อ",
+        "amphur_en":  "Tha bo",
+        "province_id":  32,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  417,
+        "amphur_code":  4301,
+        "amphur_th":  "เมืองบึงกาฬ",
+        "amphur_en":  "Mueang Bueng Kan",
+        "province_id":  27,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  418,
+        "amphur_code":  4302,
+        "amphur_th":  "พรเจริญ",
+        "amphur_en":  "Porncharoen",
+        "province_id":  27,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  419,
+        "amphur_code":  4303,
+        "amphur_th":  "โพนพิสัย",
+        "amphur_en":  "Phon phisai",
+        "province_id":  32,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  420,
+        "amphur_code":  4303,
+        "amphur_th":  "โซ่พิสัย",
+        "amphur_en":  "So phisai",
+        "province_id":  27,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  421,
+        "amphur_code":  4304,
+        "amphur_th":  "ศรีเชียงใหม่",
+        "amphur_en":  "Si chiang mai",
+        "province_id":  32,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  422,
+        "amphur_code":  4305,
+        "amphur_th":  "สังคม",
+        "amphur_en":  "Sang kom",
+        "province_id":  32,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  423,
+        "amphur_code":  4304,
+        "amphur_th":  "เซกา",
+        "amphur_en":  "Seka",
+        "province_id":  27,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  424,
+        "amphur_code":  4305,
+        "amphur_th":  "ปากคาด",
+        "amphur_en":  "Pak khat",
+        "province_id":  27,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  425,
+        "amphur_code":  4306,
+        "amphur_th":  "บึงโขงหลง",
+        "amphur_en":  "Bueng Khong Long",
+        "province_id":  27,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  426,
+        "amphur_code":  4307,
+        "amphur_th":  "ศรีวิไล",
+        "amphur_en":  "Si wilai",
+        "province_id":  27,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  427,
+        "amphur_code":  4308,
+        "amphur_th":  "บุ่งคล้า",
+        "amphur_en":  "Bung khla",
+        "province_id":  27,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  428,
+        "amphur_code":  4306,
+        "amphur_th":  "สระใคร",
+        "amphur_en":  "Sa Khrai",
+        "province_id":  32,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  429,
+        "amphur_code":  4307,
+        "amphur_th":  "เฝ้าไร่",
+        "amphur_en":  "Fao Rai",
+        "province_id":  32,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  430,
+        "amphur_code":  4308,
+        "amphur_th":  "รัตนวาปี",
+        "amphur_en":  "Ratana wapi",
+        "province_id":  32,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  431,
+        "amphur_code":  4309,
+        "amphur_th":  "โพธิ์ตาก",
+        "amphur_en":  "Pho tak",
+        "province_id":  32,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  432,
+        "amphur_code":  4401,
+        "amphur_th":  "เมืองมหาสารคาม",
+        "amphur_en":  "Mueang mahasarakham",
+        "province_id":  33,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  433,
+        "amphur_code":  4402,
+        "amphur_th":  "แกดำ",
+        "amphur_en":  "Kae dam",
+        "province_id":  33,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  434,
+        "amphur_code":  4403,
+        "amphur_th":  "โกสุมพิสัย",
+        "amphur_en":  "Kosum phisai",
+        "province_id":  33,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  435,
+        "amphur_code":  4404,
+        "amphur_th":  "กันทรวิชัย",
+        "amphur_en":  "Kantharawichai",
+        "province_id":  33,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  436,
+        "amphur_code":  4405,
+        "amphur_th":  "เชียงยืน",
+        "amphur_en":  "Chiang yun",
+        "province_id":  33,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  437,
+        "amphur_code":  4406,
+        "amphur_th":  "บรบือ",
+        "amphur_en":  "Borabu",
+        "province_id":  33,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  438,
+        "amphur_code":  4407,
+        "amphur_th":  "นาเชือก",
+        "amphur_en":  "Na chuak",
+        "province_id":  33,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  439,
+        "amphur_code":  4408,
+        "amphur_th":  "พยัคฆภูมิพิสัย",
+        "amphur_en":  "Phayakhaphum phisai",
+        "province_id":  33,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  440,
+        "amphur_code":  4409,
+        "amphur_th":  "วาปีปทุม",
+        "amphur_en":  "Wapi pathum",
+        "province_id":  33,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  441,
+        "amphur_code":  4410,
+        "amphur_th":  "นาดูน",
+        "amphur_en":  "Na dun",
+        "province_id":  33,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  442,
+        "amphur_code":  4411,
+        "amphur_th":  "ยางสีสุราช",
+        "amphur_en":  "Yang si surat",
+        "province_id":  33,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  443,
+        "amphur_code":  4412,
+        "amphur_th":  "กุดรัง",
+        "amphur_en":  "Kut rang",
+        "province_id":  33,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  444,
+        "amphur_code":  4413,
+        "amphur_th":  "ชื่นชม",
+        "amphur_en":  "Chuenchom",
+        "province_id":  33,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  445,
+        "amphur_code":  4501,
+        "amphur_th":  "เมืองร้อยเอ็ด",
+        "amphur_en":  "Mueang roi et",
+        "province_id":  34,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  446,
+        "amphur_code":  4502,
+        "amphur_th":  "เกษตรวิสัย",
+        "amphur_en":  "Kaset visai",
+        "province_id":  34,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  447,
+        "amphur_code":  4503,
+        "amphur_th":  "ปทุมรัตต์",
+        "amphur_en":  "Pathum Rat",
+        "province_id":  34,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  448,
+        "amphur_code":  4504,
+        "amphur_th":  "จตุรพักตรพิมาน",
+        "amphur_en":  "Chatura Phak Tara Phiman",
+        "province_id":  34,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  449,
+        "amphur_code":  4505,
+        "amphur_th":  "ธวัชบุรี",
+        "amphur_en":  "Thawatshaburi",
+        "province_id":  34,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  450,
+        "amphur_code":  4506,
+        "amphur_th":  "พนมไพร",
+        "amphur_en":  "Phanom phrai",
+        "province_id":  34,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  451,
+        "amphur_code":  4507,
+        "amphur_th":  "โพนทอง",
+        "amphur_en":  "Phon thong",
+        "province_id":  34,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  452,
+        "amphur_code":  4508,
+        "amphur_th":  "โพธิ์ชัย",
+        "amphur_en":  "IPho chai",
+        "province_id":  34,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  453,
+        "amphur_code":  4509,
+        "amphur_th":  "หนองพอก",
+        "amphur_en":  "Nong phok",
+        "province_id":  34,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  454,
+        "amphur_code":  4510,
+        "amphur_th":  "เสลภูมิ",
+        "amphur_en":  "Sela phum",
+        "province_id":  34,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  455,
+        "amphur_code":  4511,
+        "amphur_th":  "สุวรรณภูมิ",
+        "amphur_en":  "Suwannaphum",
+        "province_id":  34,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  456,
+        "amphur_code":  4512,
+        "amphur_th":  "เมืองสรวง",
+        "amphur_en":  "Mueangsuang",
+        "province_id":  34,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  457,
+        "amphur_code":  4513,
+        "amphur_th":  "โพนทราย",
+        "amphur_en":  "Phon sai",
+        "province_id":  34,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  458,
+        "amphur_code":  4514,
+        "amphur_th":  "อาจสามารถ",
+        "amphur_en":  "At samat",
+        "province_id":  34,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  459,
+        "amphur_code":  4515,
+        "amphur_th":  "เมยวดี",
+        "amphur_en":  "Moeiwadi",
+        "province_id":  34,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  460,
+        "amphur_code":  4516,
+        "amphur_th":  "ศรีสมเด็จ",
+        "amphur_en":  "Srisomdet",
+        "province_id":  34,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  461,
+        "amphur_code":  4517,
+        "amphur_th":  "จังหาร",
+        "amphur_en":  "Jung han",
+        "province_id":  34,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  462,
+        "amphur_code":  4518,
+        "amphur_th":  "เชียงขวัญ",
+        "amphur_en":  "Chiang khwan",
+        "province_id":  34,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  463,
+        "amphur_code":  4519,
+        "amphur_th":  "หนองฮี",
+        "amphur_en":  "Nong hi",
+        "province_id":  34,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  464,
+        "amphur_code":  4520,
+        "amphur_th":  "ทุ่งเขาหลวง",
+        "amphur_en":  "Thung kao luang",
+        "province_id":  34,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  465,
+        "amphur_code":  4601,
+        "amphur_th":  "เมืองกาฬสินธุ์",
+        "amphur_en":  "Mueang Kalasin",
+        "province_id":  35,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  466,
+        "amphur_code":  4602,
+        "amphur_th":  "นามน",
+        "amphur_en":  "Na mon",
+        "province_id":  35,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  467,
+        "amphur_code":  4603,
+        "amphur_th":  "กมลาไสย",
+        "amphur_en":  "Kamalasai",
+        "province_id":  35,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  468,
+        "amphur_code":  4604,
+        "amphur_th":  "ร่องคำ",
+        "amphur_en":  "Rong kham",
+        "province_id":  35,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  469,
+        "amphur_code":  4605,
+        "amphur_th":  "กุฉินารายณ์",
+        "amphur_en":  "Kuchinarat",
+        "province_id":  35,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  470,
+        "amphur_code":  4606,
+        "amphur_th":  "เขาวง",
+        "amphur_en":  "Khao wong",
+        "province_id":  35,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  471,
+        "amphur_code":  4607,
+        "amphur_th":  "ยางตลาด",
+        "amphur_en":  "Yang talad",
+        "province_id":  35,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  472,
+        "amphur_code":  4608,
+        "amphur_th":  "ห้วยเม็ก",
+        "amphur_en":  "Huai mek",
+        "province_id":  35,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  473,
+        "amphur_code":  4609,
+        "amphur_th":  "สหัสขันธ์",
+        "amphur_en":  "Sahasakan",
+        "province_id":  35,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  474,
+        "amphur_code":  4610,
+        "amphur_th":  "คำม่วง",
+        "amphur_en":  "Kham Mueang",
+        "province_id":  35,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  475,
+        "amphur_code":  4611,
+        "amphur_th":  "ท่าคันโท",
+        "amphur_en":  "Tha khantho",
+        "province_id":  35,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  476,
+        "amphur_code":  4612,
+        "amphur_th":  "หนองกุงศรี",
+        "amphur_en":  "Nong kung srin",
+        "province_id":  35,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  477,
+        "amphur_code":  4613,
+        "amphur_th":  "สมเด็จ",
+        "amphur_en":  "Somdet",
+        "province_id":  35,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  478,
+        "amphur_code":  4614,
+        "amphur_th":  "ห้วยผึ้ง",
+        "amphur_en":  "Huai phung",
+        "province_id":  35,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  479,
+        "amphur_code":  4615,
+        "amphur_th":  "สามชัย",
+        "amphur_en":  "Sam chai",
+        "province_id":  35,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  480,
+        "amphur_code":  4616,
+        "amphur_th":  "นาคู",
+        "amphur_en":  "Na ku",
+        "province_id":  35,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  481,
+        "amphur_code":  4617,
+        "amphur_th":  "ดอนจาน",
+        "amphur_en":  "Don jan",
+        "province_id":  35,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  482,
+        "amphur_code":  4618,
+        "amphur_th":  "ฆ้องชัย",
+        "amphur_en":  "Khong chai",
+        "province_id":  35,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  483,
+        "amphur_code":  4701,
+        "amphur_th":  "เมืองสกลนคร",
+        "amphur_en":  "Mueang sakonnakhon",
+        "province_id":  36,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  484,
+        "amphur_code":  4702,
+        "amphur_th":  "กุสุมาลย์",
+        "amphur_en":  "Kusuman",
+        "province_id":  36,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  485,
+        "amphur_code":  4703,
+        "amphur_th":  "กุดบาก",
+        "amphur_en":  "Kot bak",
+        "province_id":  36,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  486,
+        "amphur_code":  4704,
+        "amphur_th":  "พรรณานิคม",
+        "amphur_en":  "Phanna nikhom",
+        "province_id":  36,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  487,
+        "amphur_code":  4705,
+        "amphur_th":  "พังโคน",
+        "amphur_en":  "Phang khon",
+        "province_id":  36,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  488,
+        "amphur_code":  4706,
+        "amphur_th":  "วาริชภูมิ",
+        "amphur_en":  "Warit chaphum",
+        "province_id":  36,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  489,
+        "amphur_code":  4707,
+        "amphur_th":  "นิคมน้ำอูน",
+        "amphur_en":  "Nikhomnamun",
+        "province_id":  36,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  490,
+        "amphur_code":  4708,
+        "amphur_th":  "วานรนิวาส",
+        "amphur_en":  "Wanon niwat",
+        "province_id":  36,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  491,
+        "amphur_code":  4709,
+        "amphur_th":  "คำตากล้า",
+        "amphur_en":  "Kham ta kla",
+        "province_id":  36,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  492,
+        "amphur_code":  4710,
+        "amphur_th":  "บ้านม่วง",
+        "amphur_en":  "Ban Mueang",
+        "province_id":  36,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  493,
+        "amphur_code":  4711,
+        "amphur_th":  "อากาศอำนวย",
+        "amphur_en":  "Akat Amnuai",
+        "province_id":  36,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  494,
+        "amphur_code":  4712,
+        "amphur_th":  "สว่างแดนดิน",
+        "amphur_en":  "Sawang daen din",
+        "province_id":  36,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  495,
+        "amphur_code":  4713,
+        "amphur_th":  "ส่องดาว",
+        "amphur_en":  "Song dao",
+        "province_id":  36,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  496,
+        "amphur_code":  4714,
+        "amphur_th":  "เต่างอย",
+        "amphur_en":  "Tao ngoi",
+        "province_id":  36,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  497,
+        "amphur_code":  4715,
+        "amphur_th":  "โคกศรีสุพรรณ",
+        "amphur_en":  "Khok si suphan",
+        "province_id":  36,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  498,
+        "amphur_code":  4716,
+        "amphur_th":  "เจริญศิลป์",
+        "amphur_en":  "Charoen silp",
+        "province_id":  36,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  499,
+        "amphur_code":  4717,
+        "amphur_th":  "โพนนาแก้ว",
+        "amphur_en":  "Phon na kaeo",
+        "province_id":  36,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  500,
+        "amphur_code":  4718,
+        "amphur_th":  "ภูพาน",
+        "amphur_en":  "Phu phan",
+        "province_id":  36,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  501,
+        "amphur_code":  4801,
+        "amphur_th":  "เมืองนครพนม",
+        "amphur_en":  "Mueang nakhon phanom",
+        "province_id":  37,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  502,
+        "amphur_code":  4802,
+        "amphur_th":  "ปลาปาก",
+        "amphur_en":  "Pla pak",
+        "province_id":  37,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  503,
+        "amphur_code":  4803,
+        "amphur_th":  "ท่าอุเทน",
+        "amphur_en":  "Tha uthen",
+        "province_id":  37,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  504,
+        "amphur_code":  4804,
+        "amphur_th":  "บ้านแพง",
+        "amphur_en":  "Ban phaeng",
+        "province_id":  37,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  505,
+        "amphur_code":  4805,
+        "amphur_th":  "ธาตุพนม",
+        "amphur_en":  "That phanom",
+        "province_id":  37,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  506,
+        "amphur_code":  4806,
+        "amphur_th":  "เรณูนคร",
+        "amphur_en":  "Ranu nakhon",
+        "province_id":  37,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  507,
+        "amphur_code":  4807,
+        "amphur_th":  "นาแก",
+        "amphur_en":  "Na kae",
+        "province_id":  37,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  508,
+        "amphur_code":  4808,
+        "amphur_th":  "ศรีสงคราม",
+        "amphur_en":  "Si songkhram",
+        "province_id":  37,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  509,
+        "amphur_code":  4809,
+        "amphur_th":  "นาหว้า",
+        "amphur_en":  "Na wa",
+        "province_id":  37,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  510,
+        "amphur_code":  4810,
+        "amphur_th":  "โพนสวรรค์",
+        "amphur_en":  "Phon sawan",
+        "province_id":  37,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  511,
+        "amphur_code":  4811,
+        "amphur_th":  "นาทม",
+        "amphur_en":  "Na thom",
+        "province_id":  37,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  512,
+        "amphur_code":  4812,
+        "amphur_th":  "วังยาง",
+        "amphur_en":  "Wong yang",
+        "province_id":  37,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  513,
+        "amphur_code":  4901,
+        "amphur_th":  "เมืองมุกดาหาร",
+        "amphur_en":  "Mueang mukdahan",
+        "province_id":  38,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  514,
+        "amphur_code":  4902,
+        "amphur_th":  "นิคมคำสร้อย",
+        "amphur_en":  "Nikhom kham soi",
+        "province_id":  38,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  515,
+        "amphur_code":  4903,
+        "amphur_th":  "ดอนตาล",
+        "amphur_en":  "Don tan",
+        "province_id":  38,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  516,
+        "amphur_code":  4904,
+        "amphur_th":  "ดงหลวง",
+        "amphur_en":  "Dong luang",
+        "province_id":  38,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  517,
+        "amphur_code":  4905,
+        "amphur_th":  "คำชะอี",
+        "amphur_en":  "Khamcha-i",
+        "province_id":  38,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  518,
+        "amphur_code":  4906,
+        "amphur_th":  "หว้านใหญ่",
+        "amphur_en":  "Wan yai",
+        "province_id":  38,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  519,
+        "amphur_code":  4907,
+        "amphur_th":  "หนองสูง",
+        "amphur_en":  "Nong sung",
+        "province_id":  38,
+        "geo_id":  3
+    },
+    {
+        "amphur_id":  520,
+        "amphur_code":  5001,
+        "amphur_th":  "เมืองเชียงใหม่",
+        "amphur_en":  "Mueang chiang mai",
+        "province_id":  39,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  521,
+        "amphur_code":  5002,
+        "amphur_th":  "จอมทอง",
+        "amphur_en":  "Chomthong",
+        "province_id":  39,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  522,
+        "amphur_code":  5003,
+        "amphur_th":  "แม่แจ่ม",
+        "amphur_en":  "Mae chaem",
+        "province_id":  39,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  523,
+        "amphur_code":  5004,
+        "amphur_th":  "เชียงดาว",
+        "amphur_en":  "Chiang dao",
+        "province_id":  39,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  524,
+        "amphur_code":  5005,
+        "amphur_th":  "ดอยสะเก็ด",
+        "amphur_en":  "Doi saket",
+        "province_id":  39,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  525,
+        "amphur_code":  5006,
+        "amphur_th":  "แม่แตง",
+        "amphur_en":  "Mae taeng",
+        "province_id":  39,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  526,
+        "amphur_code":  5007,
+        "amphur_th":  "แม่ริม",
+        "amphur_en":  "Mae rim",
+        "province_id":  39,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  527,
+        "amphur_code":  5008,
+        "amphur_th":  "สะเมิง",
+        "amphur_en":  "Samoeng",
+        "province_id":  39,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  528,
+        "amphur_code":  5009,
+        "amphur_th":  "ฝาง",
+        "amphur_en":  "Fang",
+        "province_id":  39,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  529,
+        "amphur_code":  5010,
+        "amphur_th":  "แม่อาย",
+        "amphur_en":  "Mae ai",
+        "province_id":  39,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  530,
+        "amphur_code":  5011,
+        "amphur_th":  "พร้าว",
+        "amphur_en":  "Phrao",
+        "province_id":  39,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  531,
+        "amphur_code":  5012,
+        "amphur_th":  "สันป่าตอง",
+        "amphur_en":  "San pa tong",
+        "province_id":  39,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  532,
+        "amphur_code":  5013,
+        "amphur_th":  "สันกำแพง",
+        "amphur_en":  "Sankamphaeng",
+        "province_id":  39,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  533,
+        "amphur_code":  5014,
+        "amphur_th":  "สันทราย",
+        "amphur_en":  "San sai",
+        "province_id":  39,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  534,
+        "amphur_code":  5015,
+        "amphur_th":  "หางดง",
+        "amphur_en":  "Hang dong",
+        "province_id":  39,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  535,
+        "amphur_code":  5016,
+        "amphur_th":  "ฮอด",
+        "amphur_en":  "Hot",
+        "province_id":  39,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  536,
+        "amphur_code":  5017,
+        "amphur_th":  "ดอยเต่า",
+        "amphur_en":  "Doi tao",
+        "province_id":  39,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  537,
+        "amphur_code":  5018,
+        "amphur_th":  "อมก๋อย",
+        "amphur_en":  "Omkoi",
+        "province_id":  39,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  538,
+        "amphur_code":  5019,
+        "amphur_th":  "สารภี",
+        "amphur_en":  "Saraphi",
+        "province_id":  39,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  539,
+        "amphur_code":  5020,
+        "amphur_th":  "เวียงแหง",
+        "amphur_en":  "Wiang haeng",
+        "province_id":  39,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  540,
+        "amphur_code":  5021,
+        "amphur_th":  "ไชยปราการ",
+        "amphur_en":  "Chai prakan",
+        "province_id":  39,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  541,
+        "amphur_code":  5022,
+        "amphur_th":  "แม่วาง",
+        "amphur_en":  "Mae wang",
+        "province_id":  39,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  542,
+        "amphur_code":  5023,
+        "amphur_th":  "แม่ออน",
+        "amphur_en":  "Mae on",
+        "province_id":  39,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  543,
+        "amphur_code":  5024,
+        "amphur_th":  "ดอยหล่อ",
+        "amphur_en":  "Doi lo",
+        "province_id":  39,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  544,
+        "amphur_code":  5025,
+        "amphur_th":  "กัลยาณิวัฒนา",
+        "amphur_en":  "Kanlayani Watthana",
+        "province_id":  39,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  545,
+        "amphur_code":  5101,
+        "amphur_th":  "เมืองลำพูน",
+        "amphur_en":  "Mueang lamphun",
+        "province_id":  40,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  546,
+        "amphur_code":  5102,
+        "amphur_th":  "แม่ทา",
+        "amphur_en":  "Mea ta",
+        "province_id":  40,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  547,
+        "amphur_code":  5103,
+        "amphur_th":  "บ้านโฮ่ง",
+        "amphur_en":  "Ban hong",
+        "province_id":  40,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  548,
+        "amphur_code":  5104,
+        "amphur_th":  "ลี้",
+        "amphur_en":  "Li",
+        "province_id":  40,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  549,
+        "amphur_code":  5105,
+        "amphur_th":  "ทุ่งหัวช้าง",
+        "amphur_en":  "Thung hua chang",
+        "province_id":  40,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  550,
+        "amphur_code":  5106,
+        "amphur_th":  "ป่าซาง",
+        "amphur_en":  "Pa sang",
+        "province_id":  40,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  551,
+        "amphur_code":  5107,
+        "amphur_th":  "บ้านธิ",
+        "amphur_en":  "Ban thi",
+        "province_id":  40,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  552,
+        "amphur_code":  5108,
+        "amphur_th":  "เวียงหนองล่อง",
+        "amphur_en":  "Wiang Nong Long",
+        "province_id":  40,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  553,
+        "amphur_code":  5201,
+        "amphur_th":  "เมืองลำปาง",
+        "amphur_en":  "Mueang lampang",
+        "province_id":  41,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  554,
+        "amphur_code":  5202,
+        "amphur_th":  "แม่เมาะ",
+        "amphur_en":  "Mea mo",
+        "province_id":  41,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  555,
+        "amphur_code":  5203,
+        "amphur_th":  "เกาะคา",
+        "amphur_en":  "Ko kha",
+        "province_id":  41,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  556,
+        "amphur_code":  5204,
+        "amphur_th":  "เสริมงาม",
+        "amphur_en":  "Some ngam",
+        "province_id":  41,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  557,
+        "amphur_code":  5205,
+        "amphur_th":  "งาว",
+        "amphur_en":  "Nhao",
+        "province_id":  41,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  558,
+        "amphur_code":  5206,
+        "amphur_th":  "แจ้ห่ม",
+        "amphur_en":  "Chae hom",
+        "province_id":  41,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  559,
+        "amphur_code":  5207,
+        "amphur_th":  "วังเหนือ",
+        "amphur_en":  "Wang nua",
+        "province_id":  41,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  560,
+        "amphur_code":  5208,
+        "amphur_th":  "เถิน",
+        "amphur_en":  "Thoen",
+        "province_id":  41,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  561,
+        "amphur_code":  5209,
+        "amphur_th":  "แม่พริก",
+        "amphur_en":  "Mea phrik",
+        "province_id":  41,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  562,
+        "amphur_code":  5210,
+        "amphur_th":  "แม่ทะ",
+        "amphur_en":  "Mea tha",
+        "province_id":  41,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  563,
+        "amphur_code":  5211,
+        "amphur_th":  "สบปราบ",
+        "amphur_en":  "Sop prap",
+        "province_id":  41,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  564,
+        "amphur_code":  5212,
+        "amphur_th":  "ห้างฉัตร",
+        "amphur_en":  "Hang Chat",
+        "province_id":  41,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  565,
+        "amphur_code":  5213,
+        "amphur_th":  "เมืองปาน",
+        "amphur_en":  "Mueang pan",
+        "province_id":  41,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  566,
+        "amphur_code":  5301,
+        "amphur_th":  "เมืองอุตรดิตถ์",
+        "amphur_en":  "Mueang uttaradit",
+        "province_id":  42,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  567,
+        "amphur_code":  5302,
+        "amphur_th":  "ตรอน",
+        "amphur_en":  "Tron",
+        "province_id":  42,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  568,
+        "amphur_code":  5303,
+        "amphur_th":  "ท่าปลา",
+        "amphur_en":  "Tha pla",
+        "province_id":  42,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  569,
+        "amphur_code":  5304,
+        "amphur_th":  "น้ำปาด",
+        "amphur_en":  "Nam pat",
+        "province_id":  42,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  570,
+        "amphur_code":  5305,
+        "amphur_th":  "ฟากท่า",
+        "amphur_en":  "Pak tha",
+        "province_id":  42,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  571,
+        "amphur_code":  5306,
+        "amphur_th":  "บ้านโคก",
+        "amphur_en":  "Ban khok",
+        "province_id":  42,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  572,
+        "amphur_code":  5307,
+        "amphur_th":  "พิชัย",
+        "amphur_en":  "Phichai",
+        "province_id":  42,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  573,
+        "amphur_code":  5308,
+        "amphur_th":  "ลับแล",
+        "amphur_en":  "laplae",
+        "province_id":  42,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  574,
+        "amphur_code":  5309,
+        "amphur_th":  "ทองแสนขัน",
+        "amphur_en":  "Thong saen khan",
+        "province_id":  42,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  575,
+        "amphur_code":  5401,
+        "amphur_th":  "เมืองแพร่",
+        "amphur_en":  "Mueangphrae",
+        "province_id":  43,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  576,
+        "amphur_code":  5402,
+        "amphur_th":  "ร้องกวาง",
+        "amphur_en":  "Rong kwang",
+        "province_id":  43,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  577,
+        "amphur_code":  5403,
+        "amphur_th":  "ลอง",
+        "amphur_en":  "Long",
+        "province_id":  43,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  578,
+        "amphur_code":  5404,
+        "amphur_th":  "สูงเม่น",
+        "amphur_en":  "Sung men",
+        "province_id":  43,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  579,
+        "amphur_code":  5405,
+        "amphur_th":  "เด่นชัย",
+        "amphur_en":  "Den chai",
+        "province_id":  43,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  580,
+        "amphur_code":  5406,
+        "amphur_th":  "สอง",
+        "amphur_en":  "Song",
+        "province_id":  43,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  581,
+        "amphur_code":  5407,
+        "amphur_th":  "วังชิ้น",
+        "amphur_en":  "Wang chin",
+        "province_id":  43,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  582,
+        "amphur_code":  5408,
+        "amphur_th":  "หนองม่วงไข่",
+        "amphur_en":  "Nong Mueang kai",
+        "province_id":  43,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  583,
+        "amphur_code":  5501,
+        "amphur_th":  "เมืองน่าน",
+        "amphur_en":  "Mueang nan",
+        "province_id":  44,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  584,
+        "amphur_code":  5502,
+        "amphur_th":  "แม่จริม",
+        "amphur_en":  "Mae chrim",
+        "province_id":  44,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  585,
+        "amphur_code":  5503,
+        "amphur_th":  "บ้านหลวง",
+        "amphur_en":  "Ban luang",
+        "province_id":  44,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  586,
+        "amphur_code":  5504,
+        "amphur_th":  "นาน้อย",
+        "amphur_en":  "na noi",
+        "province_id":  44,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  587,
+        "amphur_code":  5505,
+        "amphur_th":  "ปัว",
+        "amphur_en":  "Pua",
+        "province_id":  44,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  588,
+        "amphur_code":  5506,
+        "amphur_th":  "ท่าวังผา",
+        "amphur_en":  "Tha wang pha",
+        "province_id":  44,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  589,
+        "amphur_code":  5507,
+        "amphur_th":  "เวียงสา",
+        "amphur_en":  "Wiang sa",
+        "province_id":  44,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  590,
+        "amphur_code":  5508,
+        "amphur_th":  "ทุ่งช้าง",
+        "amphur_en":  "Thung chang",
+        "province_id":  44,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  591,
+        "amphur_code":  5509,
+        "amphur_th":  "เชียงกลาง",
+        "amphur_en":  "Cheang klang",
+        "province_id":  44,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  592,
+        "amphur_code":  5510,
+        "amphur_th":  "นาหมื่น",
+        "amphur_en":  "Na mun",
+        "province_id":  44,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  593,
+        "amphur_code":  5511,
+        "amphur_th":  "สันติสุข",
+        "amphur_en":  "Suntisuk",
+        "province_id":  44,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  594,
+        "amphur_code":  5512,
+        "amphur_th":  "บ่อเกลือ",
+        "amphur_en":  "Bo kluai",
+        "province_id":  44,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  595,
+        "amphur_code":  5513,
+        "amphur_th":  "สองแคว",
+        "amphur_en":  "Song kwar",
+        "province_id":  44,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  596,
+        "amphur_code":  5514,
+        "amphur_th":  "ภูเพียง",
+        "amphur_en":  "Phu pieng",
+        "province_id":  44,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  597,
+        "amphur_code":  5515,
+        "amphur_th":  "เฉลิมพระเกียรติ",
+        "amphur_en":  "Chaloem phrakiat",
+        "province_id":  44,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  598,
+        "amphur_code":  5601,
+        "amphur_th":  "เมืองพะเยา",
+        "amphur_en":  "Mueang Phayao",
+        "province_id":  45,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  599,
+        "amphur_code":  5602,
+        "amphur_th":  "จุน",
+        "amphur_en":  "Chun",
+        "province_id":  45,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  600,
+        "amphur_code":  5603,
+        "amphur_th":  "เชียงคำ",
+        "amphur_en":  "Chiang kham",
+        "province_id":  45,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  601,
+        "amphur_code":  5604,
+        "amphur_th":  "เชียงม่วน",
+        "amphur_en":  "Chiang muan",
+        "province_id":  45,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  602,
+        "amphur_code":  5605,
+        "amphur_th":  "ดอกคำใต้",
+        "amphur_en":  "Dok kham tai",
+        "province_id":  45,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  603,
+        "amphur_code":  5606,
+        "amphur_th":  "ปง",
+        "amphur_en":  "Pong",
+        "province_id":  45,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  604,
+        "amphur_code":  5607,
+        "amphur_th":  "แม่ใจ",
+        "amphur_en":  "Mae chai",
+        "province_id":  45,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  605,
+        "amphur_code":  5608,
+        "amphur_th":  "ภูซาง",
+        "amphur_en":  "Phu sang",
+        "province_id":  45,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  606,
+        "amphur_code":  5609,
+        "amphur_th":  "ภูกามยาว",
+        "amphur_en":  "Phu kam yao",
+        "province_id":  45,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  607,
+        "amphur_code":  5701,
+        "amphur_th":  "เมืองเชียงราย",
+        "amphur_en":  "Mueang chiang rai",
+        "province_id":  46,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  608,
+        "amphur_code":  5702,
+        "amphur_th":  "เวียงชัย",
+        "amphur_en":  "Wiang chai",
+        "province_id":  46,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  609,
+        "amphur_code":  5703,
+        "amphur_th":  "เชียงของ",
+        "amphur_en":  "Chiang khong",
+        "province_id":  46,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  610,
+        "amphur_code":  5704,
+        "amphur_th":  "เทิง",
+        "amphur_en":  "Thoeng",
+        "province_id":  46,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  611,
+        "amphur_code":  5705,
+        "amphur_th":  "พาน",
+        "amphur_en":  "Phan",
+        "province_id":  46,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  612,
+        "amphur_code":  5706,
+        "amphur_th":  "ป่าแดด",
+        "amphur_en":  "Pa daet",
+        "province_id":  46,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  613,
+        "amphur_code":  5707,
+        "amphur_th":  "แม่จัน",
+        "amphur_en":  "Mae chan",
+        "province_id":  46,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  614,
+        "amphur_code":  5708,
+        "amphur_th":  "เชียงแสน",
+        "amphur_en":  "Chiang saen",
+        "province_id":  46,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  615,
+        "amphur_code":  5709,
+        "amphur_th":  "แม่สาย",
+        "amphur_en":  "Mae sai",
+        "province_id":  46,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  616,
+        "amphur_code":  5710,
+        "amphur_th":  "แม่สรวย",
+        "amphur_en":  "Mae suai",
+        "province_id":  46,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  617,
+        "amphur_code":  5711,
+        "amphur_th":  "เวียงป่าเป้า",
+        "amphur_en":  "Wiang pa pao",
+        "province_id":  46,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  618,
+        "amphur_code":  5712,
+        "amphur_th":  "พญาเม็งราย",
+        "amphur_en":  "Phaya mengrai",
+        "province_id":  46,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  619,
+        "amphur_code":  5713,
+        "amphur_th":  "เวียงแก่น",
+        "amphur_en":  "Wiang Kaen",
+        "province_id":  46,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  620,
+        "amphur_code":  5714,
+        "amphur_th":  "ขุนตาล",
+        "amphur_en":  "Khun tan",
+        "province_id":  46,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  621,
+        "amphur_code":  5715,
+        "amphur_th":  "แม่ฟ้าหลวง",
+        "amphur_en":  "Mae fa luang",
+        "province_id":  46,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  622,
+        "amphur_code":  5716,
+        "amphur_th":  "แม่ลาว",
+        "amphur_en":  "Mae lao",
+        "province_id":  46,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  623,
+        "amphur_code":  5717,
+        "amphur_th":  "เวียงเชียงรุ้ง",
+        "amphur_en":  "Wiang chiang rung",
+        "province_id":  46,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  624,
+        "amphur_code":  5718,
+        "amphur_th":  "ดอยหลวง",
+        "amphur_en":  "Doi Luang",
+        "province_id":  46,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  625,
+        "amphur_code":  5801,
+        "amphur_th":  "เมืองแม่ฮ่องสอน",
+        "amphur_en":  "Mueang mae hong son",
+        "province_id":  47,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  626,
+        "amphur_code":  5802,
+        "amphur_th":  "ขุนยวม",
+        "amphur_en":  "Khun yuam",
+        "province_id":  47,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  627,
+        "amphur_code":  5803,
+        "amphur_th":  "ปาย",
+        "amphur_en":  "Pai",
+        "province_id":  47,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  628,
+        "amphur_code":  5804,
+        "amphur_th":  "แม่สะเรียง",
+        "amphur_en":  "Mae sariang",
+        "province_id":  47,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  629,
+        "amphur_code":  5805,
+        "amphur_th":  "แม่ลาน้อย",
+        "amphur_en":  "Mae la noi",
+        "province_id":  47,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  630,
+        "amphur_code":  5806,
+        "amphur_th":  "สบเมย",
+        "amphur_en":  "Sop moei",
+        "province_id":  47,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  631,
+        "amphur_code":  5807,
+        "amphur_th":  "ปางมะผ้า",
+        "amphur_en":  "Pang mapha",
+        "province_id":  47,
+        "geo_id":  1
+    },
+    {
+        "amphur_id":  632,
+        "amphur_code":  6001,
+        "amphur_th":  "เมืองนครสวรรค์",
+        "amphur_en":  "Mueang nakhon sawan",
+        "province_id":  48,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  633,
+        "amphur_code":  6002,
+        "amphur_th":  "โกรกพระ",
+        "amphur_en":  "Krok phra",
+        "province_id":  48,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  634,
+        "amphur_code":  6003,
+        "amphur_th":  "ชุมแสง",
+        "amphur_en":  "Chumsaeng",
+        "province_id":  48,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  635,
+        "amphur_code":  6004,
+        "amphur_th":  "หนองบัว",
+        "amphur_en":  "Nong bua",
+        "province_id":  48,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  636,
+        "amphur_code":  6005,
+        "amphur_th":  "บรรพตพิสัย",
+        "amphur_en":  "Banphot phisai",
+        "province_id":  48,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  637,
+        "amphur_code":  6006,
+        "amphur_th":  "เก้าเลี้ยว",
+        "amphur_en":  "Kao lieo",
+        "province_id":  48,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  638,
+        "amphur_code":  6007,
+        "amphur_th":  "ตาคลี",
+        "amphur_en":  "Takeli",
+        "province_id":  48,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  639,
+        "amphur_code":  6008,
+        "amphur_th":  "ท่าตะโก",
+        "amphur_en":  "Tha tako",
+        "province_id":  48,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  640,
+        "amphur_code":  6009,
+        "amphur_th":  "ไพศาลี",
+        "amphur_en":  "Phai Sali",
+        "province_id":  48,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  641,
+        "amphur_code":  6010,
+        "amphur_th":  "พยุหะคีรี",
+        "amphur_en":  "Yu Ha Khiri",
+        "province_id":  48,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  642,
+        "amphur_code":  6011,
+        "amphur_th":  "ลาดยาว",
+        "amphur_en":  "Lao yao",
+        "province_id":  48,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  643,
+        "amphur_code":  6012,
+        "amphur_th":  "ตากฟ้า",
+        "amphur_en":  "Tak fa",
+        "province_id":  48,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  644,
+        "amphur_code":  6013,
+        "amphur_th":  "แม่วงก์",
+        "amphur_en":  "Mae wong",
+        "province_id":  48,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  645,
+        "amphur_code":  6014,
+        "amphur_th":  "แม่เปิน",
+        "amphur_en":  "Mae Poen",
+        "province_id":  48,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  646,
+        "amphur_code":  6015,
+        "amphur_th":  "ชุมตาบง",
+        "amphur_en":  "Chum ta bong",
+        "province_id":  48,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  647,
+        "amphur_code":  6101,
+        "amphur_th":  "เมืองอุทัยธานี",
+        "amphur_en":  "Mueang uthaithani",
+        "province_id":  49,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  648,
+        "amphur_code":  6102,
+        "amphur_th":  "ทัพทัน",
+        "amphur_en":  "Thap than",
+        "province_id":  49,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  649,
+        "amphur_code":  6103,
+        "amphur_th":  "สว่างอารมณ์",
+        "amphur_en":  "Sawang arom",
+        "province_id":  49,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  650,
+        "amphur_code":  6104,
+        "amphur_th":  "หนองฉาง",
+        "amphur_en":  "Nong chang",
+        "province_id":  49,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  651,
+        "amphur_code":  6105,
+        "amphur_th":  "หนองขาหย่าง",
+        "amphur_en":  "Nong khayang",
+        "province_id":  49,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  652,
+        "amphur_code":  6106,
+        "amphur_th":  "บ้านไร่",
+        "amphur_en":  "Ban rai",
+        "province_id":  49,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  653,
+        "amphur_code":  6107,
+        "amphur_th":  "ลานสัก",
+        "amphur_en":  "Lan sak",
+        "province_id":  49,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  654,
+        "amphur_code":  6108,
+        "amphur_th":  "ห้วยคต",
+        "amphur_en":  "Huai khot",
+        "province_id":  49,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  655,
+        "amphur_code":  6201,
+        "amphur_th":  "เมืองกำแพงเพชร",
+        "amphur_en":  "Mueang kamphaeng phet",
+        "province_id":  50,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  656,
+        "amphur_code":  6202,
+        "amphur_th":  "ไทรงาม",
+        "amphur_en":  "Sai ngam",
+        "province_id":  50,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  657,
+        "amphur_code":  6203,
+        "amphur_th":  "คลองลาน",
+        "amphur_en":  "Khlong lan",
+        "province_id":  50,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  658,
+        "amphur_code":  6204,
+        "amphur_th":  "ขาณุวรลักษบุรี",
+        "amphur_en":  "Khanu waralaksaburi",
+        "province_id":  50,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  659,
+        "amphur_code":  6205,
+        "amphur_th":  "คลองขลุง",
+        "amphur_en":  "Khlong khlung",
+        "province_id":  50,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  660,
+        "amphur_code":  6206,
+        "amphur_th":  "พรานกระต่าย",
+        "amphur_en":  "Phran kratai",
+        "province_id":  50,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  661,
+        "amphur_code":  6207,
+        "amphur_th":  "ลานกระบือ",
+        "amphur_en":  "Lan krabu",
+        "province_id":  50,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  662,
+        "amphur_code":  6208,
+        "amphur_th":  "ทรายทองวัฒนา",
+        "amphur_en":  "Saithong wattana",
+        "province_id":  50,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  663,
+        "amphur_code":  6209,
+        "amphur_th":  "ปางศิลาทอง",
+        "amphur_en":  "Pang silathong",
+        "province_id":  50,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  664,
+        "amphur_code":  6210,
+        "amphur_th":  "บึงสามัคคี",
+        "amphur_en":  "Bueng Samakkhi",
+        "province_id":  50,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  665,
+        "amphur_code":  6211,
+        "amphur_th":  "โกสัมพีนคร",
+        "amphur_en":  "Kosamphi Nakhon",
+        "province_id":  50,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  666,
+        "amphur_code":  6301,
+        "amphur_th":  "เมืองตาก",
+        "amphur_en":  "Mueang tak",
+        "province_id":  51,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  667,
+        "amphur_code":  6302,
+        "amphur_th":  "บ้านตาก",
+        "amphur_en":  "Ban Tak",
+        "province_id":  51,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  668,
+        "amphur_code":  6303,
+        "amphur_th":  "สามเงา",
+        "amphur_en":  "Sam ngao",
+        "province_id":  51,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  669,
+        "amphur_code":  6304,
+        "amphur_th":  "แม่ระมาด",
+        "amphur_en":  "Mae ramat",
+        "province_id":  51,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  670,
+        "amphur_code":  6305,
+        "amphur_th":  "ท่าสองยาง",
+        "amphur_en":  "Tha song yang",
+        "province_id":  51,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  671,
+        "amphur_code":  6306,
+        "amphur_th":  "แม่สอด",
+        "amphur_en":  "Mae sot",
+        "province_id":  51,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  672,
+        "amphur_code":  6307,
+        "amphur_th":  "พบพระ",
+        "amphur_en":  "Prop phra",
+        "province_id":  51,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  673,
+        "amphur_code":  6308,
+        "amphur_th":  "อุ้มผาง",
+        "amphur_en":  "Um phang",
+        "province_id":  51,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  674,
+        "amphur_code":  6309,
+        "amphur_th":  "วังเจ้า",
+        "amphur_en":  "Wang jao",
+        "province_id":  51,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  675,
+        "amphur_code":  6401,
+        "amphur_th":  "เมืองสุโขทัย",
+        "amphur_en":  "Mueang sukhothai",
+        "province_id":  52,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  676,
+        "amphur_code":  6402,
+        "amphur_th":  "บ้านด่านลานหอย",
+        "amphur_en":  "Ban dan lan hoi",
+        "province_id":  52,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  677,
+        "amphur_code":  6403,
+        "amphur_th":  "คีรีมาศ",
+        "amphur_en":  "Khiri mat",
+        "province_id":  52,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  678,
+        "amphur_code":  6404,
+        "amphur_th":  "กงไกรลาศ",
+        "amphur_en":  "Kong kralilat",
+        "province_id":  52,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  679,
+        "amphur_code":  6405,
+        "amphur_th":  "ศรีสัชนาลัย",
+        "amphur_en":  "Satchanalai",
+        "province_id":  52,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  680,
+        "amphur_code":  6406,
+        "amphur_th":  "ศรีสำโรง",
+        "amphur_en":  "Si samrong",
+        "province_id":  52,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  681,
+        "amphur_code":  6407,
+        "amphur_th":  "สวรรคโลก",
+        "amphur_en":  "Sawan khalok",
+        "province_id":  52,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  682,
+        "amphur_code":  6408,
+        "amphur_th":  "ศรีนคร",
+        "amphur_en":  "Si nakhon",
+        "province_id":  52,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  683,
+        "amphur_code":  6409,
+        "amphur_th":  "ทุ่งเสลี่ยม",
+        "amphur_en":  "Thung saliam",
+        "province_id":  52,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  684,
+        "amphur_code":  6501,
+        "amphur_th":  "เมืองพิษณุโลก",
+        "amphur_en":  "Mueang phitsanulok",
+        "province_id":  53,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  685,
+        "amphur_code":  6502,
+        "amphur_th":  "นครไทย",
+        "amphur_en":  "Nakhon thai",
+        "province_id":  53,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  686,
+        "amphur_code":  6503,
+        "amphur_th":  "ชาติตระการ",
+        "amphur_en":  "Chat trakan",
+        "province_id":  53,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  687,
+        "amphur_code":  6504,
+        "amphur_th":  "บางระกำ",
+        "amphur_en":  "Bangrakam",
+        "province_id":  53,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  688,
+        "amphur_code":  6505,
+        "amphur_th":  "บางกระทุ่ม",
+        "amphur_en":  "Bangkrathum",
+        "province_id":  53,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  689,
+        "amphur_code":  6506,
+        "amphur_th":  "พรหมพิราม",
+        "amphur_en":  "Phrom phiram",
+        "province_id":  53,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  690,
+        "amphur_code":  6507,
+        "amphur_th":  "วัดโบสถ์",
+        "amphur_en":  "Wat bot",
+        "province_id":  53,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  691,
+        "amphur_code":  6508,
+        "amphur_th":  "วังทอง",
+        "amphur_en":  "Wang thong",
+        "province_id":  53,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  692,
+        "amphur_code":  6509,
+        "amphur_th":  "เนินมะปราง",
+        "amphur_en":  "Noen maprang",
+        "province_id":  53,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  693,
+        "amphur_code":  6601,
+        "amphur_th":  "เมืองพิจิตร",
+        "amphur_en":  "Mueang phichit",
+        "province_id":  54,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  694,
+        "amphur_code":  6602,
+        "amphur_th":  "วังทรายพูน",
+        "amphur_en":  "Wang sai phun",
+        "province_id":  54,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  695,
+        "amphur_code":  6603,
+        "amphur_th":  "โพธิ์ประทับช้าง",
+        "amphur_en":  "Pho Prathap Chang",
+        "province_id":  54,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  696,
+        "amphur_code":  6604,
+        "amphur_th":  "ตะพานหิน",
+        "amphur_en":  "Taphan hin",
+        "province_id":  54,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  697,
+        "amphur_code":  6605,
+        "amphur_th":  "บางมูลนาก",
+        "amphur_en":  "Bang munnak",
+        "province_id":  54,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  698,
+        "amphur_code":  6606,
+        "amphur_th":  "โพทะเล",
+        "amphur_en":  "Pho thale",
+        "province_id":  54,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  699,
+        "amphur_code":  6607,
+        "amphur_th":  "สามง่าม",
+        "amphur_en":  "Sam ngam",
+        "province_id":  54,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  700,
+        "amphur_code":  6608,
+        "amphur_th":  "ทับคล้อ",
+        "amphur_en":  "Thao khlo",
+        "province_id":  54,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  701,
+        "amphur_code":  6609,
+        "amphur_th":  "สากเหล็ก",
+        "amphur_en":  "Sak lek",
+        "province_id":  54,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  702,
+        "amphur_code":  6610,
+        "amphur_th":  "บึงนาราง",
+        "amphur_en":  "Bung narang",
+        "province_id":  54,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  703,
+        "amphur_code":  6611,
+        "amphur_th":  "ดงเจริญ",
+        "amphur_en":  "Dong charoen",
+        "province_id":  54,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  704,
+        "amphur_code":  6612,
+        "amphur_th":  "วชิรบารมี",
+        "amphur_en":  "Wachira Barami",
+        "province_id":  54,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  705,
+        "amphur_code":  6701,
+        "amphur_th":  "เมืองเพชรบูรณ์",
+        "amphur_en":  "Mueang phetchabun",
+        "province_id":  55,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  706,
+        "amphur_code":  6702,
+        "amphur_th":  "ชนแดน",
+        "amphur_en":  "Chon daen",
+        "province_id":  55,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  707,
+        "amphur_code":  6703,
+        "amphur_th":  "หล่มสัก",
+        "amphur_en":  "Lom sak",
+        "province_id":  55,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  708,
+        "amphur_code":  6704,
+        "amphur_th":  "หล่มเก่า",
+        "amphur_en":  "Lom kao",
+        "province_id":  55,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  709,
+        "amphur_code":  6705,
+        "amphur_th":  "วิเชียรบุรี",
+        "amphur_en":  "Wichian buri",
+        "province_id":  55,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  710,
+        "amphur_code":  6706,
+        "amphur_th":  "ศรีเทพ",
+        "amphur_en":  "Si thep",
+        "province_id":  55,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  711,
+        "amphur_code":  6707,
+        "amphur_th":  "หนองไผ่",
+        "amphur_en":  "Nong Phai",
+        "province_id":  55,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  712,
+        "amphur_code":  6708,
+        "amphur_th":  "บึงสามพัน",
+        "amphur_en":  "Bung sam phan",
+        "province_id":  55,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  713,
+        "amphur_code":  6709,
+        "amphur_th":  "น้ำหนาว",
+        "amphur_en":  "Nam nao",
+        "province_id":  55,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  714,
+        "amphur_code":  6710,
+        "amphur_th":  "วังโป่ง",
+        "amphur_en":  "Wang pong",
+        "province_id":  55,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  715,
+        "amphur_code":  6711,
+        "amphur_th":  "เขาค้อ",
+        "amphur_en":  "Khao Kho",
+        "province_id":  55,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  716,
+        "amphur_code":  7001,
+        "amphur_th":  "เมืองราชบุรี",
+        "amphur_en":  "Mueang rachaburi",
+        "province_id":  56,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  717,
+        "amphur_code":  7002,
+        "amphur_th":  "จอมบึง",
+        "amphur_en":  "Chom bung",
+        "province_id":  56,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  718,
+        "amphur_code":  7003,
+        "amphur_th":  "สวนผึ้ง",
+        "amphur_en":  "Suan phung",
+        "province_id":  56,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  719,
+        "amphur_code":  7004,
+        "amphur_th":  "ดำเนินสะดวก",
+        "amphur_en":  "Damnoen saduak",
+        "province_id":  56,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  720,
+        "amphur_code":  7005,
+        "amphur_th":  "บ้านโป่ง",
+        "amphur_en":  "Bang phong",
+        "province_id":  56,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  721,
+        "amphur_code":  7006,
+        "amphur_th":  "บางแพ",
+        "amphur_en":  "Bang phae",
+        "province_id":  56,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  722,
+        "amphur_code":  7007,
+        "amphur_th":  "โพธาราม",
+        "amphur_en":  "Photharam",
+        "province_id":  56,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  723,
+        "amphur_code":  7008,
+        "amphur_th":  "ปากท่อ",
+        "amphur_en":  "Pak tho",
+        "province_id":  56,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  724,
+        "amphur_code":  7009,
+        "amphur_th":  "วัดเพลง",
+        "amphur_en":  "Wat phleng",
+        "province_id":  56,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  725,
+        "amphur_code":  7010,
+        "amphur_th":  "บ้านคา",
+        "amphur_en":  "Bang kha",
+        "province_id":  56,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  726,
+        "amphur_code":  7101,
+        "amphur_th":  "เมืองกาญจนบุรี",
+        "amphur_en":  "Mueang kanchanaburi",
+        "province_id":  57,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  727,
+        "amphur_code":  7102,
+        "amphur_th":  "ไทรโยค",
+        "amphur_en":  "Sai yok",
+        "province_id":  57,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  728,
+        "amphur_code":  7103,
+        "amphur_th":  "บ่อพลอย",
+        "amphur_en":  "Bo phloi",
+        "province_id":  57,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  729,
+        "amphur_code":  7104,
+        "amphur_th":  "ศรีสวัสดิ์",
+        "amphur_en":  "Si sawat",
+        "province_id":  57,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  730,
+        "amphur_code":  7105,
+        "amphur_th":  "ท่ามะกา",
+        "amphur_en":  "Tha maka",
+        "province_id":  57,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  731,
+        "amphur_code":  7106,
+        "amphur_th":  "ท่าม่วง",
+        "amphur_en":  "Tha Mueang",
+        "province_id":  57,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  732,
+        "amphur_code":  7107,
+        "amphur_th":  "ทองผาภูมิ",
+        "amphur_en":  "Thong pha phum",
+        "province_id":  57,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  733,
+        "amphur_code":  7108,
+        "amphur_th":  "สังขละบุรี",
+        "amphur_en":  "Sangkhla buri",
+        "province_id":  57,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  734,
+        "amphur_code":  7109,
+        "amphur_th":  "พนมทวน",
+        "amphur_en":  "Phanom thoan",
+        "province_id":  57,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  735,
+        "amphur_code":  7110,
+        "amphur_th":  "เลาขวัญ",
+        "amphur_en":  "Lao khwan",
+        "province_id":  57,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  736,
+        "amphur_code":  7111,
+        "amphur_th":  "ด่านมะขามเตี้ย",
+        "amphur_en":  "Dan makham tia",
+        "province_id":  57,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  737,
+        "amphur_code":  7112,
+        "amphur_th":  "หนองปรือ",
+        "amphur_en":  "Nongprue",
+        "province_id":  57,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  738,
+        "amphur_code":  7113,
+        "amphur_th":  "ห้วยกระเจา",
+        "amphur_en":  "Huai krajao",
+        "province_id":  57,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  739,
+        "amphur_code":  7201,
+        "amphur_th":  "เมืองสุพรรณบุรี",
+        "amphur_en":  "Mueang suphanburi",
+        "province_id":  58,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  740,
+        "amphur_code":  7202,
+        "amphur_th":  "เดิมบางนางบวช",
+        "amphur_en":  "Doembang nangbuat",
+        "province_id":  58,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  741,
+        "amphur_code":  7203,
+        "amphur_th":  "ด่านช้าง",
+        "amphur_en":  "Dan chang",
+        "province_id":  58,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  742,
+        "amphur_code":  7204,
+        "amphur_th":  "บางปลาม้า",
+        "amphur_en":  "Bang plama",
+        "province_id":  58,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  743,
+        "amphur_code":  7205,
+        "amphur_th":  "ศรีประจันต์",
+        "amphur_en":  "Si prachan",
+        "province_id":  58,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  744,
+        "amphur_code":  7206,
+        "amphur_th":  "ดอนเจดีย์",
+        "amphur_en":  "Don chedi",
+        "province_id":  58,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  745,
+        "amphur_code":  7207,
+        "amphur_th":  "สองพี่น้อง",
+        "amphur_en":  "Song phi nong",
+        "province_id":  58,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  746,
+        "amphur_code":  7208,
+        "amphur_th":  "สามชุก",
+        "amphur_en":  "Sam chuk",
+        "province_id":  58,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  747,
+        "amphur_code":  7209,
+        "amphur_th":  "อู่ทอง",
+        "amphur_en":  "U thong",
+        "province_id":  58,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  748,
+        "amphur_code":  7210,
+        "amphur_th":  "หนองหญ้าไซ",
+        "amphur_en":  "Nong yasai",
+        "province_id":  58,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  749,
+        "amphur_code":  7301,
+        "amphur_th":  "เมืองนครปฐม",
+        "amphur_en":  "Mueang nakhon pathom",
+        "province_id":  59,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  750,
+        "amphur_code":  7302,
+        "amphur_th":  "กำแพงแสน",
+        "amphur_en":  "Kampheng saen",
+        "province_id":  59,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  751,
+        "amphur_code":  7303,
+        "amphur_th":  "นครชัยศรี",
+        "amphur_en":  "INakhon chaisi",
+        "province_id":  59,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  752,
+        "amphur_code":  7304,
+        "amphur_th":  "ดอนตูม",
+        "amphur_en":  "Don tom",
+        "province_id":  59,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  753,
+        "amphur_code":  7305,
+        "amphur_th":  "บางเลน",
+        "amphur_en":  "Bang len",
+        "province_id":  59,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  754,
+        "amphur_code":  7306,
+        "amphur_th":  "สามพราน",
+        "amphur_en":  "Sam phran",
+        "province_id":  59,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  755,
+        "amphur_code":  7307,
+        "amphur_th":  "พุทธมณฑล",
+        "amphur_en":  "Bukkha monthon",
+        "province_id":  59,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  756,
+        "amphur_code":  7401,
+        "amphur_th":  "เมืองสมุทรสาคร",
+        "amphur_en":  "Mueang samut sakhon",
+        "province_id":  60,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  757,
+        "amphur_code":  7402,
+        "amphur_th":  "กระทุ่มแบน",
+        "amphur_en":  "Kratumban",
+        "province_id":  60,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  758,
+        "amphur_code":  7403,
+        "amphur_th":  "บ้านแพ้ว",
+        "amphur_en":  "Ban phaeo",
+        "province_id":  60,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  759,
+        "amphur_code":  7501,
+        "amphur_th":  "เมืองสมุทรสงคราม",
+        "amphur_en":  "Mueang samut songkhram",
+        "province_id":  61,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  760,
+        "amphur_code":  7502,
+        "amphur_th":  "บางคนที",
+        "amphur_en":  "Bang Khonthi",
+        "province_id":  61,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  761,
+        "amphur_code":  7503,
+        "amphur_th":  "อัมพวา",
+        "amphur_en":  "Amphawa",
+        "province_id":  61,
+        "geo_id":  2
+    },
+    {
+        "amphur_id":  762,
+        "amphur_code":  7601,
+        "amphur_th":  "เมืองเพชรบุรี",
+        "amphur_en":  "Mueang phetchaburi",
+        "province_id":  62,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  763,
+        "amphur_code":  7602,
+        "amphur_th":  "เขาย้อย",
+        "amphur_en":  "khao yoi",
+        "province_id":  62,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  764,
+        "amphur_code":  7603,
+        "amphur_th":  "หนองหญ้าปล้อง",
+        "amphur_en":  "Nong ya plong",
+        "province_id":  62,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  765,
+        "amphur_code":  7604,
+        "amphur_th":  "ชะอำ",
+        "amphur_en":  "Cha-am",
+        "province_id":  62,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  766,
+        "amphur_code":  7605,
+        "amphur_th":  "ท่ายาง",
+        "amphur_en":  "Tha yang",
+        "province_id":  62,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  767,
+        "amphur_code":  7606,
+        "amphur_th":  "บ้านลาด",
+        "amphur_en":  "Ban lat",
+        "province_id":  62,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  768,
+        "amphur_code":  7607,
+        "amphur_th":  "บ้านแหลม",
+        "amphur_en":  "Ban laerm",
+        "province_id":  62,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  769,
+        "amphur_code":  7608,
+        "amphur_th":  "แก่งกระจาน",
+        "amphur_en":  "Kaeng kachan",
+        "province_id":  62,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  770,
+        "amphur_code":  7701,
+        "amphur_th":  "เมืองประจวบคีรีขันธ์",
+        "amphur_en":  "Mung prachuap khiri khan",
+        "province_id":  63,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  771,
+        "amphur_code":  7702,
+        "amphur_th":  "กุยบุรี",
+        "amphur_en":  "Kui buri",
+        "province_id":  63,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  772,
+        "amphur_code":  7703,
+        "amphur_th":  "ทับสะแก",
+        "amphur_en":  "Thap sakae",
+        "province_id":  63,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  773,
+        "amphur_code":  7704,
+        "amphur_th":  "บางสะพาน",
+        "amphur_en":  "Bang saphan",
+        "province_id":  63,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  774,
+        "amphur_code":  7705,
+        "amphur_th":  "บางสะพานน้อย",
+        "amphur_en":  "Bang saphan noi",
+        "province_id":  63,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  775,
+        "amphur_code":  7706,
+        "amphur_th":  "ปราณบุรี",
+        "amphur_en":  "Pran buri",
+        "province_id":  63,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  776,
+        "amphur_code":  7707,
+        "amphur_th":  "หัวหิน",
+        "amphur_en":  "Hua hin",
+        "province_id":  63,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  777,
+        "amphur_code":  7708,
+        "amphur_th":  "สามร้อยยอด",
+        "amphur_en":  "Sam roi yot",
+        "province_id":  63,
+        "geo_id":  4
+    },
+    {
+        "amphur_id":  778,
+        "amphur_code":  8001,
+        "amphur_th":  "เมืองนครศรีธรรมราช",
+        "amphur_en":  "Mueang nakhon si thammarat",
+        "province_id":  64,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  779,
+        "amphur_code":  8002,
+        "amphur_th":  "พรหมคีรี",
+        "amphur_en":  "Phrommakhiri",
+        "province_id":  64,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  780,
+        "amphur_code":  8003,
+        "amphur_th":  "ลานสกา",
+        "amphur_en":  "Lan Saka",
+        "province_id":  64,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  781,
+        "amphur_code":  8004,
+        "amphur_th":  "ฉวาง",
+        "amphur_en":  "Chawang",
+        "province_id":  64,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  782,
+        "amphur_code":  8005,
+        "amphur_th":  "พิปูน",
+        "amphur_en":  "Phipun",
+        "province_id":  64,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  783,
+        "amphur_code":  8006,
+        "amphur_th":  "เชียรใหญ่",
+        "amphur_en":  "Chian yai",
+        "province_id":  64,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  784,
+        "amphur_code":  8007,
+        "amphur_th":  "ชะอวด",
+        "amphur_en":  "Cha-uat",
+        "province_id":  64,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  785,
+        "amphur_code":  8008,
+        "amphur_th":  "ท่าศาลา",
+        "amphur_en":  "Tha sala",
+        "province_id":  64,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  786,
+        "amphur_code":  8009,
+        "amphur_th":  "ทุ่งสง",
+        "amphur_en":  "Thung song",
+        "province_id":  64,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  787,
+        "amphur_code":  8010,
+        "amphur_th":  "นาบอน",
+        "amphur_en":  "Na bon",
+        "province_id":  64,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  788,
+        "amphur_code":  8011,
+        "amphur_th":  "ทุ่งใหญ่",
+        "amphur_en":  "Thung yai",
+        "province_id":  64,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  789,
+        "amphur_code":  8012,
+        "amphur_th":  "ปากพนัง",
+        "amphur_en":  "Pak phanang",
+        "province_id":  64,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  790,
+        "amphur_code":  8013,
+        "amphur_th":  "ร่อนพิบูลย์",
+        "amphur_en":  "Ron pipun",
+        "province_id":  64,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  791,
+        "amphur_code":  8014,
+        "amphur_th":  "สิชล",
+        "amphur_en":  "Sichon",
+        "province_id":  64,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  792,
+        "amphur_code":  8015,
+        "amphur_th":  "ขนอม",
+        "amphur_en":  "Khanom",
+        "province_id":  64,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  793,
+        "amphur_code":  8016,
+        "amphur_th":  "หัวไทร",
+        "amphur_en":  "Hua sai",
+        "province_id":  64,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  794,
+        "amphur_code":  8017,
+        "amphur_th":  "บางขัน",
+        "amphur_en":  "Bang chan",
+        "province_id":  64,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  795,
+        "amphur_code":  8018,
+        "amphur_th":  "ถ้ำพรรณรา",
+        "amphur_en":  "Tham phanara",
+        "province_id":  64,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  796,
+        "amphur_code":  8019,
+        "amphur_th":  "จุฬาภรณ์",
+        "amphur_en":  "Chulaporn",
+        "province_id":  64,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  797,
+        "amphur_code":  8020,
+        "amphur_th":  "พระพรหม",
+        "amphur_en":  "Phra phrom",
+        "province_id":  64,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  798,
+        "amphur_code":  8021,
+        "amphur_th":  "นบพิตำ",
+        "amphur_en":  "Nop pitam",
+        "province_id":  64,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  799,
+        "amphur_code":  8022,
+        "amphur_th":  "ช้างกลาง",
+        "amphur_en":  "Chang klang",
+        "province_id":  64,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  800,
+        "amphur_code":  8023,
+        "amphur_th":  "เฉลิมพระเกียรติ",
+        "amphur_en":  "Chaloem phrakiat",
+        "province_id":  64,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  801,
+        "amphur_code":  8101,
+        "amphur_th":  "เมืองกระบี่",
+        "amphur_en":  "Mueang krabi",
+        "province_id":  65,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  802,
+        "amphur_code":  8102,
+        "amphur_th":  "เขาพนม",
+        "amphur_en":  "Khaong phanom",
+        "province_id":  65,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  803,
+        "amphur_code":  8103,
+        "amphur_th":  "เกาะลันตา",
+        "amphur_en":  "Ko lanta",
+        "province_id":  65,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  804,
+        "amphur_code":  8104,
+        "amphur_th":  "คลองท่อม",
+        "amphur_en":  "Khlong thom",
+        "province_id":  65,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  805,
+        "amphur_code":  8105,
+        "amphur_th":  "อ่าวลึก",
+        "amphur_en":  "Ao Luk",
+        "province_id":  65,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  806,
+        "amphur_code":  8106,
+        "amphur_th":  "ปลายพระยา",
+        "amphur_en":  "Plai phraya",
+        "province_id":  65,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  807,
+        "amphur_code":  8107,
+        "amphur_th":  "ลำทับ",
+        "amphur_en":  "Lum tub",
+        "province_id":  65,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  808,
+        "amphur_code":  8108,
+        "amphur_th":  "เหนือคลอง",
+        "amphur_en":  "Nua klong",
+        "province_id":  65,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  809,
+        "amphur_code":  8201,
+        "amphur_th":  "เมืองพังงา",
+        "amphur_en":  "Mueang phangnga",
+        "province_id":  66,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  810,
+        "amphur_code":  8202,
+        "amphur_th":  "เกาะยาว",
+        "amphur_en":  "ko yao",
+        "province_id":  66,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  811,
+        "amphur_code":  8203,
+        "amphur_th":  "กะปง",
+        "amphur_en":  "ka pong",
+        "province_id":  66,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  812,
+        "amphur_code":  8204,
+        "amphur_th":  "ตะกั่วทุ่ง",
+        "amphur_en":  "Takua thung",
+        "province_id":  66,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  813,
+        "amphur_code":  8205,
+        "amphur_th":  "ตะกั่วป่า",
+        "amphur_en":  "Takua pa",
+        "province_id":  66,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  814,
+        "amphur_code":  8206,
+        "amphur_th":  "คุระบุรี",
+        "amphur_en":  "Khura buri",
+        "province_id":  66,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  815,
+        "amphur_code":  8207,
+        "amphur_th":  "ทับปุด",
+        "amphur_en":  "Thap put",
+        "province_id":  66,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  816,
+        "amphur_code":  8208,
+        "amphur_th":  "ท้ายเหมือง",
+        "amphur_en":  "Thai Mueang",
+        "province_id":  66,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  817,
+        "amphur_code":  8301,
+        "amphur_th":  "เมืองภูเก็ต",
+        "amphur_en":  "Mueangphuket",
+        "province_id":  67,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  818,
+        "amphur_code":  8302,
+        "amphur_th":  "กะทู้",
+        "amphur_en":  "Kathu",
+        "province_id":  67,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  819,
+        "amphur_code":  8303,
+        "amphur_th":  "ถลาง",
+        "amphur_en":  "Thalang",
+        "province_id":  67,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  820,
+        "amphur_code":  8401,
+        "amphur_th":  "เมืองสุราษฎร์ธานี",
+        "amphur_en":  "Mueang surat thani",
+        "province_id":  68,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  821,
+        "amphur_code":  8402,
+        "amphur_th":  "กาญจนดิษฐ์",
+        "amphur_en":  "Kanchanadit",
+        "province_id":  68,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  822,
+        "amphur_code":  8403,
+        "amphur_th":  "ดอนสัก",
+        "amphur_en":  "Don sak",
+        "province_id":  68,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  823,
+        "amphur_code":  8404,
+        "amphur_th":  "เกาะสมุย",
+        "amphur_en":  "Ko samut",
+        "province_id":  68,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  824,
+        "amphur_code":  8405,
+        "amphur_th":  "เกาะพะงัน",
+        "amphur_en":  "ko phangan",
+        "province_id":  68,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  825,
+        "amphur_code":  8406,
+        "amphur_th":  "ไชยา",
+        "amphur_en":  "Chai ya",
+        "province_id":  68,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  826,
+        "amphur_code":  8407,
+        "amphur_th":  "ท่าชนะ",
+        "amphur_en":  "Tha chana",
+        "province_id":  68,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  827,
+        "amphur_code":  8408,
+        "amphur_th":  "คีรีรัฐนิคม",
+        "amphur_en":  "Khiri ratthanikhem",
+        "province_id":  68,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  828,
+        "amphur_code":  8409,
+        "amphur_th":  "บ้านตาขุน",
+        "amphur_en":  "Ban ta khun",
+        "province_id":  68,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  829,
+        "amphur_code":  8410,
+        "amphur_th":  "พนม",
+        "amphur_en":  "Phanom",
+        "province_id":  68,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  830,
+        "amphur_code":  8411,
+        "amphur_th":  "ท่าฉาง",
+        "amphur_en":  "Tha chang",
+        "province_id":  68,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  831,
+        "amphur_code":  8412,
+        "amphur_th":  "บ้านนาสาร",
+        "amphur_en":  "Ban na san",
+        "province_id":  68,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  832,
+        "amphur_code":  8413,
+        "amphur_th":  "บ้านนาเดิม",
+        "amphur_en":  "Ban na doem",
+        "province_id":  68,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  833,
+        "amphur_code":  8414,
+        "amphur_th":  "เคียนซา",
+        "amphur_en":  "Khian sa",
+        "province_id":  68,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  834,
+        "amphur_code":  8415,
+        "amphur_th":  "เวียงสระ",
+        "amphur_en":  "Weang sa",
+        "province_id":  68,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  835,
+        "amphur_code":  8416,
+        "amphur_th":  "พระแสง",
+        "amphur_en":  "Phrasaeng",
+        "province_id":  68,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  836,
+        "amphur_code":  8417,
+        "amphur_th":  "พุนพิน",
+        "amphur_en":  "Phunphin",
+        "province_id":  68,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  837,
+        "amphur_code":  8418,
+        "amphur_th":  "ชัยบุรี",
+        "amphur_en":  "Chat buri",
+        "province_id":  68,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  838,
+        "amphur_code":  8419,
+        "amphur_th":  "วิภาวดี",
+        "amphur_en":  "Wiphawadi",
+        "province_id":  68,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  839,
+        "amphur_code":  8501,
+        "amphur_th":  "เมืองระนอง",
+        "amphur_en":  "Mueang ranong",
+        "province_id":  69,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  840,
+        "amphur_code":  8502,
+        "amphur_th":  "ละอุ่น",
+        "amphur_en":  "La-un",
+        "province_id":  69,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  841,
+        "amphur_code":  8503,
+        "amphur_th":  "กะเปอร์",
+        "amphur_en":  "Kapoe",
+        "province_id":  69,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  842,
+        "amphur_code":  8504,
+        "amphur_th":  "กระบุรี",
+        "amphur_en":  "Kra buri",
+        "province_id":  69,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  843,
+        "amphur_code":  8505,
+        "amphur_th":  "สุขสำราญ",
+        "amphur_en":  "Sook samran",
+        "province_id":  69,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  844,
+        "amphur_code":  8601,
+        "amphur_th":  "เมืองชุมพร",
+        "amphur_en":  "Mueang chum phon",
+        "province_id":  70,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  845,
+        "amphur_code":  8602,
+        "amphur_th":  "ท่าแซะ",
+        "amphur_en":  "tha sae",
+        "province_id":  70,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  846,
+        "amphur_code":  8603,
+        "amphur_th":  "ปะทิว",
+        "amphur_en":  "Pathiu",
+        "province_id":  70,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  847,
+        "amphur_code":  8604,
+        "amphur_th":  "หลังสวน",
+        "amphur_en":  "Lang suan",
+        "province_id":  70,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  848,
+        "amphur_code":  8605,
+        "amphur_th":  "ละแม",
+        "amphur_en":  "Lamae",
+        "province_id":  70,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  849,
+        "amphur_code":  8606,
+        "amphur_th":  "พะโต๊ะ",
+        "amphur_en":  "Phato",
+        "province_id":  70,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  850,
+        "amphur_code":  8607,
+        "amphur_th":  "สวี",
+        "amphur_en":  "Sawi",
+        "province_id":  70,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  851,
+        "amphur_code":  8608,
+        "amphur_th":  "ทุ่งตะโก",
+        "amphur_en":  "Thung tako",
+        "province_id":  70,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  852,
+        "amphur_code":  9001,
+        "amphur_th":  "เมืองสงขลา",
+        "amphur_en":  "Mueang songkhla",
+        "province_id":  71,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  853,
+        "amphur_code":  9002,
+        "amphur_th":  "สทิงพระ",
+        "amphur_en":  "Sathing phra",
+        "province_id":  71,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  854,
+        "amphur_code":  9003,
+        "amphur_th":  "จะนะ",
+        "amphur_en":  "Chana",
+        "province_id":  71,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  855,
+        "amphur_code":  9004,
+        "amphur_th":  "นาทวี",
+        "amphur_en":  "Na thawi",
+        "province_id":  71,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  856,
+        "amphur_code":  9005,
+        "amphur_th":  "เทพา",
+        "amphur_en":  "The pha",
+        "province_id":  71,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  857,
+        "amphur_code":  9006,
+        "amphur_th":  "สะบ้าย้อย",
+        "amphur_en":  "Saba yoi",
+        "province_id":  71,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  858,
+        "amphur_code":  9007,
+        "amphur_th":  "ระโนด",
+        "amphur_en":  "Ranot",
+        "province_id":  71,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  859,
+        "amphur_code":  9008,
+        "amphur_th":  "กระแสสินธุ์",
+        "amphur_en":  "Kasae sin",
+        "province_id":  71,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  860,
+        "amphur_code":  9009,
+        "amphur_th":  "รัตภูมิ",
+        "amphur_en":  "Rattaphom",
+        "province_id":  71,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  861,
+        "amphur_code":  9010,
+        "amphur_th":  "สะเดา",
+        "amphur_en":  "Sadao",
+        "province_id":  71,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  862,
+        "amphur_code":  9011,
+        "amphur_th":  "หาดใหญ่",
+        "amphur_en":  "Hat yai",
+        "province_id":  71,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  863,
+        "amphur_code":  9012,
+        "amphur_th":  "นาหม่อม",
+        "amphur_en":  "Na mom",
+        "province_id":  71,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  864,
+        "amphur_code":  9013,
+        "amphur_th":  "ควนเนียง",
+        "amphur_en":  "Khuan niang",
+        "province_id":  71,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  865,
+        "amphur_code":  9014,
+        "amphur_th":  "บางกล่ำ",
+        "amphur_en":  "Bang khum",
+        "province_id":  71,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  866,
+        "amphur_code":  9015,
+        "amphur_th":  "สิงหนคร",
+        "amphur_en":  "Singha nakhon",
+        "province_id":  71,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  867,
+        "amphur_code":  9016,
+        "amphur_th":  "คลองหอยโข่ง",
+        "amphur_en":  "Khlong Hoi Khong",
+        "province_id":  71,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  868,
+        "amphur_code":  9101,
+        "amphur_th":  "เมืองสตูล",
+        "amphur_en":  "Mueang satun",
+        "province_id":  72,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  869,
+        "amphur_code":  9102,
+        "amphur_th":  "ควนโดน",
+        "amphur_en":  "Khuan don",
+        "province_id":  72,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  870,
+        "amphur_code":  9103,
+        "amphur_th":  "ควนกาหลง",
+        "amphur_en":  "Khuan ka long",
+        "province_id":  72,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  871,
+        "amphur_code":  9104,
+        "amphur_th":  "ท่าแพ",
+        "amphur_en":  "Tha phae",
+        "province_id":  72,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  872,
+        "amphur_code":  9105,
+        "amphur_th":  "ละงู",
+        "amphur_en":  "Langu",
+        "province_id":  72,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  873,
+        "amphur_code":  9106,
+        "amphur_th":  "ทุ่งหว้า",
+        "amphur_en":  "Thung wa",
+        "province_id":  72,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  874,
+        "amphur_code":  9107,
+        "amphur_th":  "มะนัง",
+        "amphur_en":  "Manang",
+        "province_id":  72,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  875,
+        "amphur_code":  9201,
+        "amphur_th":  "เมืองตรัง",
+        "amphur_en":  "Mueang trang",
+        "province_id":  73,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  876,
+        "amphur_code":  9202,
+        "amphur_th":  "กันตัง",
+        "amphur_en":  "Kantang",
+        "province_id":  73,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  877,
+        "amphur_code":  9203,
+        "amphur_th":  "ย่านตาขาว",
+        "amphur_en":  "Yan ta khao",
+        "province_id":  73,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  878,
+        "amphur_code":  9204,
+        "amphur_th":  "ปะเหลียน",
+        "amphur_en":  "Palian",
+        "province_id":  73,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  879,
+        "amphur_code":  9205,
+        "amphur_th":  "สิเกา",
+        "amphur_en":  "Sikao",
+        "province_id":  73,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  880,
+        "amphur_code":  9206,
+        "amphur_th":  "ห้วยยอด",
+        "amphur_en":  "Huai Yot",
+        "province_id":  73,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  881,
+        "amphur_code":  9207,
+        "amphur_th":  "วังวิเศษ",
+        "amphur_en":  "Wang wiset",
+        "province_id":  73,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  882,
+        "amphur_code":  9208,
+        "amphur_th":  "นาโยง",
+        "amphur_en":  "Na yong",
+        "province_id":  73,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  883,
+        "amphur_code":  9209,
+        "amphur_th":  "รัษฎา",
+        "amphur_en":  "Ratsada",
+        "province_id":  73,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  884,
+        "amphur_code":  9210,
+        "amphur_th":  "หาดสำราญ",
+        "amphur_en":  "Had someran",
+        "province_id":  73,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  885,
+        "amphur_code":  9301,
+        "amphur_th":  "เมืองพัทลุง",
+        "amphur_en":  "Mueang phatthalung",
+        "province_id":  74,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  886,
+        "amphur_code":  9302,
+        "amphur_th":  "กงหรา",
+        "amphur_en":  "kong ra",
+        "province_id":  74,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  887,
+        "amphur_code":  9303,
+        "amphur_th":  "เขาชัยสน",
+        "amphur_en":  "Khao chaison",
+        "province_id":  74,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  888,
+        "amphur_code":  9304,
+        "amphur_th":  "ตะโหมด",
+        "amphur_en":  "Tamot",
+        "province_id":  74,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  889,
+        "amphur_code":  9305,
+        "amphur_th":  "ควนขนุน",
+        "amphur_en":  "Khuan khanon",
+        "province_id":  74,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  890,
+        "amphur_code":  9306,
+        "amphur_th":  "ปากพะยูน",
+        "amphur_en":  "Pak phayun",
+        "province_id":  74,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  891,
+        "amphur_code":  9307,
+        "amphur_th":  "ศรีบรรพต",
+        "amphur_en":  "Si banphot",
+        "province_id":  74,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  892,
+        "amphur_code":  9308,
+        "amphur_th":  "ป่าบอน",
+        "amphur_en":  "Pa bon",
+        "province_id":  74,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  893,
+        "amphur_code":  9309,
+        "amphur_th":  "บางแก้ว",
+        "amphur_en":  "Bang kaeo",
+        "province_id":  74,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  894,
+        "amphur_code":  9310,
+        "amphur_th":  "ป่าพะยอม",
+        "amphur_en":  "Pa phayom",
+        "province_id":  74,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  895,
+        "amphur_code":  9311,
+        "amphur_th":  "ศรีนครินทร์",
+        "amphur_en":  "Si Nakharin",
+        "province_id":  74,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  896,
+        "amphur_code":  9401,
+        "amphur_th":  "เมืองปัตตานี",
+        "amphur_en":  "Mueang pattani",
+        "province_id":  75,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  897,
+        "amphur_code":  9402,
+        "amphur_th":  "โคกโพธิ์",
+        "amphur_en":  "Khok pho",
+        "province_id":  75,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  898,
+        "amphur_code":  9403,
+        "amphur_th":  "หนองจิก",
+        "amphur_en":  "Nong chik",
+        "province_id":  75,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  899,
+        "amphur_code":  9404,
+        "amphur_th":  "ปะนาเระ",
+        "amphur_en":  "Panara",
+        "province_id":  75,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  900,
+        "amphur_code":  9405,
+        "amphur_th":  "มายอ",
+        "amphur_en":  "Mayo",
+        "province_id":  75,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  901,
+        "amphur_code":  9406,
+        "amphur_th":  "ทุ่งยางแดง",
+        "amphur_en":  "Thung yang daeng",
+        "province_id":  75,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  902,
+        "amphur_code":  9407,
+        "amphur_th":  "สายบุรี",
+        "amphur_en":  "Sai buri",
+        "province_id":  75,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  903,
+        "amphur_code":  9408,
+        "amphur_th":  "ไม้แก่น",
+        "amphur_en":  "Mai kaen",
+        "province_id":  75,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  904,
+        "amphur_code":  9409,
+        "amphur_th":  "ยะหริ่ง",
+        "amphur_en":  "Yaring",
+        "province_id":  75,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  905,
+        "amphur_code":  9410,
+        "amphur_th":  "ยะรัง",
+        "amphur_en":  "Yarang",
+        "province_id":  75,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  906,
+        "amphur_code":  9411,
+        "amphur_th":  "กะพ้อ",
+        "amphur_en":  "Kapho",
+        "province_id":  75,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  907,
+        "amphur_code":  9412,
+        "amphur_th":  "แม่ลาน",
+        "amphur_en":  "Mae lan",
+        "province_id":  75,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  908,
+        "amphur_code":  9501,
+        "amphur_th":  "เมืองยะลา",
+        "amphur_en":  "Mueang yala",
+        "province_id":  76,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  909,
+        "amphur_code":  9502,
+        "amphur_th":  "เบตง",
+        "amphur_en":  "Betong",
+        "province_id":  76,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  910,
+        "amphur_code":  9503,
+        "amphur_th":  "บันนังสตา",
+        "amphur_en":  "Bannang sata",
+        "province_id":  76,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  911,
+        "amphur_code":  9504,
+        "amphur_th":  "ธารโต",
+        "amphur_en":  "Than to",
+        "province_id":  76,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  912,
+        "amphur_code":  9505,
+        "amphur_th":  "ยะหา",
+        "amphur_en":  "Yaha",
+        "province_id":  76,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  913,
+        "amphur_code":  9506,
+        "amphur_th":  "รามัน",
+        "amphur_en":  "Raman",
+        "province_id":  76,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  914,
+        "amphur_code":  9507,
+        "amphur_th":  "กาบัง",
+        "amphur_en":  "Kabang",
+        "province_id":  76,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  915,
+        "amphur_code":  9508,
+        "amphur_th":  "กรงปินัง",
+        "amphur_en":  "Krong Pinang",
+        "province_id":  76,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  916,
+        "amphur_code":  9601,
+        "amphur_th":  "เมืองนราธิวาส",
+        "amphur_en":  "Mueang narathiwat",
+        "province_id":  77,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  917,
+        "amphur_code":  9602,
+        "amphur_th":  "ตากใบ",
+        "amphur_en":  "Tak bai",
+        "province_id":  77,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  918,
+        "amphur_code":  9603,
+        "amphur_th":  "บาเจาะ",
+        "amphur_en":  "Bacho",
+        "province_id":  77,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  919,
+        "amphur_code":  9604,
+        "amphur_th":  "ยี่งอ",
+        "amphur_en":  "Yi-ngo",
+        "province_id":  77,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  920,
+        "amphur_code":  9605,
+        "amphur_th":  "ระแงะ",
+        "amphur_en":  "Rangae",
+        "province_id":  77,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  921,
+        "amphur_code":  9606,
+        "amphur_th":  "รือเสาะ",
+        "amphur_en":  "Ruso",
+        "province_id":  77,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  922,
+        "amphur_code":  9607,
+        "amphur_th":  "ศรีสาคร",
+        "amphur_en":  "Sisakhon",
+        "province_id":  77,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  923,
+        "amphur_code":  9608,
+        "amphur_th":  "แว้ง",
+        "amphur_en":  "Waeng",
+        "province_id":  77,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  924,
+        "amphur_code":  9609,
+        "amphur_th":  "สุคิริน",
+        "amphur_en":  "Sukhirin",
+        "province_id":  77,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  925,
+        "amphur_code":  9610,
+        "amphur_th":  "สุไหงโกลก",
+        "amphur_en":  "Su-ngai Kolok",
+        "province_id":  77,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  926,
+        "amphur_code":  9611,
+        "amphur_th":  "สุไหงปาดี",
+        "amphur_en":  "Sungai padi",
+        "province_id":  77,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  927,
+        "amphur_code":  9612,
+        "amphur_th":  "จะแนะ",
+        "amphur_en":  "Chanao",
+        "province_id":  77,
+        "geo_id":  6
+    },
+    {
+        "amphur_id":  928,
+        "amphur_code":  9613,
+        "amphur_th":  "เจาะไอร้อง",
+        "amphur_en":  "Cho-airong",
+        "province_id":  77,
+        "geo_id":  6
+    }
+]

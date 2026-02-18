@@ -1,0 +1,37 @@
+[
+    {
+        "inno":  1,
+        "indate":  "2025-05-26T00:00:00",
+        "intype":  "11",
+        "productID":  "a01l",
+        "quantity":  360
+    },
+    {
+        "inno":  2,
+        "indate":  "2025-05-26T00:00:00",
+        "intype":  "11",
+        "productID":  "a02s",
+        "quantity":  360
+    },
+    {
+        "inno":  3,
+        "indate":  "2025-05-26T00:00:00",
+        "intype":  "11",
+        "productID":  "a02m",
+        "quantity":  2160
+    },
+    {
+        "inno":  4,
+        "indate":  "2025-05-26T00:00:00",
+        "intype":  "11",
+        "productID":  "a02l",
+        "quantity":  8640
+    },
+    {
+        "inno":  5,
+        "indate":  "2025-05-26T00:00:00",
+        "intype":  "11",
+        "productID":  "a02xl",
+        "quantity":  720
+    }
+]

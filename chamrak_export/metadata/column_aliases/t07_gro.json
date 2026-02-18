@@ -1,0 +1,55 @@
+{
+    "table_name":  "GRO",
+    "table_alias":  "t07_gro",
+    "columns":  [
+                    {
+                        "column_name":  "ID",
+                        "alias":  "c01",
+                        "data_type":  3,
+                        "max_length":  null,
+                        "ordinal":  1
+                    },
+                    {
+                        "column_name":  "Group",
+                        "alias":  "c02",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  2
+                    },
+                    {
+                        "column_name":  "number",
+                        "alias":  "c03",
+                        "data_type":  3,
+                        "max_length":  null,
+                        "ordinal":  3
+                    },
+                    {
+                        "column_name":  "time",
+                        "alias":  "c04",
+                        "data_type":  3,
+                        "max_length":  null,
+                        "ordinal":  4
+                    },
+                    {
+                        "column_name":  "rate",
+                        "alias":  "c05",
+                        "data_type":  3,
+                        "max_length":  null,
+                        "ordinal":  5
+                    },
+                    {
+                        "column_name":  "timeCm",
+                        "alias":  "c06",
+                        "data_type":  3,
+                        "max_length":  null,
+                        "ordinal":  6
+                    },
+                    {
+                        "column_name":  "rateCm",
+                        "alias":  "c07",
+                        "data_type":  3,
+                        "max_length":  null,
+                        "ordinal":  7
+                    }
+                ]
+}

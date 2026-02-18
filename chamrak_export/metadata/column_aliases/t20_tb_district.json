@@ -1,0 +1,69 @@
+{
+    "table_name":  "tb_district",
+    "table_alias":  "t20_tb_district",
+    "columns":  [
+                    {
+                        "column_name":  "district_id",
+                        "alias":  "c01",
+                        "data_type":  3,
+                        "max_length":  null,
+                        "ordinal":  1
+                    },
+                    {
+                        "column_name":  "district_code",
+                        "alias":  "c02",
+                        "data_type":  3,
+                        "max_length":  null,
+                        "ordinal":  2
+                    },
+                    {
+                        "column_name":  "district_th",
+                        "alias":  "c03",
+                        "data_type":  130,
+                        "max_length":  150,
+                        "ordinal":  3
+                    },
+                    {
+                        "column_name":  "district_en",
+                        "alias":  "c04",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  4
+                    },
+                    {
+                        "column_name":  "amphur_id",
+                        "alias":  "c05",
+                        "data_type":  3,
+                        "max_length":  null,
+                        "ordinal":  5
+                    },
+                    {
+                        "column_name":  "province_id",
+                        "alias":  "c06",
+                        "data_type":  3,
+                        "max_length":  null,
+                        "ordinal":  6
+                    },
+                    {
+                        "column_name":  "post_code",
+                        "alias":  "c07",
+                        "data_type":  3,
+                        "max_length":  null,
+                        "ordinal":  7
+                    },
+                    {
+                        "column_name":  "note",
+                        "alias":  "c08",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  8
+                    },
+                    {
+                        "column_name":  "ego_id",
+                        "alias":  "c09",
+                        "data_type":  2,
+                        "max_length":  null,
+                        "ordinal":  9
+                    }
+                ]
+}

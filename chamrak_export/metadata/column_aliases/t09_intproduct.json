@@ -1,0 +1,41 @@
+{
+    "table_name":  "intproduct",
+    "table_alias":  "t09_intproduct",
+    "columns":  [
+                    {
+                        "column_name":  "inno",
+                        "alias":  "c01",
+                        "data_type":  3,
+                        "max_length":  null,
+                        "ordinal":  1
+                    },
+                    {
+                        "column_name":  "indate",
+                        "alias":  "c02",
+                        "data_type":  7,
+                        "max_length":  null,
+                        "ordinal":  2
+                    },
+                    {
+                        "column_name":  "intype",
+                        "alias":  "c03",
+                        "data_type":  130,
+                        "max_length":  2,
+                        "ordinal":  3
+                    },
+                    {
+                        "column_name":  "productID",
+                        "alias":  "c04",
+                        "data_type":  130,
+                        "max_length":  5,
+                        "ordinal":  4
+                    },
+                    {
+                        "column_name":  "quantity",
+                        "alias":  "c05",
+                        "data_type":  5,
+                        "max_length":  null,
+                        "ordinal":  5
+                    }
+                ]
+}

@@ -1,0 +1,8 @@
+{
+    "pk_table_name":  "tbl_สถานะ",
+    "pk_table_alias":  "t24_tbl_status",
+    "pk_column_name":  "list",
+    "fk_table_name":  "tbl_รายรับรายจ่าย",
+    "fk_table_alias":  "t23_tbl_income_expense",
+    "fk_column_name":  "สถานะ"
+}

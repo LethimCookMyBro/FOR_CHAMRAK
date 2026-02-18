@@ -1,0 +1,83 @@
+{
+    "table_name":  "cm",
+    "table_alias":  "t02_cm",
+    "columns":  [
+                    {
+                        "column_name":  "ID",
+                        "alias":  "c01",
+                        "data_type":  3,
+                        "max_length":  null,
+                        "ordinal":  1
+                    },
+                    {
+                        "column_name":  "รหัสcm",
+                        "alias":  "c02",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  2
+                    },
+                    {
+                        "column_name":  "ชื่อสกุล",
+                        "alias":  "c03",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  3
+                    },
+                    {
+                        "column_name":  "รหัสหน่วย",
+                        "alias":  "c04",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  4
+                    },
+                    {
+                        "column_name":  "โทร",
+                        "alias":  "c05",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  5
+                    },
+                    {
+                        "column_name":  "วดปเกิด",
+                        "alias":  "c06",
+                        "data_type":  7,
+                        "max_length":  null,
+                        "ordinal":  6
+                    },
+                    {
+                        "column_name":  "ที่อยู่",
+                        "alias":  "c07",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  7
+                    },
+                    {
+                        "column_name":  "หมู่",
+                        "alias":  "c08",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  8
+                    },
+                    {
+                        "column_name":  "ตำบล",
+                        "alias":  "c09",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  9
+                    },
+                    {
+                        "column_name":  "อำเภอ",
+                        "alias":  "c10",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  10
+                    },
+                    {
+                        "column_name":  "จังหวัด",
+                        "alias":  "c11",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  11
+                    }
+                ]
+}

@@ -1,0 +1,93 @@
+[
+    {
+        "id":  1,
+        "productID":  "b01",
+        "productName":  "ไม้เท้า",
+        "price":  300,
+        "unit":  "อัน"
+    },
+    {
+        "id":  2,
+        "productID":  "b02",
+        "productName":  "ไม้เท้า 3-4 ขา",
+        "price":  500,
+        "unit":  "อัน"
+    },
+    {
+        "id":  3,
+        "productID":  "b03",
+        "productName":  "walker 4 ขา",
+        "price":  2000,
+        "unit":  "อัน"
+    },
+    {
+        "id":  4,
+        "productID":  "b04",
+        "productName":  "ไม้เท้าช่วยเดิน",
+        "price":  6000,
+        "unit":  "อัน"
+    },
+    {
+        "id":  5,
+        "productID":  "b05",
+        "productName":  "รถเข็นนั่ง",
+        "price":  2500,
+        "unit":  "อัน"
+    },
+    {
+        "id":  6,
+        "productID":  "b06",
+        "productName":  "ที่นอนลม",
+        "price":  1000,
+        "unit":  "ลูก"
+    },
+    {
+        "id":  7,
+        "productID":  "b07",
+        "productName":  "เตียงผู้ป่วย",
+        "price":  2500,
+        "unit":  "เตียง"
+    },
+    {
+        "id":  8,
+        "productID":  "b08",
+        "productName":  "เก้าอี้อาบน้ำ",
+        "price":  500,
+        "unit":  "ตัว"
+    },
+    {
+        "id":  9,
+        "productID":  "b09",
+        "productName":  "เก้าอี้นั่งถ่าย",
+        "price":  500,
+        "unit":  "ตัว"
+    },
+    {
+        "id":  10,
+        "productID":  "b10",
+        "productName":  "เครื่องวัดความดัน",
+        "price":  1500,
+        "unit":  "เครื่อง"
+    },
+    {
+        "id":  11,
+        "productID":  "b11",
+        "productName":  "เครื่องผลิตออกซิเจน",
+        "price":  20000,
+        "unit":  "เครื่อง"
+    },
+    {
+        "id":  12,
+        "productID":  "b12",
+        "productName":  "ชุดถังออกซิเจน",
+        "price":  5000,
+        "unit":  "ชุด"
+    },
+    {
+        "id":  13,
+        "productID":  "b13",
+        "productName":  "เทอโมมิเตอร์",
+        "price":  300,
+        "unit":  "อัน"
+    }
+]

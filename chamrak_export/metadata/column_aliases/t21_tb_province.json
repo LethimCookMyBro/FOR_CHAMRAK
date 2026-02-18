@@ -1,0 +1,41 @@
+{
+    "table_name":  "tb_province",
+    "table_alias":  "t21_tb_province",
+    "columns":  [
+                    {
+                        "column_name":  "province_id",
+                        "alias":  "c01",
+                        "data_type":  3,
+                        "max_length":  null,
+                        "ordinal":  1
+                    },
+                    {
+                        "column_name":  "Province_code",
+                        "alias":  "c02",
+                        "data_type":  2,
+                        "max_length":  null,
+                        "ordinal":  2
+                    },
+                    {
+                        "column_name":  "Province_th",
+                        "alias":  "c03",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  3
+                    },
+                    {
+                        "column_name":  "Province_en",
+                        "alias":  "c04",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  4
+                    },
+                    {
+                        "column_name":  "geo_id",
+                        "alias":  "c05",
+                        "data_type":  2,
+                        "max_length":  null,
+                        "ordinal":  5
+                    }
+                ]
+}

@@ -1,0 +1,48 @@
+{
+    "table_name":  "tb_amphur",
+    "table_alias":  "t19_tb_amphur",
+    "columns":  [
+                    {
+                        "column_name":  "amphur_id",
+                        "alias":  "c01",
+                        "data_type":  5,
+                        "max_length":  null,
+                        "ordinal":  1
+                    },
+                    {
+                        "column_name":  "amphur_code",
+                        "alias":  "c02",
+                        "data_type":  5,
+                        "max_length":  null,
+                        "ordinal":  2
+                    },
+                    {
+                        "column_name":  "amphur_th",
+                        "alias":  "c03",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  3
+                    },
+                    {
+                        "column_name":  "amphur_en",
+                        "alias":  "c04",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  4
+                    },
+                    {
+                        "column_name":  "province_id",
+                        "alias":  "c05",
+                        "data_type":  5,
+                        "max_length":  null,
+                        "ordinal":  5
+                    },
+                    {
+                        "column_name":  "geo_id",
+                        "alias":  "c06",
+                        "data_type":  5,
+                        "max_length":  null,
+                        "ordinal":  6
+                    }
+                ]
+}

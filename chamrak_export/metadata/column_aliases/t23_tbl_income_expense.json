@@ -1,0 +1,167 @@
+{
+    "table_name":  "tbl_รายรับรายจ่าย",
+    "table_alias":  "t23_tbl_income_expense",
+    "columns":  [
+                    {
+                        "column_name":  "ID",
+                        "alias":  "c01",
+                        "data_type":  3,
+                        "max_length":  null,
+                        "ordinal":  1
+                    },
+                    {
+                        "column_name":  "เลขที่",
+                        "alias":  "c02",
+                        "data_type":  3,
+                        "max_length":  null,
+                        "ordinal":  2
+                    },
+                    {
+                        "column_name":  "outdate",
+                        "alias":  "c03",
+                        "data_type":  7,
+                        "max_length":  null,
+                        "ordinal":  3
+                    },
+                    {
+                        "column_name":  "ปี",
+                        "alias":  "c04",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  4
+                    },
+                    {
+                        "column_name":  "รุ่น",
+                        "alias":  "c05",
+                        "data_type":  3,
+                        "max_length":  null,
+                        "ordinal":  5
+                    },
+                    {
+                        "column_name":  "รอบ",
+                        "alias":  "c06",
+                        "data_type":  3,
+                        "max_length":  null,
+                        "ordinal":  6
+                    },
+                    {
+                        "column_name":  "รายรับ1",
+                        "alias":  "c07",
+                        "data_type":  4,
+                        "max_length":  null,
+                        "ordinal":  7
+                    },
+                    {
+                        "column_name":  "รายรับ2",
+                        "alias":  "c08",
+                        "data_type":  4,
+                        "max_length":  null,
+                        "ordinal":  8
+                    },
+                    {
+                        "column_name":  "รายรับ3",
+                        "alias":  "c09",
+                        "data_type":  4,
+                        "max_length":  null,
+                        "ordinal":  9
+                    },
+                    {
+                        "column_name":  "รายรับ4",
+                        "alias":  "c10",
+                        "data_type":  4,
+                        "max_length":  null,
+                        "ordinal":  10
+                    },
+                    {
+                        "column_name":  "รายจ่าย1",
+                        "alias":  "c11",
+                        "data_type":  4,
+                        "max_length":  null,
+                        "ordinal":  11
+                    },
+                    {
+                        "column_name":  "รายจ่าย2",
+                        "alias":  "c12",
+                        "data_type":  4,
+                        "max_length":  null,
+                        "ordinal":  12
+                    },
+                    {
+                        "column_name":  "รายจ่าย3",
+                        "alias":  "c13",
+                        "data_type":  4,
+                        "max_length":  null,
+                        "ordinal":  13
+                    },
+                    {
+                        "column_name":  "รายจ่าย4",
+                        "alias":  "c14",
+                        "data_type":  4,
+                        "max_length":  null,
+                        "ordinal":  14
+                    },
+                    {
+                        "column_name":  "หมายเหตุ",
+                        "alias":  "c15",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  15
+                    },
+                    {
+                        "column_name":  "สถานะ",
+                        "alias":  "c16",
+                        "data_type":  3,
+                        "max_length":  null,
+                        "ordinal":  16
+                    },
+                    {
+                        "column_name":  "iout",
+                        "alias":  "c17",
+                        "data_type":  3,
+                        "max_length":  null,
+                        "ordinal":  17
+                    },
+                    {
+                        "column_name":  "sheck",
+                        "alias":  "c18",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  18
+                    },
+                    {
+                        "column_name":  "number",
+                        "alias":  "c19",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  19
+                    },
+                    {
+                        "column_name":  "name",
+                        "alias":  "c20",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  20
+                    },
+                    {
+                        "column_name":  "exdate",
+                        "alias":  "c21",
+                        "data_type":  7,
+                        "max_length":  null,
+                        "ordinal":  21
+                    },
+                    {
+                        "column_name":  "outlist",
+                        "alias":  "c22",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  22
+                    },
+                    {
+                        "column_name":  "inid",
+                        "alias":  "c23",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  23
+                    }
+                ]
+}

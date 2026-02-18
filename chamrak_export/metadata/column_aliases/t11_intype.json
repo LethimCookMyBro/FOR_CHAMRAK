@@ -1,0 +1,20 @@
+{
+    "table_name":  "intype",
+    "table_alias":  "t11_intype",
+    "columns":  [
+                    {
+                        "column_name":  "intypeID",
+                        "alias":  "c01",
+                        "data_type":  130,
+                        "max_length":  2,
+                        "ordinal":  1
+                    },
+                    {
+                        "column_name":  "intypename",
+                        "alias":  "c02",
+                        "data_type":  130,
+                        "max_length":  10,
+                        "ordinal":  2
+                    }
+                ]
+}

@@ -1,0 +1,20 @@
+{
+    "table_name":  "outtype",
+    "table_alias":  "t15_outtype",
+    "columns":  [
+                    {
+                        "column_name":  "outtypeID",
+                        "alias":  "c01",
+                        "data_type":  130,
+                        "max_length":  2,
+                        "ordinal":  1
+                    },
+                    {
+                        "column_name":  "outtypename",
+                        "alias":  "c02",
+                        "data_type":  130,
+                        "max_length":  10,
+                        "ordinal":  2
+                    }
+                ]
+}

@@ -1,0 +1,62 @@
+{
+    "table_name":  "outproduct",
+    "table_alias":  "t13_outproduct",
+    "columns":  [
+                    {
+                        "column_name":  "outno",
+                        "alias":  "c01",
+                        "data_type":  3,
+                        "max_length":  null,
+                        "ordinal":  1
+                    },
+                    {
+                        "column_name":  "outdate",
+                        "alias":  "c02",
+                        "data_type":  7,
+                        "max_length":  null,
+                        "ordinal":  2
+                    },
+                    {
+                        "column_name":  "outtype",
+                        "alias":  "c03",
+                        "data_type":  130,
+                        "max_length":  2,
+                        "ordinal":  3
+                    },
+                    {
+                        "column_name":  "productID",
+                        "alias":  "c04",
+                        "data_type":  130,
+                        "max_length":  5,
+                        "ordinal":  4
+                    },
+                    {
+                        "column_name":  "quantity",
+                        "alias":  "c05",
+                        "data_type":  5,
+                        "max_length":  null,
+                        "ordinal":  5
+                    },
+                    {
+                        "column_name":  "รหัสltc",
+                        "alias":  "c06",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  6
+                    },
+                    {
+                        "column_name":  "Returndate",
+                        "alias":  "c07",
+                        "data_type":  7,
+                        "max_length":  null,
+                        "ordinal":  7
+                    },
+                    {
+                        "column_name":  "round",
+                        "alias":  "c08",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  8
+                    }
+                ]
+}

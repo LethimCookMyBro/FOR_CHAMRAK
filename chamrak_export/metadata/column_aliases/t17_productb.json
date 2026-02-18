@@ -1,0 +1,41 @@
+{
+    "table_name":  "productB",
+    "table_alias":  "t17_productb",
+    "columns":  [
+                    {
+                        "column_name":  "id",
+                        "alias":  "c01",
+                        "data_type":  3,
+                        "max_length":  null,
+                        "ordinal":  1
+                    },
+                    {
+                        "column_name":  "productID",
+                        "alias":  "c02",
+                        "data_type":  130,
+                        "max_length":  5,
+                        "ordinal":  2
+                    },
+                    {
+                        "column_name":  "productName",
+                        "alias":  "c03",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  3
+                    },
+                    {
+                        "column_name":  "price",
+                        "alias":  "c04",
+                        "data_type":  5,
+                        "max_length":  null,
+                        "ordinal":  4
+                    },
+                    {
+                        "column_name":  "unit",
+                        "alias":  "c05",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  5
+                    }
+                ]
+}

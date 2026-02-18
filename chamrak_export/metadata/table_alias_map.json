@@ -1,0 +1,165 @@
+{
+    "generated_at":  "2026-02-18T06:01:48Z",
+    "items":  [
+                  {
+                      "table_name":  "cg",
+                      "table_alias":  "t01_cg"
+                  },
+                  {
+                      "table_name":  "cm",
+                      "table_alias":  "t02_cm"
+                  },
+                  {
+                      "table_name":  "cmMoney",
+                      "table_alias":  "t03_cmmoney"
+                  },
+                  {
+                      "table_name":  "DataJ",
+                      "table_alias":  "t04_dataj"
+                  },
+                  {
+                      "table_name":  "disproductB",
+                      "table_alias":  "t05_disproductb"
+                  },
+                  {
+                      "table_name":  "disproductB4",
+                      "table_alias":  "t06_disproductb4"
+                  },
+                  {
+                      "table_name":  "GRO",
+                      "table_alias":  "t07_gro"
+                  },
+                  {
+                      "table_name":  "inlist",
+                      "table_alias":  "t08_inlist"
+                  },
+                  {
+                      "table_name":  "intproduct",
+                      "table_alias":  "t09_intproduct"
+                  },
+                  {
+                      "table_name":  "intproductB",
+                      "table_alias":  "t10_intproductb"
+                  },
+                  {
+                      "table_name":  "intype",
+                      "table_alias":  "t11_intype"
+                  },
+                  {
+                      "table_name":  "outlist",
+                      "table_alias":  "t12_outlist"
+                  },
+                  {
+                      "table_name":  "outproduct",
+                      "table_alias":  "t13_outproduct"
+                  },
+                  {
+                      "table_name":  "outproductB",
+                      "table_alias":  "t14_outproductb"
+                  },
+                  {
+                      "table_name":  "outtype",
+                      "table_alias":  "t15_outtype"
+                  },
+                  {
+                      "table_name":  "product",
+                      "table_alias":  "t16_product"
+                  },
+                  {
+                      "table_name":  "productB",
+                      "table_alias":  "t17_productb"
+                  },
+                  {
+                      "table_name":  "TAI",
+                      "table_alias":  "t18_tai"
+                  },
+                  {
+                      "table_name":  "tb_amphur",
+                      "table_alias":  "t19_tb_amphur"
+                  },
+                  {
+                      "table_name":  "tb_district",
+                      "table_alias":  "t20_tb_district"
+                  },
+                  {
+                      "table_name":  "tb_province",
+                      "table_alias":  "t21_tb_province"
+                  },
+                  {
+                      "table_name":  "tbl_naneout",
+                      "table_alias":  "t22_tbl_naneout"
+                  },
+                  {
+                      "table_name":  "tbl_รายรับรายจ่าย",
+                      "table_alias":  "t23_tbl_income_expense"
+                  },
+                  {
+                      "table_name":  "tbl_สถานะ",
+                      "table_alias":  "t24_tbl_status"
+                  },
+                  {
+                      "table_name":  "เทศบาล",
+                      "table_alias":  "t25_municipality"
+                  },
+                  {
+                      "table_name":  "หน่วย",
+                      "table_alias":  "t26_unit"
+                  }
+              ],
+    "by_table_name":  {
+                          "cg":  "t01_cg",
+                          "cm":  "t02_cm",
+                          "cmMoney":  "t03_cmmoney",
+                          "DataJ":  "t04_dataj",
+                          "disproductB":  "t05_disproductb",
+                          "disproductB4":  "t06_disproductb4",
+                          "GRO":  "t07_gro",
+                          "inlist":  "t08_inlist",
+                          "intproduct":  "t09_intproduct",
+                          "intproductB":  "t10_intproductb",
+                          "intype":  "t11_intype",
+                          "outlist":  "t12_outlist",
+                          "outproduct":  "t13_outproduct",
+                          "outproductB":  "t14_outproductb",
+                          "outtype":  "t15_outtype",
+                          "product":  "t16_product",
+                          "productB":  "t17_productb",
+                          "TAI":  "t18_tai",
+                          "tb_amphur":  "t19_tb_amphur",
+                          "tb_district":  "t20_tb_district",
+                          "tb_province":  "t21_tb_province",
+                          "tbl_naneout":  "t22_tbl_naneout",
+                          "tbl_รายรับรายจ่าย":  "t23_tbl_income_expense",
+                          "tbl_สถานะ":  "t24_tbl_status",
+                          "เทศบาล":  "t25_municipality",
+                          "หน่วย":  "t26_unit"
+                      },
+    "by_table_alias":  {
+                           "t01_cg":  "cg",
+                           "t02_cm":  "cm",
+                           "t03_cmmoney":  "cmMoney",
+                           "t04_dataj":  "DataJ",
+                           "t05_disproductb":  "disproductB",
+                           "t06_disproductb4":  "disproductB4",
+                           "t07_gro":  "GRO",
+                           "t08_inlist":  "inlist",
+                           "t09_intproduct":  "intproduct",
+                           "t10_intproductb":  "intproductB",
+                           "t11_intype":  "intype",
+                           "t12_outlist":  "outlist",
+                           "t13_outproduct":  "outproduct",
+                           "t14_outproductb":  "outproductB",
+                           "t15_outtype":  "outtype",
+                           "t16_product":  "product",
+                           "t17_productb":  "productB",
+                           "t18_tai":  "TAI",
+                           "t19_tb_amphur":  "tb_amphur",
+                           "t20_tb_district":  "tb_district",
+                           "t21_tb_province":  "tb_province",
+                           "t22_tbl_naneout":  "tbl_naneout",
+                           "t23_tbl_income_expense":  "tbl_รายรับรายจ่าย",
+                           "t24_tbl_status":  "tbl_สถานะ",
+                           "t25_municipality":  "เทศบาล",
+                           "t26_unit":  "หน่วย"
+                       }
+}

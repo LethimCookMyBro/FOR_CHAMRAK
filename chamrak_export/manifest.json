@@ -1,0 +1,282 @@
+{
+    "generated_at":  "2026-02-18T06:01:48Z",
+    "source_db":  "C:\\Users\\User\\Downloads\\dataLTC.accdb",
+    "output_root":  "C:\\Users\\User\\Downloads\\For_www\\chamrak_export",
+    "table_count":  26,
+    "total_rows":  8682,
+    "geo_lookup_tables":  [
+                              {
+                                  "table_name":  "tb_province",
+                                  "table_alias":  "t21_tb_province"
+                              },
+                              {
+                                  "table_name":  "tb_amphur",
+                                  "table_alias":  "t19_tb_amphur"
+                              },
+                              {
+                                  "table_name":  "tb_district",
+                                  "table_alias":  "t20_tb_district"
+                              }
+                          ],
+    "transformed_tables":  [
+                               "t01_cg",
+                               "t02_cm",
+                               "t03_cmmoney",
+                               "t04_dataj",
+                               "t05_disproductb",
+                               "t06_disproductb4",
+                               "t07_gro",
+                               "t08_inlist",
+                               "t09_intproduct",
+                               "t10_intproductb",
+                               "t11_intype",
+                               "t12_outlist",
+                               "t13_outproduct",
+                               "t14_outproductb",
+                               "t15_outtype",
+                               "t16_product",
+                               "t17_productb",
+                               "t18_tai",
+                               "t22_tbl_naneout",
+                               "t23_tbl_income_expense",
+                               "t24_tbl_status",
+                               "t25_municipality",
+                               "t26_unit"
+                           ],
+    "tables":  [
+                   {
+                       "table_name":  "cg",
+                       "table_alias":  "t01_cg",
+                       "file":  "data/t01_cg.json",
+                       "row_count":  11,
+                       "primary_key":  [
+                                           "รหัสcg"
+                                       ]
+                   },
+                   {
+                       "table_name":  "cm",
+                       "table_alias":  "t02_cm",
+                       "file":  "data/t02_cm.json",
+                       "row_count":  3,
+                       "primary_key":  [
+                                           "รหัสcm"
+                                       ]
+                   },
+                   {
+                       "table_name":  "cmMoney",
+                       "table_alias":  "t03_cmmoney",
+                       "file":  "data/t03_cmmoney.json",
+                       "row_count":  0,
+                       "primary_key":  [
+                                           "id"
+                                       ]
+                   },
+                   {
+                       "table_name":  "DataJ",
+                       "table_alias":  "t04_dataj",
+                       "file":  "data/t04_dataj.json",
+                       "row_count":  50,
+                       "primary_key":  [
+                                           "ID"
+                                       ]
+                   },
+                   {
+                       "table_name":  "disproductB",
+                       "table_alias":  "t05_disproductb",
+                       "file":  "data/t05_disproductb.json",
+                       "row_count":  0,
+                       "primary_key":  [
+                                           "outno"
+                                       ]
+                   },
+                   {
+                       "table_name":  "disproductB4",
+                       "table_alias":  "t06_disproductb4",
+                       "file":  "data/t06_disproductb4.json",
+                       "row_count":  0,
+                       "primary_key":  [
+                                           "outno"
+                                       ]
+                   },
+                   {
+                       "table_name":  "GRO",
+                       "table_alias":  "t07_gro",
+                       "file":  "data/t07_gro.json",
+                       "row_count":  4,
+                       "primary_key":  [
+                                           "ID"
+                                       ]
+                   },
+                   {
+                       "table_name":  "inlist",
+                       "table_alias":  "t08_inlist",
+                       "file":  "data/t08_inlist.json",
+                       "row_count":  4,
+                       "primary_key":  [
+                                           "inD"
+                                       ]
+                   },
+                   {
+                       "table_name":  "intproduct",
+                       "table_alias":  "t09_intproduct",
+                       "file":  "data/t09_intproduct.json",
+                       "row_count":  5,
+                       "primary_key":  [
+                                           "inno"
+                                       ]
+                   },
+                   {
+                       "table_name":  "intproductB",
+                       "table_alias":  "t10_intproductb",
+                       "file":  "data/t10_intproductb.json",
+                       "row_count":  0,
+                       "primary_key":  [
+                                           "inno"
+                                       ]
+                   },
+                   {
+                       "table_name":  "intype",
+                       "table_alias":  "t11_intype",
+                       "file":  "data/t11_intype.json",
+                       "row_count":  2,
+                       "primary_key":  [
+                                           "intypeID"
+                                       ]
+                   },
+                   {
+                       "table_name":  "outlist",
+                       "table_alias":  "t12_outlist",
+                       "file":  "data/t12_outlist.json",
+                       "row_count":  4,
+                       "primary_key":  [
+                                           "oD"
+                                       ]
+                   },
+                   {
+                       "table_name":  "outproduct",
+                       "table_alias":  "t13_outproduct",
+                       "file":  "data/t13_outproduct.json",
+                       "row_count":  111,
+                       "primary_key":  [
+                                           "outno"
+                                       ]
+                   },
+                   {
+                       "table_name":  "outproductB",
+                       "table_alias":  "t14_outproductb",
+                       "file":  "data/t14_outproductb.json",
+                       "row_count":  0,
+                       "primary_key":  [
+                                           "outno"
+                                       ]
+                   },
+                   {
+                       "table_name":  "outtype",
+                       "table_alias":  "t15_outtype",
+                       "file":  "data/t15_outtype.json",
+                       "row_count":  4,
+                       "primary_key":  [
+                                           "outtypeID"
+                                       ]
+                   },
+                   {
+                       "table_name":  "product",
+                       "table_alias":  "t16_product",
+                       "file":  "data/t16_product.json",
+                       "row_count":  15,
+                       "primary_key":  [
+                                           "productID"
+                                       ]
+                   },
+                   {
+                       "table_name":  "productB",
+                       "table_alias":  "t17_productb",
+                       "file":  "data/t17_productb.json",
+                       "row_count":  13,
+                       "primary_key":  [
+                                           "productID"
+                                       ]
+                   },
+                   {
+                       "table_name":  "TAI",
+                       "table_alias":  "t18_tai",
+                       "file":  "data/t18_tai.json",
+                       "row_count":  9,
+                       "primary_key":  [
+                                           "tai"
+                                       ]
+                   },
+                   {
+                       "table_name":  "tb_amphur",
+                       "table_alias":  "t19_tb_amphur",
+                       "file":  "data/t19_tb_amphur.json",
+                       "row_count":  928,
+                       "primary_key":  [
+                                           "amphur_id"
+                                       ]
+                   },
+                   {
+                       "table_name":  "tb_district",
+                       "table_alias":  "t20_tb_district",
+                       "file":  "data/t20_tb_district.json",
+                       "row_count":  7426,
+                       "primary_key":  [
+                                           "district_id"
+                                       ]
+                   },
+                   {
+                       "table_name":  "tb_province",
+                       "table_alias":  "t21_tb_province",
+                       "file":  "data/t21_tb_province.json",
+                       "row_count":  77,
+                       "primary_key":  [
+                                           "province_id"
+                                       ]
+                   },
+                   {
+                       "table_name":  "tbl_naneout",
+                       "table_alias":  "t22_tbl_naneout",
+                       "file":  "data/t22_tbl_naneout.json",
+                       "row_count":  3,
+                       "primary_key":  [
+                                           "id"
+                                       ]
+                   },
+                   {
+                       "table_name":  "tbl_รายรับรายจ่าย",
+                       "table_alias":  "t23_tbl_income_expense",
+                       "file":  "data/t23_tbl_income_expense.json",
+                       "row_count":  7,
+                       "primary_key":  [
+                                           "ID"
+                                       ]
+                   },
+                   {
+                       "table_name":  "tbl_สถานะ",
+                       "table_alias":  "t24_tbl_status",
+                       "file":  "data/t24_tbl_status.json",
+                       "row_count":  2,
+                       "primary_key":  [
+                                           "ID"
+                                       ]
+                   },
+                   {
+                       "table_name":  "เทศบาล",
+                       "table_alias":  "t25_municipality",
+                       "file":  "data/t25_municipality.json",
+                       "row_count":  1,
+                       "primary_key":  [
+                                           "idt"
+                                       ]
+                   },
+                   {
+                       "table_name":  "หน่วย",
+                       "table_alias":  "t26_unit",
+                       "file":  "data/t26_unit.json",
+                       "row_count":  3,
+                       "primary_key":  [
+                                           "ID"
+                                       ]
+                   }
+               ]
+}

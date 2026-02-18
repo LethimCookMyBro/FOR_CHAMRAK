@@ -1,0 +1,20 @@
+{
+    "table_name":  "TAI",
+    "table_alias":  "t18_tai",
+    "columns":  [
+                    {
+                        "column_name":  "OD",
+                        "alias":  "c01",
+                        "data_type":  3,
+                        "max_length":  null,
+                        "ordinal":  1
+                    },
+                    {
+                        "column_name":  "tai",
+                        "alias":  "c02",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  2
+                    }
+                ]
+}

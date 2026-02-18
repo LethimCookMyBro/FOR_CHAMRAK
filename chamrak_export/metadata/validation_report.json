@@ -1,0 +1,411 @@
+{
+    "generated_at":  "2026-02-18T06:01:48Z",
+    "checks":  {
+                   "row_count_match":  {
+                                           "pass":  true,
+                                           "details":  [
+                                                           {
+                                                               "table_name":  "cg",
+                                                               "table_alias":  "t01_cg",
+                                                               "source_rows":  11,
+                                                               "exported_rows":  11,
+                                                               "pass":  true
+                                                           },
+                                                           {
+                                                               "table_name":  "cm",
+                                                               "table_alias":  "t02_cm",
+                                                               "source_rows":  3,
+                                                               "exported_rows":  3,
+                                                               "pass":  true
+                                                           },
+                                                           {
+                                                               "table_name":  "cmMoney",
+                                                               "table_alias":  "t03_cmmoney",
+                                                               "source_rows":  0,
+                                                               "exported_rows":  0,
+                                                               "pass":  true
+                                                           },
+                                                           {
+                                                               "table_name":  "DataJ",
+                                                               "table_alias":  "t04_dataj",
+                                                               "source_rows":  50,
+                                                               "exported_rows":  50,
+                                                               "pass":  true
+                                                           },
+                                                           {
+                                                               "table_name":  "disproductB",
+                                                               "table_alias":  "t05_disproductb",
+                                                               "source_rows":  0,
+                                                               "exported_rows":  0,
+                                                               "pass":  true
+                                                           },
+                                                           {
+                                                               "table_name":  "disproductB4",
+                                                               "table_alias":  "t06_disproductb4",
+                                                               "source_rows":  0,
+                                                               "exported_rows":  0,
+                                                               "pass":  true
+                                                           },
+                                                           {
+                                                               "table_name":  "GRO",
+                                                               "table_alias":  "t07_gro",
+                                                               "source_rows":  4,
+                                                               "exported_rows":  4,
+                                                               "pass":  true
+                                                           },
+                                                           {
+                                                               "table_name":  "inlist",
+                                                               "table_alias":  "t08_inlist",
+                                                               "source_rows":  4,
+                                                               "exported_rows":  4,
+                                                               "pass":  true
+                                                           },
+                                                           {
+                                                               "table_name":  "intproduct",
+                                                               "table_alias":  "t09_intproduct",
+                                                               "source_rows":  5,
+                                                               "exported_rows":  5,
+                                                               "pass":  true
+                                                           },
+                                                           {
+                                                               "table_name":  "intproductB",
+                                                               "table_alias":  "t10_intproductb",
+                                                               "source_rows":  0,
+                                                               "exported_rows":  0,
+                                                               "pass":  true
+                                                           },
+                                                           {
+                                                               "table_name":  "intype",
+                                                               "table_alias":  "t11_intype",
+                                                               "source_rows":  2,
+                                                               "exported_rows":  2,
+                                                               "pass":  true
+                                                           },
+                                                           {
+                                                               "table_name":  "outlist",
+                                                               "table_alias":  "t12_outlist",
+                                                               "source_rows":  4,
+                                                               "exported_rows":  4,
+                                                               "pass":  true
+                                                           },
+                                                           {
+                                                               "table_name":  "outproduct",
+                                                               "table_alias":  "t13_outproduct",
+                                                               "source_rows":  111,
+                                                               "exported_rows":  111,
+                                                               "pass":  true
+                                                           },
+                                                           {
+                                                               "table_name":  "outproductB",
+                                                               "table_alias":  "t14_outproductb",
+                                                               "source_rows":  0,
+                                                               "exported_rows":  0,
+                                                               "pass":  true
+                                                           },
+                                                           {
+                                                               "table_name":  "outtype",
+                                                               "table_alias":  "t15_outtype",
+                                                               "source_rows":  4,
+                                                               "exported_rows":  4,
+                                                               "pass":  true
+                                                           },
+                                                           {
+                                                               "table_name":  "product",
+                                                               "table_alias":  "t16_product",
+                                                               "source_rows":  15,
+                                                               "exported_rows":  15,
+                                                               "pass":  true
+                                                           },
+                                                           {
+                                                               "table_name":  "productB",
+                                                               "table_alias":  "t17_productb",
+                                                               "source_rows":  13,
+                                                               "exported_rows":  13,
+                                                               "pass":  true
+                                                           },
+                                                           {
+                                                               "table_name":  "TAI",
+                                                               "table_alias":  "t18_tai",
+                                                               "source_rows":  9,
+                                                               "exported_rows":  9,
+                                                               "pass":  true
+                                                           },
+                                                           {
+                                                               "table_name":  "tb_amphur",
+                                                               "table_alias":  "t19_tb_amphur",
+                                                               "source_rows":  928,
+                                                               "exported_rows":  928,
+                                                               "pass":  true
+                                                           },
+                                                           {
+                                                               "table_name":  "tb_district",
+                                                               "table_alias":  "t20_tb_district",
+                                                               "source_rows":  7426,
+                                                               "exported_rows":  7426,
+                                                               "pass":  true
+                                                           },
+                                                           {
+                                                               "table_name":  "tb_province",
+                                                               "table_alias":  "t21_tb_province",
+                                                               "source_rows":  77,
+                                                               "exported_rows":  77,
+                                                               "pass":  true
+                                                           },
+                                                           {
+                                                               "table_name":  "tbl_naneout",
+                                                               "table_alias":  "t22_tbl_naneout",
+                                                               "source_rows":  3,
+                                                               "exported_rows":  3,
+                                                               "pass":  true
+                                                           },
+                                                           {
+                                                               "table_name":  "tbl_รายรับรายจ่าย",
+                                                               "table_alias":  "t23_tbl_income_expense",
+                                                               "source_rows":  7,
+                                                               "exported_rows":  7,
+                                                               "pass":  true
+                                                           },
+                                                           {
+                                                               "table_name":  "tbl_สถานะ",
+                                                               "table_alias":  "t24_tbl_status",
+                                                               "source_rows":  2,
+                                                               "exported_rows":  2,
+                                                               "pass":  true
+                                                           },
+                                                           {
+                                                               "table_name":  "เทศบาล",
+                                                               "table_alias":  "t25_municipality",
+                                                               "source_rows":  1,
+                                                               "exported_rows":  1,
+                                                               "pass":  true
+                                                           },
+                                                           {
+                                                               "table_name":  "หน่วย",
+                                                               "table_alias":  "t26_unit",
+                                                               "source_rows":  3,
+                                                               "exported_rows":  3,
+                                                               "pass":  true
+                                                           }
+                                                       ]
+                                       },
+                   "geo_byte_equivalent":  {
+                                               "pass":  true,
+                                               "details":  [
+                                                               {
+                                                                   "table_name":  "tb_amphur",
+                                                                   "table_alias":  "t19_tb_amphur",
+                                                                   "pre_sha256":  "fd55373fe822ed01aced1273ee003713454f289c331fc34ce0ccb4d8f040af8c",
+                                                                   "post_sha256":  "fd55373fe822ed01aced1273ee003713454f289c331fc34ce0ccb4d8f040af8c",
+                                                                   "equal":  true
+                                                               },
+                                                               {
+                                                                   "table_name":  "tb_district",
+                                                                   "table_alias":  "t20_tb_district",
+                                                                   "pre_sha256":  "09751f4ad320cdc24ccbb7989a86db77eb6985b5b33a6cf7f00727b2f87d961d",
+                                                                   "post_sha256":  "09751f4ad320cdc24ccbb7989a86db77eb6985b5b33a6cf7f00727b2f87d961d",
+                                                                   "equal":  true
+                                                               },
+                                                               {
+                                                                   "table_name":  "tb_province",
+                                                                   "table_alias":  "t21_tb_province",
+                                                                   "pre_sha256":  "d73e43a44a1f30a2fc8787fd9c381d8a78546946ecd4ee66ecb7263db71c81ad",
+                                                                   "post_sha256":  "d73e43a44a1f30a2fc8787fd9c381d8a78546946ecd4ee66ecb7263db71c81ad",
+                                                                   "equal":  true
+                                                               }
+                                                           ]
+                                           },
+                   "location_override":  {
+                                             "pass":  true,
+                                             "details":  [
+                                                             {
+                                                                 "table_name":  "cg",
+                                                                 "table_alias":  "t01_cg",
+                                                                 "column_name":  "ตำบล",
+                                                                 "expected":  "ชำราก",
+                                                                 "pass":  true,
+                                                                 "violations":  0
+                                                             },
+                                                             {
+                                                                 "table_name":  "cg",
+                                                                 "table_alias":  "t01_cg",
+                                                                 "column_name":  "อำเภอ",
+                                                                 "expected":  "เมืองตราด",
+                                                                 "pass":  true,
+                                                                 "violations":  0
+                                                             },
+                                                             {
+                                                                 "table_name":  "cg",
+                                                                 "table_alias":  "t01_cg",
+                                                                 "column_name":  "จังหวัด",
+                                                                 "expected":  "ตราด",
+                                                                 "pass":  true,
+                                                                 "violations":  0
+                                                             },
+                                                             {
+                                                                 "table_name":  "cm",
+                                                                 "table_alias":  "t02_cm",
+                                                                 "column_name":  "ตำบล",
+                                                                 "expected":  "ชำราก",
+                                                                 "pass":  true,
+                                                                 "violations":  0
+                                                             },
+                                                             {
+                                                                 "table_name":  "cm",
+                                                                 "table_alias":  "t02_cm",
+                                                                 "column_name":  "อำเภอ",
+                                                                 "expected":  "เมืองตราด",
+                                                                 "pass":  true,
+                                                                 "violations":  0
+                                                             },
+                                                             {
+                                                                 "table_name":  "cm",
+                                                                 "table_alias":  "t02_cm",
+                                                                 "column_name":  "จังหวัด",
+                                                                 "expected":  "ตราด",
+                                                                 "pass":  true,
+                                                                 "violations":  0
+                                                             },
+                                                             {
+                                                                 "table_name":  "DataJ",
+                                                                 "table_alias":  "t04_dataj",
+                                                                 "column_name":  "ตำบล",
+                                                                 "expected":  "ชำราก",
+                                                                 "pass":  true,
+                                                                 "violations":  0
+                                                             },
+                                                             {
+                                                                 "table_name":  "DataJ",
+                                                                 "table_alias":  "t04_dataj",
+                                                                 "column_name":  "อำเภอ",
+                                                                 "expected":  "เมืองตราด",
+                                                                 "pass":  true,
+                                                                 "violations":  0
+                                                             },
+                                                             {
+                                                                 "table_name":  "DataJ",
+                                                                 "table_alias":  "t04_dataj",
+                                                                 "column_name":  "จังหวัด",
+                                                                 "expected":  "ตราด",
+                                                                 "pass":  true,
+                                                                 "violations":  0
+                                                             },
+                                                             {
+                                                                 "table_name":  "tbl_naneout",
+                                                                 "table_alias":  "t22_tbl_naneout",
+                                                                 "column_name":  "ตำบล",
+                                                                 "expected":  "ชำราก",
+                                                                 "pass":  true,
+                                                                 "violations":  0
+                                                             },
+                                                             {
+                                                                 "table_name":  "tbl_naneout",
+                                                                 "table_alias":  "t22_tbl_naneout",
+                                                                 "column_name":  "อำเภอ",
+                                                                 "expected":  "เมืองตราด",
+                                                                 "pass":  true,
+                                                                 "violations":  0
+                                                             },
+                                                             {
+                                                                 "table_name":  "tbl_naneout",
+                                                                 "table_alias":  "t22_tbl_naneout",
+                                                                 "column_name":  "จังหวัด",
+                                                                 "expected":  "ตราด",
+                                                                 "pass":  true,
+                                                                 "violations":  0
+                                                             },
+                                                             {
+                                                                 "table_name":  "เทศบาล",
+                                                                 "table_alias":  "t25_municipality",
+                                                                 "column_name":  "ตำบล",
+                                                                 "expected":  "230113",
+                                                                 "pass":  true,
+                                                                 "violations":  0
+                                                             },
+                                                             {
+                                                                 "table_name":  "เทศบาล",
+                                                                 "table_alias":  "t25_municipality",
+                                                                 "column_name":  "อำเภอ",
+                                                                 "expected":  "160",
+                                                                 "pass":  true,
+                                                                 "violations":  0
+                                                             },
+                                                             {
+                                                                 "table_name":  "เทศบาล",
+                                                                 "table_alias":  "t25_municipality",
+                                                                 "column_name":  "จังหวัด",
+                                                                 "expected":  "14",
+                                                                 "pass":  true,
+                                                                 "violations":  0
+                                                             },
+                                                             {
+                                                                 "table_name":  "หน่วย",
+                                                                 "table_alias":  "t26_unit",
+                                                                 "column_name":  "ตำบล",
+                                                                 "expected":  "ชำราก",
+                                                                 "pass":  true,
+                                                                 "violations":  0
+                                                             },
+                                                             {
+                                                                 "table_name":  "หน่วย",
+                                                                 "table_alias":  "t26_unit",
+                                                                 "column_name":  "อำเภอ",
+                                                                 "expected":  "เมืองตราด",
+                                                                 "pass":  true,
+                                                                 "violations":  0
+                                                             },
+                                                             {
+                                                                 "table_name":  "หน่วย",
+                                                                 "table_alias":  "t26_unit",
+                                                                 "column_name":  "จังหวัด",
+                                                                 "expected":  "ตราด",
+                                                                 "pass":  true,
+                                                                 "violations":  0
+                                                             }
+                                                         ]
+                                         },
+                   "municipality_name_override":  {
+                                                      "pass":  true,
+                                                      "expected":  {
+                                                                       "office_name":  "ศูนย์พัฒนาคุณภาพชีวิตผู้สูงอายุ ผู้พิการ และผู้ที่มีภาวะพึ่งพิง ทต.ชำราก",
+                                                                       "office_short":  "เทศบาลตำบลชำราก"
+                                                                   }
+                                                  },
+                   "forbidden_words_removed":  {
+                                                   "pass":  true,
+                                                   "forbidden_words":  [
+                                                                           "โป่งน้ำร้อน",
+                                                                           "จันทบุรี",
+                                                                           "ทับไทร"
+                                                                       ],
+                                                   "hits":  [
+
+                                                            ]
+                                               },
+                   "iso_datetime_format":  {
+                                               "pass":  true,
+                                               "failures":  [
+
+                                                            ]
+                                           },
+                   "pic_asset_export":  {
+                                            "pass":  true,
+                                            "source_pic_count":  1,
+                                            "exported_pic_count":  1,
+                                            "issues":  [
+
+                                                       ]
+                                        },
+                   "utf8_json":  {
+                                     "pass":  true,
+                                     "checked_files":  56,
+                                     "issues":  [
+
+                                                ]
+                                 }
+               },
+    "summary":  {
+                    "pass_all":  true,
+                    "total_tables":  26,
+                    "total_rows":  8682
+                }
+}

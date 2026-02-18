@@ -1,0 +1,58 @@
+@media (max-width: 1160px) {
+  .three-col {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 980px) {
+  .two-col {
+    grid-template-columns: 1fr;
+  }
+
+  .topbar-main {
+    padding: 12px 14px;
+    flex-wrap: wrap;
+  }
+
+  .system-name h1 {
+    font-size: 20px;
+  }
+
+  .main-wrap {
+    padding: 18px 16px;
+  }
+
+  .section-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .section-tools {
+    width: 100%;
+  }
+}
+
+@media (max-width: 700px) {
+  .logo {
+    width: 42px;
+    height: 42px;
+    font-size: 20px;
+  }
+
+  .system-status {
+    display: none;
+  }
+
+  .security-toggle {
+    width: 100%;
+    text-align: center;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .row-form-fields {
+    grid-template-columns: 1fr;
+  }
+}

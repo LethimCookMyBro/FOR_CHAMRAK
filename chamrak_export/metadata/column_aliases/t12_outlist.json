@@ -1,0 +1,27 @@
+{
+    "table_name":  "outlist",
+    "table_alias":  "t12_outlist",
+    "columns":  [
+                    {
+                        "column_name":  "oD",
+                        "alias":  "c01",
+                        "data_type":  3,
+                        "max_length":  null,
+                        "ordinal":  1
+                    },
+                    {
+                        "column_name":  "outid",
+                        "alias":  "c02",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  2
+                    },
+                    {
+                        "column_name":  "list",
+                        "alias":  "c03",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  3
+                    }
+                ]
+}

@@ -1,0 +1,167 @@
+{
+    "table_name":  "DataJ",
+    "table_alias":  "t04_dataj",
+    "columns":  [
+                    {
+                        "column_name":  "ID",
+                        "alias":  "c01",
+                        "data_type":  3,
+                        "max_length":  null,
+                        "ordinal":  1
+                    },
+                    {
+                        "column_name":  "เลขประชาชน",
+                        "alias":  "c02",
+                        "data_type":  130,
+                        "max_length":  13,
+                        "ordinal":  2
+                    },
+                    {
+                        "column_name":  "นาม",
+                        "alias":  "c03",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  3
+                    },
+                    {
+                        "column_name":  "ชื่อ",
+                        "alias":  "c04",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  4
+                    },
+                    {
+                        "column_name":  "สกุล",
+                        "alias":  "c05",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  5
+                    },
+                    {
+                        "column_name":  "ADL",
+                        "alias":  "c06",
+                        "data_type":  5,
+                        "max_length":  null,
+                        "ordinal":  6
+                    },
+                    {
+                        "column_name":  "TAI",
+                        "alias":  "c07",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  7
+                    },
+                    {
+                        "column_name":  "วันเดือนปีเกิด",
+                        "alias":  "c08",
+                        "data_type":  7,
+                        "max_length":  null,
+                        "ordinal":  8
+                    },
+                    {
+                        "column_name":  "เพศ",
+                        "alias":  "c09",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  9
+                    },
+                    {
+                        "column_name":  "สถานะ",
+                        "alias":  "c10",
+                        "data_type":  11,
+                        "max_length":  2,
+                        "ordinal":  10
+                    },
+                    {
+                        "column_name":  "วันที่เสียชีวิต",
+                        "alias":  "c11",
+                        "data_type":  7,
+                        "max_length":  null,
+                        "ordinal":  11
+                    },
+                    {
+                        "column_name":  "ที่อยู่",
+                        "alias":  "c12",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  12
+                    },
+                    {
+                        "column_name":  "หมู่",
+                        "alias":  "c13",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  13
+                    },
+                    {
+                        "column_name":  "ถนน",
+                        "alias":  "c14",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  14
+                    },
+                    {
+                        "column_name":  "ตำบล",
+                        "alias":  "c15",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  15
+                    },
+                    {
+                        "column_name":  "อำเภอ",
+                        "alias":  "c16",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  16
+                    },
+                    {
+                        "column_name":  "จังหวัด",
+                        "alias":  "c17",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  17
+                    },
+                    {
+                        "column_name":  "รหัสหน่วย",
+                        "alias":  "c18",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  18
+                    },
+                    {
+                        "column_name":  "รหัสcm",
+                        "alias":  "c19",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  19
+                    },
+                    {
+                        "column_name":  "รหัสcg",
+                        "alias":  "c20",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  20
+                    },
+                    {
+                        "column_name":  "วันเริ่ม cp",
+                        "alias":  "c21",
+                        "data_type":  7,
+                        "max_length":  null,
+                        "ordinal":  21
+                    },
+                    {
+                        "column_name":  "วันสิ้นสุด cp",
+                        "alias":  "c22",
+                        "data_type":  7,
+                        "max_length":  null,
+                        "ordinal":  22
+                    },
+                    {
+                        "column_name":  "G",
+                        "alias":  "c23",
+                        "data_type":  3,
+                        "max_length":  null,
+                        "ordinal":  23
+                    }
+                ]
+}

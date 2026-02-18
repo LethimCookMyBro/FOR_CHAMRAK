@@ -1,0 +1,184 @@
+[
+    {
+        "table_name":  "cg",
+        "table_alias":  "t01_cg",
+        "column_name":  "รหัสcg",
+        "pk_name":  "PrimaryKey",
+        "ordinal":  1
+    },
+    {
+        "table_name":  "cm",
+        "table_alias":  "t02_cm",
+        "column_name":  "รหัสcm",
+        "pk_name":  "PrimaryKey",
+        "ordinal":  1
+    },
+    {
+        "table_name":  "cmMoney",
+        "table_alias":  "t03_cmmoney",
+        "column_name":  "id",
+        "pk_name":  "PrimaryKey",
+        "ordinal":  1
+    },
+    {
+        "table_name":  "DataJ",
+        "table_alias":  "t04_dataj",
+        "column_name":  "ID",
+        "pk_name":  "ID",
+        "ordinal":  1
+    },
+    {
+        "table_name":  "disproductB",
+        "table_alias":  "t05_disproductb",
+        "column_name":  "outno",
+        "pk_name":  "PrimaryKey",
+        "ordinal":  1
+    },
+    {
+        "table_name":  "disproductB4",
+        "table_alias":  "t06_disproductb4",
+        "column_name":  "outno",
+        "pk_name":  "PrimaryKey",
+        "ordinal":  1
+    },
+    {
+        "table_name":  "GRO",
+        "table_alias":  "t07_gro",
+        "column_name":  "ID",
+        "pk_name":  "PrimaryKey",
+        "ordinal":  1
+    },
+    {
+        "table_name":  "inlist",
+        "table_alias":  "t08_inlist",
+        "column_name":  "inD",
+        "pk_name":  "PrimaryKey",
+        "ordinal":  1
+    },
+    {
+        "table_name":  "intproduct",
+        "table_alias":  "t09_intproduct",
+        "column_name":  "inno",
+        "pk_name":  "PrimaryKey",
+        "ordinal":  1
+    },
+    {
+        "table_name":  "intproductB",
+        "table_alias":  "t10_intproductb",
+        "column_name":  "inno",
+        "pk_name":  "PrimaryKey",
+        "ordinal":  1
+    },
+    {
+        "table_name":  "intype",
+        "table_alias":  "t11_intype",
+        "column_name":  "intypeID",
+        "pk_name":  "PrimaryKey",
+        "ordinal":  1
+    },
+    {
+        "table_name":  "outlist",
+        "table_alias":  "t12_outlist",
+        "column_name":  "oD",
+        "pk_name":  "PrimaryKey",
+        "ordinal":  1
+    },
+    {
+        "table_name":  "outproduct",
+        "table_alias":  "t13_outproduct",
+        "column_name":  "outno",
+        "pk_name":  "PrimaryKey",
+        "ordinal":  1
+    },
+    {
+        "table_name":  "outproductB",
+        "table_alias":  "t14_outproductb",
+        "column_name":  "outno",
+        "pk_name":  "PrimaryKey",
+        "ordinal":  1
+    },
+    {
+        "table_name":  "outtype",
+        "table_alias":  "t15_outtype",
+        "column_name":  "outtypeID",
+        "pk_name":  "PrimaryKey",
+        "ordinal":  1
+    },
+    {
+        "table_name":  "product",
+        "table_alias":  "t16_product",
+        "column_name":  "productID",
+        "pk_name":  "PrimaryKey",
+        "ordinal":  1
+    },
+    {
+        "table_name":  "productB",
+        "table_alias":  "t17_productb",
+        "column_name":  "productID",
+        "pk_name":  "PrimaryKey",
+        "ordinal":  1
+    },
+    {
+        "table_name":  "TAI",
+        "table_alias":  "t18_tai",
+        "column_name":  "tai",
+        "pk_name":  "PrimaryKey",
+        "ordinal":  1
+    },
+    {
+        "table_name":  "tb_amphur",
+        "table_alias":  "t19_tb_amphur",
+        "column_name":  "amphur_id",
+        "pk_name":  "amphur_id",
+        "ordinal":  1
+    },
+    {
+        "table_name":  "tb_district",
+        "table_alias":  "t20_tb_district",
+        "column_name":  "district_id",
+        "pk_name":  "PrimaryKey",
+        "ordinal":  1
+    },
+    {
+        "table_name":  "tb_province",
+        "table_alias":  "t21_tb_province",
+        "column_name":  "province_id",
+        "pk_name":  "PrimaryKey",
+        "ordinal":  1
+    },
+    {
+        "table_name":  "tbl_naneout",
+        "table_alias":  "t22_tbl_naneout",
+        "column_name":  "id",
+        "pk_name":  "PrimaryKey",
+        "ordinal":  1
+    },
+    {
+        "table_name":  "tbl_รายรับรายจ่าย",
+        "table_alias":  "t23_tbl_income_expense",
+        "column_name":  "ID",
+        "pk_name":  "PrimaryKey",
+        "ordinal":  1
+    },
+    {
+        "table_name":  "tbl_สถานะ",
+        "table_alias":  "t24_tbl_status",
+        "column_name":  "ID",
+        "pk_name":  "PrimaryKey",
+        "ordinal":  1
+    },
+    {
+        "table_name":  "เทศบาล",
+        "table_alias":  "t25_municipality",
+        "column_name":  "idt",
+        "pk_name":  "PrimaryKey",
+        "ordinal":  1
+    },
+    {
+        "table_name":  "หน่วย",
+        "table_alias":  "t26_unit",
+        "column_name":  "ID",
+        "pk_name":  "PrimaryKey",
+        "ordinal":  1
+    }
+]

@@ -1,0 +1,34 @@
+{
+    "table_name":  "cmMoney",
+    "table_alias":  "t03_cmmoney",
+    "columns":  [
+                    {
+                        "column_name":  "id",
+                        "alias":  "c01",
+                        "data_type":  3,
+                        "max_length":  null,
+                        "ordinal":  1
+                    },
+                    {
+                        "column_name":  "รหัสcm",
+                        "alias":  "c02",
+                        "data_type":  130,
+                        "max_length":  255,
+                        "ordinal":  2
+                    },
+                    {
+                        "column_name":  "date",
+                        "alias":  "c03",
+                        "data_type":  7,
+                        "max_length":  null,
+                        "ordinal":  3
+                    },
+                    {
+                        "column_name":  "money",
+                        "alias":  "c04",
+                        "data_type":  3,
+                        "max_length":  null,
+                        "ordinal":  4
+                    }
+                ]
+}
