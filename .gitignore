@@ -1,3 +1,6 @@
 node_modules/
+.env
 runtime_data/overrides/*.json
+runtime_data/activity_logs.jsonl
+runtime_data/trash_items.json
 npm-debug.log*

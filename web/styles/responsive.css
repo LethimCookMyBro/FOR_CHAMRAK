@@ -48,6 +48,11 @@
     text-align: center;
   }
 
+  .auth-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
   .stats-grid {
     grid-template-columns: 1fr;
   }

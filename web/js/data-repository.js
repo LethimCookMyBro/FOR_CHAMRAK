@@ -5,45 +5,157 @@ class DataRepository {
     this.apiBase = apiBase;
     this.dataRoot = dataRoot;
     this.storagePrefix = storagePrefix;
-    this.sourceCache = new Map();
     this.workingCache = new Map();
+    this.tableVersions = new Map();
     this.mode = "unknown";
   }
 
-  async getTable(alias) {
-    if (this.workingCache.has(alias)) return this.workingCache.get(alias);
+  redirectToLogin() {
+    if (typeof window === "undefined") return;
+    const currentPath = String(window.location.pathname || "");
+    if (currentPath === "/login.html") return;
+    window.location.replace("/login.html");
+  }
 
-    let rows;
-    try {
-      rows = await this.fetchRemoteTable(alias);
-      this.mode = "backend";
-    } catch (error) {
-      console.warn("โหลดจาก backend ไม่สำเร็จ ใช้ fallback", alias, error);
-      rows = await this.getFallbackTable(alias);
-      this.mode = "local";
+  sanitizeAlias(alias) {
+    const text = String(alias || "").trim();
+    if (!/^[A-Za-z0-9_]+$/.test(text)) {
+      throw new Error("alias ไม่ถูกต้อง");
+    }
+    return text;
+  }
+
+  buildRequestError(response, payload) {
+    const message = String(payload?.error || `request error ${response.status}`);
+    const error = new Error(message);
+    error.status = response.status;
+
+    if (payload && typeof payload === "object") {
+      if (payload.code) error.code = String(payload.code);
+      if (payload.currentVersion) error.currentVersion = String(payload.currentVersion);
+      if (payload.retryAfter) error.retryAfter = Number(payload.retryAfter) || 0;
     }
 
-    const attached = this.attachRowIds(alias, rows);
-    this.workingCache.set(alias, attached);
-    return attached;
+    if (response.status === 401) {
+      error.authRequired = true;
+    }
+
+    if (response.status === 409 && error.code === "VERSION_CONFLICT") {
+      error.versionConflict = true;
+    }
+    if (response.status === 503 && String(error.code || "").startsWith("AI_QUEUE_")) {
+      error.aiBusy = true;
+    }
+
+    return error;
+  }
+
+  async requestJson(url, options = {}) {
+    const response = await fetch(url, { cache: "no-store", ...options });
+    let payload = null;
+    try {
+      payload = await response.json();
+    } catch {
+      payload = null;
+    }
+
+    if (!response.ok) {
+      throw this.buildRequestError(response, payload);
+    }
+
+    return payload;
+  }
+
+  async getTable(alias) {
+    alias = this.sanitizeAlias(alias);
+    if (this.workingCache.has(alias)) return this.workingCache.get(alias);
+
+    try {
+      const remote = await this.fetchRemoteTable(alias);
+      this.mode = "backend";
+
+      if (remote.version) this.tableVersions.set(alias, remote.version);
+      else this.tableVersions.delete(alias);
+
+      const attached = this.attachRowIds(alias, remote.rows);
+      this.workingCache.set(alias, attached);
+      return attached;
+    } catch (error) {
+      if (error?.authRequired) {
+        this.redirectToLogin();
+      }
+      throw error;
+    }
   }
 
   async saveTable(alias, rows) {
+    alias = this.sanitizeAlias(alias);
     const cleanRows = this.normalizeRows(rows).map((row) => this.stripInternalKeys(row));
+    const ifVersion = String(this.tableVersions.get(alias) || "");
 
     try {
-      await this.saveRemoteTable(alias, cleanRows);
+      const payload = await this.saveRemoteTable(alias, cleanRows, ifVersion);
       this.mode = "backend";
-      localStorage.removeItem(`${this.storagePrefix}${alias}`);
+
+      const nextRows = Array.isArray(payload?.data) ? payload.data : cleanRows;
+      const nextVersion = String(payload?.version || "");
+      if (nextVersion) this.tableVersions.set(alias, nextVersion);
+      else this.tableVersions.delete(alias);
+
+      const attached = this.attachRowIds(alias, nextRows);
+      this.workingCache.set(alias, attached);
+      return attached;
     } catch (error) {
-      console.warn("บันทึก backend ไม่สำเร็จ ใช้ fallback localStorage", alias, error);
-      this.mode = "local";
-      localStorage.setItem(`${this.storagePrefix}${alias}`, JSON.stringify(cleanRows));
+      if (error?.authRequired) {
+        this.redirectToLogin();
+        throw error;
+      }
+
+      if (error?.versionConflict) {
+        this.workingCache.delete(alias);
+        if (error.currentVersion) this.tableVersions.set(alias, String(error.currentVersion));
+      }
+
+      throw error;
+    }
+  }
+
+  async deleteRows(alias, rowIds) {
+    alias = this.sanitizeAlias(alias);
+    const ids = Array.isArray(rowIds) ? rowIds.map((item) => String(item || "")).filter(Boolean) : [];
+    if (!ids.length) {
+      throw new Error("rowIds ต้องมีอย่างน้อย 1 รายการ");
     }
 
-    const attached = this.attachRowIds(alias, cleanRows);
-    this.workingCache.set(alias, attached);
-    return attached;
+    const ifVersion = String(this.tableVersions.get(alias) || "");
+
+    try {
+      const payload = await this.requestJson(`${this.apiBase}/tables/${encodeURIComponent(alias)}/delete`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rowIds: ids, ifVersion })
+      });
+      this.mode = "backend";
+      this.workingCache.delete(alias);
+
+      const nextVersion = String(payload?.version || "");
+      if (nextVersion) this.tableVersions.set(alias, nextVersion);
+      else this.tableVersions.delete(alias);
+
+      return payload;
+    } catch (error) {
+      if (error?.authRequired) {
+        this.redirectToLogin();
+        throw error;
+      }
+
+      if (error?.versionConflict) {
+        this.workingCache.delete(alias);
+        if (error.currentVersion) this.tableVersions.set(alias, String(error.currentVersion));
+      }
+
+      throw error;
+    }
   }
 
   async cloneTable(alias) {
@@ -51,24 +163,138 @@ class DataRepository {
     return rows.map((row) => ({ ...row }));
   }
 
+  clearTableCache(alias, options = {}) {
+    const includeVersion = options.includeVersion !== false;
+    if (!alias) {
+      this.workingCache.clear();
+      if (includeVersion) this.tableVersions.clear();
+      return;
+    }
+
+    const key = String(alias);
+    this.workingCache.delete(key);
+    if (includeVersion) this.tableVersions.delete(key);
+  }
+
   async getStorageInfo() {
     try {
-      const response = await fetch(`${this.apiBase}/storage`, { cache: "no-store" });
-      if (!response.ok) throw new Error("status not ok");
-      const payload = await response.json();
+      const payload = await this.requestJson(`${this.apiBase}/storage`);
       return {
         mode: "backend",
         storage: payload
       };
-    } catch {
+    } catch (error) {
+      if (error?.authRequired) {
+        this.redirectToLogin();
+        throw error;
+      }
       return {
         mode: "local",
         storage: {
-          source: "chamrak_export/data/*.json",
-          edits: "localStorage (key prefix: chamrak_edit_)"
+          source: "backend unavailable",
+          edits: "ไม่สามารถเชื่อมต่อ backend ได้"
         }
       };
     }
+  }
+
+  async askAi(message, history = []) {
+    const text = String(message || "").trim();
+    if (!text) throw new Error("กรุณากรอกข้อความ");
+
+    const safeHistory = (Array.isArray(history) ? history : [])
+      .slice(-10)
+      .map((item) => ({
+        role: String(item?.role || "").toLowerCase() === "assistant" ? "assistant" : "user",
+        text: String(item?.text || "").slice(0, 800)
+      }));
+
+    const payload = await this.requestJson(`${this.apiBase}/ai/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: text, history: safeHistory })
+    });
+
+    return payload;
+  }
+
+  async runSecurityScan() {
+    const payload = await this.requestJson(`${this.apiBase}/security/scan`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ simulate: true })
+    });
+    return payload;
+  }
+
+  async listActivityLogs(filters = {}) {
+    const params = new URLSearchParams();
+    if (filters.from) params.set("from", String(filters.from));
+    if (filters.to) params.set("to", String(filters.to));
+    if (filters.user) params.set("user", String(filters.user));
+    if (filters.type) params.set("type", String(filters.type));
+    if (filters.action) params.set("action", String(filters.action));
+    if (filters.page) params.set("page", String(filters.page));
+    if (filters.pageSize) params.set("pageSize", String(filters.pageSize));
+
+    const query = params.toString();
+    return this.requestJson(`${this.apiBase}/logs${query ? `?${query}` : ""}`);
+  }
+
+  async exportActivityLogs(filters = {}) {
+    const params = new URLSearchParams();
+    if (filters.from) params.set("from", String(filters.from));
+    if (filters.to) params.set("to", String(filters.to));
+    if (filters.user) params.set("user", String(filters.user));
+    if (filters.type) params.set("type", String(filters.type));
+    if (filters.action) params.set("action", String(filters.action));
+
+    const query = params.toString();
+    const response = await fetch(`${this.apiBase}/logs/export${query ? `?${query}` : ""}`, { cache: "no-store" });
+    if (response.status === 401) {
+      const error = new Error("ต้องเข้าสู่ระบบใหม่");
+      error.authRequired = true;
+      throw error;
+    }
+    if (!response.ok) {
+      throw new Error(`export logs failed ${response.status}`);
+    }
+    return response.text();
+  }
+
+  async listTrash(options = {}) {
+    const params = new URLSearchParams();
+    if (options.alias) params.set("alias", String(options.alias));
+    if (options.includeRestored) params.set("includeRestored", "1");
+
+    const query = params.toString();
+    return this.requestJson(`${this.apiBase}/trash${query ? `?${query}` : ""}`);
+  }
+
+  async restoreTrash(trashIds) {
+    const ids = Array.isArray(trashIds) ? trashIds.map((item) => String(item || "")).filter(Boolean) : [];
+    if (!ids.length) throw new Error("กรุณาเลือกข้อมูลที่ต้องการกู้คืน");
+
+    const payload = await this.requestJson(`${this.apiBase}/trash/restore`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ trashIds: ids })
+    });
+
+    const restoredAliases = Array.isArray(payload?.restoredAliases) ? payload.restoredAliases : [];
+    for (const alias of restoredAliases) {
+      this.clearTableCache(alias);
+    }
+
+    return payload;
+  }
+
+  async purgeExpiredTrash() {
+    return this.requestJson(`${this.apiBase}/trash/purge-expired`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({})
+    });
   }
 
   createRowId(alias) {
@@ -108,59 +334,30 @@ class DataRepository {
     return clean;
   }
 
-  async getFallbackTable(alias) {
-    const saved = localStorage.getItem(`${this.storagePrefix}${alias}`);
-    if (saved) {
-      try {
-        return this.normalizeRows(JSON.parse(saved));
-      } catch (error) {
-        console.warn("อ่าน localStorage ไม่สำเร็จ", alias, error);
-      }
-    }
-    return (await this.getSourceTable(alias)).map((row) => ({ ...row }));
-  }
-
-  async getSourceTable(alias) {
-    if (this.sourceCache.has(alias)) return this.sourceCache.get(alias);
-    const rows = this.normalizeRows(await this.getJson(`${this.dataRoot}/data/${alias}.json`));
-    this.sourceCache.set(alias, rows);
-    return rows;
-  }
-
   async fetchRemoteTable(alias) {
-    const response = await fetch(`${this.apiBase}/tables/${encodeURIComponent(alias)}`, { cache: "no-store" });
-    if (!response.ok) {
-      throw new Error(`remote table error ${response.status}`);
+    const payload = await this.requestJson(`${this.apiBase}/tables/${encodeURIComponent(alias)}`);
+    if (Array.isArray(payload)) {
+      return {
+        rows: this.normalizeRows(payload),
+        version: ""
+      };
     }
-    const payload = await response.json();
-    if (Array.isArray(payload)) return this.normalizeRows(payload);
-    return this.normalizeRows(payload?.rows);
+
+    return {
+      rows: this.normalizeRows(payload?.rows),
+      version: String(payload?.version || "")
+    };
   }
 
-  async saveRemoteTable(alias, rows) {
-    const response = await fetch(`${this.apiBase}/tables/${encodeURIComponent(alias)}`, {
+  async saveRemoteTable(alias, rows, ifVersion = "") {
+    const body = { rows };
+    if (ifVersion) body.ifVersion = ifVersion;
+
+    return this.requestJson(`${this.apiBase}/tables/${encodeURIComponent(alias)}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ rows })
+      body: JSON.stringify(body)
     });
-    if (!response.ok) {
-      let detail = "";
-      try {
-        const payload = await response.json();
-        detail = payload?.error || "";
-      } catch {
-        detail = "";
-      }
-      throw new Error(`remote save error ${response.status} ${detail}`.trim());
-    }
-  }
-
-  async getJson(path) {
-    const response = await fetch(path, { cache: "no-store" });
-    if (!response.ok) {
-      throw new Error(`โหลดไฟล์ไม่สำเร็จ: ${path} (${response.status})`);
-    }
-    return response.json();
   }
 }
 

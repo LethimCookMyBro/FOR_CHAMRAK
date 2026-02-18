@@ -1,13 +1,19 @@
 import { API_BASE, DATA_ROOT, HIGH_TAI, STORAGE_PREFIX } from "./config.js";
-import { Format, NameUtils, Validate } from "./utils.js";
+import { Format, NameUtils } from "./utils.js";
 import { DataRepository } from "./data-repository.js";
 import { SecurityManager } from "./security-manager.js";
 import { DomainService } from "./domain-service.js";
+import { AppHelpers } from "./app-helpers.js";
+import { EntityDialogService } from "./entity-dialog-service.js";
+import { SecurityToolkit } from "./security.js";
+import { AiAssistantPage } from "./ai-assistant-page.js";
+import { ActivityLogPage } from "./activity-log-page.js";
 
 class LtcApp {
   constructor() {
     this.repo = new DataRepository(API_BASE, DATA_ROOT, STORAGE_PREFIX);
     this.domain = new DomainService(this.repo);
+    this.helpers = new AppHelpers();
 
     this.state = {
       page: "overview",
@@ -35,6 +41,8 @@ class LtcApp {
 
     this.el = {
       statusText: document.getElementById("statusText"),
+      authUserText: document.getElementById("authUserText"),
+      logoutBtn: document.getElementById("logoutBtn"),
       securityToggleBtn: document.getElementById("securityToggleBtn"),
       navButtons: [...document.querySelectorAll(".nav-btn")],
       pages: [...document.querySelectorAll(".page")],
@@ -75,7 +83,6 @@ class LtcApp {
       cmSelectAll: document.getElementById("cmSelectAll"),
 
       suppliesBody: document.getElementById("suppliesBody"),
-      supplyTxnBody: document.getElementById("supplyTxnBody"),
       supplyAddProductBtn: document.getElementById("supplyAddProductBtn"),
       supplyEditProductBtn: document.getElementById("supplyEditProductBtn"),
       supplyDeleteProductBtn: document.getElementById("supplyDeleteProductBtn"),
@@ -104,6 +111,19 @@ class LtcApp {
       unitDeleteBatchBtn: document.getElementById("unitDeleteBatchBtn"),
       unitsSelectAll: document.getElementById("unitsSelectAll"),
 
+      aiChatBody: document.getElementById("aiChatBody"),
+      aiInput: document.getElementById("aiInput"),
+      aiSendBtn: document.getElementById("aiSendBtn"),
+      aiClearBtn: document.getElementById("aiClearBtn"),
+      aiTyping: document.getElementById("aiTyping"),
+      aiSuggestionWrap: document.getElementById("aiSuggestionWrap"),
+      aiQuickButtons: [...document.querySelectorAll(".ai-quick-btn")],
+
+      trashSummary: document.getElementById("trashSummary"),
+      trashBody: document.getElementById("trashBody"),
+      trashRestoreBtn: document.getElementById("trashRestoreBtn"),
+      trashPurgeBtn: document.getElementById("trashPurgeBtn"),
+
       entityDialog: document.getElementById("entityDialog"),
       entityForm: document.getElementById("entityForm"),
       entityDialogTitle: document.getElementById("entityDialogTitle"),
@@ -113,6 +133,19 @@ class LtcApp {
       entitySubmitBtn: document.getElementById("entitySubmitBtn")
     };
 
+    this.dialogs = new EntityDialogService(this.el, this.repo, this.domain, this.helpers);
+    this.securityToolkit = new SecurityToolkit(this.repo);
+    this.aiPage = new AiAssistantPage({
+      repo: this.repo,
+      security: this.securityToolkit,
+      elements: this.el
+    });
+    this.activityPage = new ActivityLogPage({
+      repo: this.repo,
+      elements: this.el,
+      onDataRestored: (aliases) => this.handleTrashRestored(aliases)
+    });
+
     this.security = new SecurityManager(
       this.el.securityToggleBtn,
       () => {
@@ -121,7 +154,7 @@ class LtcApp {
         });
       },
       {
-        requestPin: (config) => this.requestPinDialog(config),
+        requestPin: (config) => this.dialogs.requestPinDialog(config),
         notify: (message) => alert(message)
       }
     );
@@ -131,7 +164,10 @@ class LtcApp {
     try {
       this.bindEvents();
       this.setPage(this.state.page);
+      this.aiPage.init();
+      this.activityPage.init();
       await this.security.init();
+      await this.loadCurrentUser();
       this.setStatus("กำลังโหลดข้อมูล...");
       await this.renderAll();
       await this.refreshStorageStatus();
@@ -151,6 +187,8 @@ class LtcApp {
       await this.security.toggle();
       await this.refreshStorageStatus();
     });
+
+    this.el.logoutBtn?.addEventListener("click", () => this.handleLogout().catch(this.handleError));
 
     this.el.dependentsSearch.addEventListener("input", (event) => {
       this.state.queries.dependents = Format.toText(event.target.value).toLowerCase();
@@ -296,6 +334,32 @@ class LtcApp {
     this.el.statusText.textContent = text;
   }
 
+  async loadCurrentUser() {
+    try {
+      const response = await fetch("/auth/me", { cache: "no-store" });
+      if (response.status === 401) {
+        window.location.replace("/login.html");
+        return;
+      }
+      if (!response.ok) return;
+      const payload = await response.json();
+      const username = payload?.user?.username || "-";
+      if (this.el.authUserText) {
+        this.el.authUserText.textContent = `ผู้ใช้: ${username}`;
+      }
+    } catch {
+      if (this.el.authUserText) {
+        this.el.authUserText.textContent = "ผู้ใช้: -";
+      }
+    }
+  }
+
+  async handleLogout() {
+    if (!confirm("ต้องการออกจากระบบใช่หรือไม่?")) return;
+    await fetch("/auth/logout", { method: "POST" }).catch(() => {});
+    window.location.replace("/login.html");
+  }
+
   async refreshStorageStatus() {
     const storageInfo = await this.repo.getStorageInfo();
     const lockState = this.security.isUnlocked() ? "แก้ไขได้" : "โหมดอ่านอย่างเดียว";
@@ -311,6 +375,13 @@ class LtcApp {
     for (const section of this.el.pages) {
       section.classList.toggle("show", section.id === `page-${page}`);
     }
+
+    if (page === "logs") {
+      this.renderActivity().catch(this.handleError);
+    }
+    if (page === "ai") {
+      this.el.aiInput?.focus();
+    }
   }
 
   async renderAll() {
@@ -321,8 +392,13 @@ class LtcApp {
       this.renderCm(),
       this.renderSupplies(),
       this.renderFinance(),
-      this.renderUnits()
+      this.renderUnits(),
+      this.renderActivity()
     ]);
+  }
+
+  async renderActivity() {
+    await this.activityPage.refreshAll();
   }
 
   async renderOverview() {
@@ -335,9 +411,9 @@ class LtcApp {
       this.domain.computeInventoryRows()
     ]);
 
-    const taiCounts = this.countBy(dependents, (row) => String(row.TAI || "ไม่ระบุ").toUpperCase());
-    const maleCount = dependents.filter((row) => this.normalizeGender(row["เพศ"]) === "ชาย").length;
-    const femaleCount = dependents.filter((row) => this.normalizeGender(row["เพศ"]) === "หญิง").length;
+    const taiCounts = this.helpers.countBy(dependents, (row) => String(row.TAI || "ไม่ระบุ").toUpperCase());
+    const maleCount = dependents.filter((row) => this.helpers.normalizeGender(row["เพศ"]) === "ชาย").length;
+    const femaleCount = dependents.filter((row) => this.helpers.normalizeGender(row["เพศ"]) === "หญิง").length;
     const highCount = dependents.filter((row) => HIGH_TAI.has(String(row.TAI || "").toUpperCase())).length;
 
     const financeSummary = this.domain.summarizeFinance(financeRows);
@@ -406,7 +482,7 @@ class LtcApp {
       rows.map((row) => row.__rowid)
     );
 
-    const filtered = this.filterRows(rows, this.state.queries.dependents, [
+    const filtered = this.helpers.filterRows(rows, this.state.queries.dependents, [
       "เลขประชาชน",
       "นาม",
       "ชื่อ",
@@ -421,8 +497,8 @@ class LtcApp {
     this.el.dependentsBody.innerHTML = filtered.length
       ? filtered
           .map((row, index) => {
-            const fullName = this.fullNameFromDependent(row);
-            const gender = this.normalizeGender(row["เพศ"]);
+            const fullName = this.helpers.fullNameFromDependent(row);
+            const gender = this.helpers.normalizeGender(row["เพศ"]);
             const genderTag = gender === "หญิง" ? "tag-female" : "tag-male";
             const tai = String(row.TAI || "ไม่ระบุ").toUpperCase();
             const taiTag = `tag-${tai}`;
@@ -462,7 +538,7 @@ class LtcApp {
       rows.map((row) => row.__rowid)
     );
 
-    const filtered = this.filterRows(rows, this.state.queries.cg, ["รหัสcg", "ชื่อสกุล", "โทร", "รหัสcm", "ตำบล", "อำเภอ"]);
+    const filtered = this.helpers.filterRows(rows, this.state.queries.cg, ["รหัสcg", "ชื่อสกุล", "โทร", "รหัสcm", "ตำบล", "อำเภอ"]);
 
     this.el.cgBody.innerHTML = filtered.length
       ? filtered
@@ -477,7 +553,7 @@ class LtcApp {
                 <td><span class="unit-badge">${Format.escapeHtml(row["รหัสcg"] || "-")}</span></td>
                 <td>${Format.escapeHtml(fullName)}</td>
                 <td>${Format.escapeHtml(row["โทร"] || "-")}</td>
-                <td>${Format.escapeHtml(this.buildAddress(row))}</td>
+                <td>${Format.escapeHtml(this.helpers.buildAddress(row))}</td>
                 <td>${Format.escapeHtml(row["ตำบล"] || "-")}</td>
                 <td>${Format.escapeHtml(row["อำเภอ"] || "-")}</td>
                 <td>${Format.escapeHtml(row["รหัสcm"] || "-")}</td>
@@ -507,8 +583,8 @@ class LtcApp {
       cmRows.map((row) => row.__rowid)
     );
 
-    const cgByCm = this.countBy(cgRows, (row) => String(row["รหัสcm"] || ""));
-    const depByCm = this.countBy(dependentRows, (row) => String(row["รหัสcm"] || ""));
+    const cgByCm = this.helpers.countBy(cgRows, (row) => String(row["รหัสcm"] || ""));
+    const depByCm = this.helpers.countBy(dependentRows, (row) => String(row["รหัสcm"] || ""));
 
     this.el.cmBody.innerHTML = cmRows.length
       ? cmRows
@@ -566,10 +642,7 @@ class LtcApp {
   }
 
   async renderSupplies() {
-    const [inventoryRows, movements] = await Promise.all([
-      this.domain.computeInventoryRows(),
-      this.domain.getSupplyMovements(30)
-    ]);
+    const inventoryRows = await this.domain.computeInventoryRows();
 
     if (!inventoryRows.some((row) => row.rowId === this.state.selected.supplies)) {
       this.state.selected.supplies = null;
@@ -609,24 +682,6 @@ class LtcApp {
 
     this.paintSelection(this.el.suppliesBody, this.state.selected.supplies);
     this.syncSelectAllCheckbox(this.el.suppliesBody, "supplies", this.el.suppliesSelectAll);
-
-    this.el.supplyTxnBody.innerHTML = movements.length
-      ? movements
-          .map((row) => {
-            const typeClass = row.type === "รับเข้า" ? "tag-income" : "tag-expense";
-            return `
-              <tr>
-                <td>${Format.escapeHtml(Format.formatDateCompact(row.date))}</td>
-                <td><span class="tag ${typeClass}">${Format.escapeHtml(row.type)}</span></td>
-                <td>${Format.escapeHtml(row.productID)}</td>
-                <td>${Format.escapeHtml(row.productName)}</td>
-                <td>${Format.number(row.quantity)}</td>
-                <td>${Format.escapeHtml(row.reference)}</td>
-              </tr>
-            `;
-          })
-          .join("")
-      : `<tr><td colspan="6" class="empty-row">ยังไม่มีการเคลื่อนไหว</td></tr>`;
   }
 
   async renderFinance() {
@@ -668,8 +723,8 @@ class LtcApp {
       .map((item) => `<div class="info-row ${item.strong ? "strong" : ""}"><span>${item.label}</span><strong>${Format.currency(item.value)}</strong></div>`)
       .join("");
 
-    const highestIncomeCategory = this.maxIndex(summary.income) + 1;
-    const highestExpenseCategory = this.maxIndex(summary.expense) + 1;
+    const highestIncomeCategory = this.helpers.maxIndex(summary.income) + 1;
+    const highestExpenseCategory = this.helpers.maxIndex(summary.expense) + 1;
     const expenseRatio = summary.totalIncome > 0 ? (summary.totalExpense / summary.totalIncome) * 100 : 0;
     const savingsRate = summary.totalIncome > 0 ? (summary.net / summary.totalIncome) * 100 : 0;
 
@@ -734,8 +789,8 @@ class LtcApp {
       units.map((row) => row.__rowid)
     );
 
-    const dependentByUnit = this.countBy(dependentRows, (row) => String(row["รหัสหน่วย"] || ""));
-    const cmByUnit = this.countBy(cmRows, (row) => String(row["รหัสหน่วย"] || ""));
+    const dependentByUnit = this.helpers.countBy(dependentRows, (row) => String(row["รหัสหน่วย"] || ""));
+    const cmByUnit = this.helpers.countBy(cmRows, (row) => String(row["รหัสหน่วย"] || ""));
 
     const cmCodeToUnit = {};
     for (const row of cmRows) {
@@ -778,7 +833,7 @@ class LtcApp {
   async handleAddDependent() {
     await this.runProtected("เพิ่มผู้รับบริการ", async () => {
       const rows = await this.repo.cloneTable("t04_dataj");
-      const form = await this.openDependentDialog("add");
+      const form = await this.dialogs.openDependentDialog("add");
       if (!form) return;
 
       const duplicated = rows.some((row) => String(row["เลขประชาชน"] || "") === form.citizenId);
@@ -829,7 +884,7 @@ class LtcApp {
       const index = rows.findIndex((row) => row.__rowid === selected.__rowid);
       if (index < 0) return;
 
-      const form = await this.openDependentDialog("edit", rows[index]);
+      const form = await this.dialogs.openDependentDialog("edit", rows[index]);
       if (!form) return;
 
       const duplicated = rows.some(
@@ -875,9 +930,7 @@ class LtcApp {
 
       if (!confirm("ยืนยันการลบผู้รับบริการที่เลือก?")) return;
 
-      const rows = await this.repo.cloneTable("t04_dataj");
-      const filtered = rows.filter((row) => row.__rowid !== selected.__rowid);
-      await this.repo.saveTable("t04_dataj", filtered);
+      await this.repo.deleteRows("t04_dataj", [selected.__rowid]);
       this.state.selected.dependents = null;
       this.getCheckedSet("dependents").delete(selected.__rowid);
     });
@@ -892,10 +945,8 @@ class LtcApp {
       }
       if (!confirm(`ยืนยันการลบผู้รับบริการ ${rowIds.length} รายการ?`)) return;
 
-      const rows = await this.repo.cloneTable("t04_dataj");
       const idSet = new Set(rowIds);
-      const filtered = rows.filter((row) => !idSet.has(row.__rowid));
-      await this.repo.saveTable("t04_dataj", filtered);
+      await this.repo.deleteRows("t04_dataj", rowIds);
       this.clearChecked("dependents");
       if (this.state.selected.dependents && idSet.has(this.state.selected.dependents)) {
         this.state.selected.dependents = null;
@@ -906,7 +957,7 @@ class LtcApp {
   async handleAddCg() {
     await this.runProtected("เพิ่ม CG", async () => {
       const rows = await this.repo.cloneTable("t01_cg");
-      const form = await this.openCgDialog("add");
+      const form = await this.dialogs.openCgDialog("add");
       if (!form) return;
 
       const generatedCode = form.cgCode || this.generateCgCode(form.cmCode, rows);
@@ -947,7 +998,7 @@ class LtcApp {
       if (index < 0) return;
 
       const oldCode = String(rows[index]["รหัสcg"] || "");
-      const form = await this.openCgDialog("edit", rows[index]);
+      const form = await this.dialogs.openCgDialog("edit", rows[index]);
       if (!form) return;
 
       const newCode = form.cgCode || oldCode;
@@ -1001,9 +1052,7 @@ class LtcApp {
 
       if (!confirm("ยืนยันการลบ CG ที่เลือก?")) return;
 
-      const rows = await this.repo.cloneTable("t01_cg");
-      const filtered = rows.filter((row) => row.__rowid !== selected.__rowid);
-      await this.repo.saveTable("t01_cg", filtered);
+      await this.repo.deleteRows("t01_cg", [selected.__rowid]);
       this.state.selected.cg = null;
       this.getCheckedSet("cg").delete(selected.__rowid);
     });
@@ -1032,8 +1081,7 @@ class LtcApp {
       if (!confirm(`ยืนยันการลบ CG ${selectedRows.length} รายการ?`)) return;
 
       const idSet = new Set(rowIds);
-      const filtered = rows.filter((row) => !idSet.has(row.__rowid));
-      await this.repo.saveTable("t01_cg", filtered);
+      await this.repo.deleteRows("t01_cg", rowIds);
       this.clearChecked("cg");
       if (this.state.selected.cg && idSet.has(this.state.selected.cg)) {
         this.state.selected.cg = null;
@@ -1044,7 +1092,7 @@ class LtcApp {
   async handleAddCm() {
     await this.runProtected("เพิ่ม CM", async () => {
       const rows = await this.repo.cloneTable("t02_cm");
-      const form = await this.openCmDialog("add");
+      const form = await this.dialogs.openCmDialog("add");
       if (!form) return;
 
       const generatedCode = form.cmCode || this.generateCmCode(form.unitCode, rows);
@@ -1085,7 +1133,7 @@ class LtcApp {
       if (index < 0) return;
 
       const oldCode = String(rows[index]["รหัสcm"] || "");
-      const form = await this.openCmDialog("edit", rows[index]);
+      const form = await this.dialogs.openCmDialog("edit", rows[index]);
       if (!form) return;
 
       const newCode = form.cmCode || oldCode;
@@ -1159,9 +1207,7 @@ class LtcApp {
 
       if (!confirm("ยืนยันการลบ CM ที่เลือก?")) return;
 
-      const rows = await this.repo.cloneTable("t02_cm");
-      const filtered = rows.filter((row) => row.__rowid !== selected.__rowid);
-      await this.repo.saveTable("t02_cm", filtered);
+      await this.repo.deleteRows("t02_cm", [selected.__rowid]);
       this.state.selected.cm = null;
       this.getCheckedSet("cm").delete(selected.__rowid);
     });
@@ -1193,8 +1239,7 @@ class LtcApp {
       if (!confirm(`ยืนยันการลบ CM ${selectedRows.length} รายการ?`)) return;
 
       const idSet = new Set(rowIds);
-      const filtered = rows.filter((row) => !idSet.has(row.__rowid));
-      await this.repo.saveTable("t02_cm", filtered);
+      await this.repo.deleteRows("t02_cm", rowIds);
       this.clearChecked("cm");
       if (this.state.selected.cm && idSet.has(this.state.selected.cm)) {
         this.state.selected.cm = null;
@@ -1205,7 +1250,7 @@ class LtcApp {
   async handleAddProduct() {
     await this.runProtected("เพิ่มวัสดุ", async () => {
       const rows = await this.repo.cloneTable("t16_product");
-      const form = await this.openProductDialog("add");
+      const form = await this.dialogs.openProductDialog("add");
       if (!form) return;
 
       const duplicated = rows.some((row) => String(row.productID || "") === form.productID);
@@ -1240,7 +1285,7 @@ class LtcApp {
       if (index < 0) return;
 
       const oldProductId = String(rows[index].productID || "");
-      const form = await this.openProductDialog("edit", rows[index]);
+      const form = await this.dialogs.openProductDialog("edit", rows[index]);
       if (!form) return;
 
       const duplicated = rows.some((row, rowIndex) => rowIndex !== index && String(row.productID || "") === form.productID);
@@ -1295,8 +1340,7 @@ class LtcApp {
       }
 
       const productId = String(selected.productID || "");
-      const [productRows, inRows, outRows] = await Promise.all([
-        this.repo.cloneTable("t16_product"),
+      const [inRows, outRows] = await Promise.all([
         this.repo.cloneTable("t09_intproduct"),
         this.repo.cloneTable("t13_outproduct")
       ]);
@@ -1313,14 +1357,13 @@ class LtcApp {
         return;
       }
 
-      const nextProducts = productRows.filter((row) => row.__rowid !== selected.__rowid);
-      const nextInRows = inRows.filter((row) => String(row.productID || "") !== productId);
-      const nextOutRows = outRows.filter((row) => String(row.productID || "") !== productId);
+      const inDeleteIds = inRows.filter((row) => String(row.productID || "") === productId).map((row) => row.__rowid);
+      const outDeleteIds = outRows.filter((row) => String(row.productID || "") === productId).map((row) => row.__rowid);
 
       await Promise.all([
-        this.repo.saveTable("t16_product", nextProducts),
-        this.repo.saveTable("t09_intproduct", nextInRows),
-        this.repo.saveTable("t13_outproduct", nextOutRows)
+        this.repo.deleteRows("t16_product", [selected.__rowid]),
+        inDeleteIds.length ? this.repo.deleteRows("t09_intproduct", inDeleteIds) : Promise.resolve(),
+        outDeleteIds.length ? this.repo.deleteRows("t13_outproduct", outDeleteIds) : Promise.resolve()
       ]);
 
       this.state.selected.supplies = null;
@@ -1359,14 +1402,17 @@ class LtcApp {
       }
 
       const rowIdSet = new Set(rowIds);
-      const nextProducts = productRows.filter((row) => !rowIdSet.has(row.__rowid));
-      const nextInRows = inRows.filter((row) => !productCodeSet.has(String(row.productID || "")));
-      const nextOutRows = outRows.filter((row) => !productCodeSet.has(String(row.productID || "")));
+      const inDeleteIds = inRows
+        .filter((row) => productCodeSet.has(String(row.productID || "")))
+        .map((row) => row.__rowid);
+      const outDeleteIds = outRows
+        .filter((row) => productCodeSet.has(String(row.productID || "")))
+        .map((row) => row.__rowid);
 
       await Promise.all([
-        this.repo.saveTable("t16_product", nextProducts),
-        this.repo.saveTable("t09_intproduct", nextInRows),
-        this.repo.saveTable("t13_outproduct", nextOutRows)
+        this.repo.deleteRows("t16_product", rowIds),
+        inDeleteIds.length ? this.repo.deleteRows("t09_intproduct", inDeleteIds) : Promise.resolve(),
+        outDeleteIds.length ? this.repo.deleteRows("t13_outproduct", outDeleteIds) : Promise.resolve()
       ]);
 
       this.clearChecked("supplies");
@@ -1384,7 +1430,7 @@ class LtcApp {
         return;
       }
 
-      const form = await this.openSupplyMovementDialog("in", selected);
+      const form = await this.dialogs.openSupplyMovementDialog("in", selected);
       if (!form) return;
 
       const rows = await this.repo.cloneTable("t09_intproduct");
@@ -1410,7 +1456,7 @@ class LtcApp {
         return;
       }
 
-      const form = await this.openSupplyMovementDialog("out", selected.product);
+      const form = await this.dialogs.openSupplyMovementDialog("out", selected.product);
       if (!form) return;
 
       const quantity = Number(form.quantity);
@@ -1439,7 +1485,7 @@ class LtcApp {
   async handleAddFinance() {
     await this.runProtected("เพิ่มรายการการเงิน", async () => {
       const rows = await this.repo.cloneTable("t23_tbl_income_expense");
-      const form = await this.openFinanceDialog("add");
+      const form = await this.dialogs.openFinanceDialog("add");
       if (!form) return;
 
       const newRow = this.domain.buildFinanceRow(form, {}, this.repo.getNextNumeric(rows, "ID"));
@@ -1468,7 +1514,7 @@ class LtcApp {
       const index = rows.findIndex((row) => row.__rowid === selected.__rowid);
       if (index < 0) return;
 
-      const form = await this.openFinanceDialog("edit", parsed);
+      const form = await this.dialogs.openFinanceDialog("edit", parsed);
       if (!form) return;
 
       const updated = this.domain.buildFinanceRow(form, rows[index], rows[index].ID || this.repo.getNextNumeric(rows, "ID"));
@@ -1489,9 +1535,7 @@ class LtcApp {
 
       if (!confirm("ยืนยันการลบรายการการเงินที่เลือก?")) return;
 
-      const rows = await this.repo.cloneTable("t23_tbl_income_expense");
-      const filtered = rows.filter((row) => row.__rowid !== selected.__rowid);
-      await this.repo.saveTable("t23_tbl_income_expense", filtered);
+      await this.repo.deleteRows("t23_tbl_income_expense", [selected.__rowid]);
       this.state.selected.finance = null;
       this.getCheckedSet("finance").delete(selected.__rowid);
     });
@@ -1506,10 +1550,8 @@ class LtcApp {
       }
       if (!confirm(`ยืนยันการลบรายการการเงิน ${rowIds.length} รายการ?`)) return;
 
-      const rows = await this.repo.cloneTable("t23_tbl_income_expense");
       const idSet = new Set(rowIds);
-      const filtered = rows.filter((row) => !idSet.has(row.__rowid));
-      await this.repo.saveTable("t23_tbl_income_expense", filtered);
+      await this.repo.deleteRows("t23_tbl_income_expense", rowIds);
       this.clearChecked("finance");
       if (this.state.selected.finance && idSet.has(this.state.selected.finance)) {
         this.state.selected.finance = null;
@@ -1520,7 +1562,7 @@ class LtcApp {
   async handleAddUnit() {
     await this.runProtected("เพิ่มหน่วยงาน", async () => {
       const rows = await this.repo.cloneTable("t26_unit");
-      const form = await this.openUnitDialog("add");
+      const form = await this.dialogs.openUnitDialog("add");
       if (!form) return;
 
       const duplicated = rows.some((row) => String(row["รหัสหน่วย"] || "") === form.unitCode);
@@ -1560,7 +1602,7 @@ class LtcApp {
       if (index < 0) return;
 
       const oldCode = String(rows[index]["รหัสหน่วย"] || "");
-      const form = await this.openUnitDialog("edit", rows[index]);
+      const form = await this.dialogs.openUnitDialog("edit", rows[index]);
       if (!form) return;
 
       const newCode = form.unitCode;
@@ -1634,9 +1676,7 @@ class LtcApp {
 
       if (!confirm("ยืนยันการลบหน่วยงานที่เลือก?")) return;
 
-      const rows = await this.repo.cloneTable("t26_unit");
-      const filtered = rows.filter((row) => row.__rowid !== selected.__rowid);
-      await this.repo.saveTable("t26_unit", filtered);
+      await this.repo.deleteRows("t26_unit", [selected.__rowid]);
       this.state.selected.units = null;
       this.getCheckedSet("units").delete(selected.__rowid);
     });
@@ -1668,8 +1708,7 @@ class LtcApp {
       if (!confirm(`ยืนยันการลบหน่วยงาน ${selectedUnits.length} รายการ?`)) return;
 
       const idSet = new Set(rowIds);
-      const filtered = rows.filter((row) => !idSet.has(row.__rowid));
-      await this.repo.saveTable("t26_unit", filtered);
+      await this.repo.deleteRows("t26_unit", rowIds);
       this.clearChecked("units");
       if (this.state.selected.units && idSet.has(this.state.selected.units)) {
         this.state.selected.units = null;
@@ -1682,6 +1721,16 @@ class LtcApp {
     if (!unlocked) return;
 
     await handler();
+    await this.renderAll();
+    await this.refreshStorageStatus();
+  }
+
+  async handleTrashRestored(aliases) {
+    const uniqueAliases = Array.isArray(aliases) ? [...new Set(aliases.map((item) => String(item || "").trim()).filter(Boolean))] : [];
+    if (!uniqueAliases.length) return;
+    for (const alias of uniqueAliases) {
+      this.repo.clearTableCache(alias);
+    }
     await this.renderAll();
     await this.refreshStorageStatus();
   }
@@ -1705,652 +1754,6 @@ class LtcApp {
     if (!rowId) return null;
     const inventoryRows = await this.domain.computeInventoryRows();
     return inventoryRows.find((row) => row.rowId === rowId) || null;
-  }
-
-  async requestPinDialog(config = {}) {
-    const { title = "ยืนยัน PIN", hint = "", confirm = false } = config;
-    const fields = [
-      {
-        name: "pin",
-        label: "PIN",
-        type: "password",
-        required: true,
-        value: "",
-        placeholder: "อย่างน้อย 6 ตัวอักษร/ตัวเลข",
-        validate: (value) => {
-          if (String(value || "").trim().length < 1) return "กรุณากรอก PIN";
-          return null;
-        }
-      }
-    ];
-    if (confirm) {
-      fields.push({
-        name: "pinConfirm",
-        label: "ยืนยัน PIN",
-        type: "password",
-        required: true,
-        value: ""
-      });
-    }
-    return this.openEntityDialog({
-      title,
-      hint,
-      fields
-    });
-  }
-
-  async openDependentDialog(mode, row = null) {
-    const [unitRows, cmRows, cgRows] = await Promise.all([
-      this.repo.getTable("t26_unit"),
-      this.repo.getTable("t02_cm"),
-      this.repo.getTable("t01_cg")
-    ]);
-
-    const initial = {
-      citizenId: row?.["เลขประชาชน"] || "",
-      prefix: Format.normalizeFemalePrefix(row?.["นาม"] || "นาย"),
-      firstName: row?.["ชื่อ"] || "",
-      lastName: row?.["สกุล"] || "",
-      gender: row?.["เพศ"] || this.inferGenderFromPrefix(row?.["นาม"] || "นาย"),
-      adl: row?.ADL ?? 0,
-      tai: String(row?.TAI || "I1").toUpperCase(),
-      birthDate: row?.["วันเดือนปีเกิด"] || null,
-      address: row?.["ที่อยู่"] || "",
-      moo: row?.["หมู่"] || "",
-      road: row?.["ถนน"] || "",
-      subdistrict: row?.["ตำบล"] || "",
-      district: row?.["อำเภอ"] || "",
-      province: row?.["จังหวัด"] || "ตราด",
-      unitCode: row?.["รหัสหน่วย"] || "",
-      cmCode: row?.["รหัสcm"] || "",
-      cgCode: row?.["รหัสcg"] || "",
-      careStart: row?.["วันเริ่ม cp"] || null,
-      careEnd: row?.["วันสิ้นสุด cp"] || null
-    };
-
-    return this.openEntityDialog({
-      title: mode === "add" ? "เพิ่มผู้รับบริการ LTC" : "แก้ไขผู้รับบริการ LTC",
-      hint: "กรอกข้อมูลสำคัญที่ใช้จริงในหน้างาน ข้อมูลจะเชื่อมกับภาพรวมทันที",
-      fields: [
-        {
-          name: "citizenId",
-          label: "เลขบัตรประชาชน",
-          type: "text",
-          required: true,
-          value: initial.citizenId,
-          placeholder: "13 หลัก",
-          validate: (value) => {
-            if (!/^\d{13}$/.test(value)) return "เลขบัตรประชาชนต้องเป็นตัวเลข 13 หลัก";
-            if (!Validate.thaiCitizenId(value)) return "เลขบัตรประชาชนไม่ผ่านการตรวจสอบ";
-            return null;
-          }
-        },
-        {
-          name: "prefix",
-          label: "คำนำหน้า",
-          type: "select",
-          required: true,
-          value: initial.prefix,
-          options: ["นาย", "นาง", "นางสาว", "ด.ช.", "ด.ญ."]
-        },
-        { name: "firstName", label: "ชื่อ", type: "text", required: true, value: initial.firstName },
-        { name: "lastName", label: "สกุล", type: "text", required: true, value: initial.lastName },
-        {
-          name: "gender",
-          label: "เพศ",
-          type: "select",
-          required: true,
-          value: initial.gender,
-          options: ["ชาย", "หญิง"]
-        },
-        {
-          name: "adl",
-          label: "ADL",
-          type: "number",
-          required: true,
-          value: initial.adl,
-          min: 0,
-          max: 20,
-          validate: (value) => (Validate.nonNegative(value) ? null : "ADL ต้องเป็นเลข 0 ขึ้นไป")
-        },
-        {
-          name: "tai",
-          label: "ระดับ TAI",
-          type: "select",
-          required: true,
-          value: initial.tai,
-          options: ["I1", "I2", "I3", "B3", "C2", "C3"]
-        },
-        { name: "birthDate", label: "วันเดือนปีเกิด", type: "date", value: initial.birthDate },
-        { name: "address", label: "บ้านเลขที่", type: "text", required: true, value: initial.address },
-        { name: "moo", label: "หมู่", type: "text", value: initial.moo },
-        { name: "road", label: "ถนน", type: "text", value: initial.road },
-        { name: "subdistrict", label: "ตำบล", type: "text", required: true, value: initial.subdistrict },
-        { name: "district", label: "อำเภอ", type: "text", required: true, value: initial.district },
-        { name: "province", label: "จังหวัด", type: "text", required: true, value: initial.province },
-        {
-          name: "unitCode",
-          label: "รหัสหน่วย",
-          type: "select",
-          required: true,
-          value: initial.unitCode,
-          options: unitRows.map((rowItem) => ({
-            value: String(rowItem["รหัสหน่วย"] || ""),
-            label: `${rowItem["รหัสหน่วย"] || "-"} - ${rowItem["หน่วย"] || ""}`
-          }))
-        },
-        {
-          name: "cmCode",
-          label: "รหัส CM",
-          type: "select",
-          value: initial.cmCode,
-          options: cmRows.map((rowItem) => ({
-            value: String(rowItem["รหัสcm"] || ""),
-            label: `${rowItem["รหัสcm"] || "-"} - ${Format.expandFemalePrefixInText(rowItem["ชื่อสกุล"] || "")}`
-          }))
-        },
-        {
-          name: "cgCode",
-          label: "รหัส CG",
-          type: "select",
-          value: initial.cgCode,
-          options: cgRows.map((rowItem) => ({
-            value: String(rowItem["รหัสcg"] || ""),
-            label: `${rowItem["รหัสcg"] || "-"} - ${Format.expandFemalePrefixInText(rowItem["ชื่อสกุล"] || "")}`
-          }))
-        },
-        { name: "careStart", label: "วันเริ่ม CP", type: "date", value: initial.careStart },
-        { name: "careEnd", label: "วันสิ้นสุด CP", type: "date", value: initial.careEnd }
-      ]
-    });
-  }
-
-  async openCgDialog(mode, row = null) {
-    const cmRows = await this.repo.getTable("t02_cm");
-    const parsed = NameUtils.parse(row?.["ชื่อสกุล"] || "");
-
-    return this.openEntityDialog({
-      title: mode === "add" ? "เพิ่ม Care Giver (CG)" : "แก้ไข Care Giver (CG)",
-      hint: "คำนำหน้า น.ส. จะถูกบันทึกเป็น นางสาว อัตโนมัติ",
-      fields: [
-        { name: "cgCode", label: "รหัส CG", type: "text", value: row?.["รหัสcg"] || "", help: "ปล่อยว่างเพื่อให้ระบบสร้างรหัสให้" },
-        {
-          name: "prefix",
-          label: "คำนำหน้า",
-          type: "select",
-          required: true,
-          value: parsed.prefix || "นางสาว",
-          options: ["นาย", "นาง", "นางสาว", "ด.ช.", "ด.ญ.", "คุณ"]
-        },
-        { name: "firstName", label: "ชื่อ", type: "text", required: true, value: parsed.firstName },
-        { name: "lastName", label: "สกุล", type: "text", required: true, value: parsed.lastName },
-        { name: "birthDate", label: "วันเดือนปีเกิด", type: "date", value: row?.["วดปเกิด"] || null },
-        {
-          name: "phone",
-          label: "โทรศัพท์",
-          type: "text",
-          value: row?.["โทร"] || "",
-          validate: (value) => (Validate.phone(value) ? null : "รูปแบบเบอร์โทรไม่ถูกต้อง")
-        },
-        { name: "address", label: "บ้านเลขที่", type: "text", required: true, value: row?.["ที่อยู่"] || "" },
-        { name: "moo", label: "หมู่", type: "text", value: row?.["หมู่"] || "" },
-        { name: "subdistrict", label: "ตำบล", type: "text", required: true, value: row?.["ตำบล"] || "" },
-        { name: "district", label: "อำเภอ", type: "text", required: true, value: row?.["อำเภอ"] || "" },
-        { name: "province", label: "จังหวัด", type: "text", required: true, value: row?.["จังหวัด"] || "ตราด" },
-        {
-          name: "cmCode",
-          label: "รหัส CM",
-          type: "select",
-          required: true,
-          value: row?.["รหัสcm"] || "",
-          options: cmRows.map((cm) => ({
-            value: String(cm["รหัสcm"] || ""),
-            label: `${cm["รหัสcm"] || "-"} - ${Format.expandFemalePrefixInText(cm["ชื่อสกุล"] || "")}`
-          }))
-        }
-      ]
-    });
-  }
-
-  async openCmDialog(mode, row = null) {
-    const unitRows = await this.repo.getTable("t26_unit");
-    const parsed = NameUtils.parse(row?.["ชื่อสกุล"] || "");
-
-    return this.openEntityDialog({
-      title: mode === "add" ? "เพิ่ม Care Manager (CM)" : "แก้ไข Care Manager (CM)",
-      hint: "แก้ไขรหัส CM ได้ โดยระบบจะอัปเดตรหัสที่เชื่อมอยู่ให้อัตโนมัติ",
-      fields: [
-        { name: "cmCode", label: "รหัส CM", type: "text", value: row?.["รหัสcm"] || "", help: "ปล่อยว่างเพื่อให้ระบบสร้างรหัสให้" },
-        {
-          name: "prefix",
-          label: "คำนำหน้า",
-          type: "select",
-          required: true,
-          value: parsed.prefix || "นางสาว",
-          options: ["นาย", "นาง", "นางสาว", "ด.ร.", "พ.จ.อ.", "จ.ส.อ.", "คุณ"]
-        },
-        { name: "firstName", label: "ชื่อ", type: "text", required: true, value: parsed.firstName },
-        { name: "lastName", label: "สกุล", type: "text", required: true, value: parsed.lastName },
-        {
-          name: "unitCode",
-          label: "รหัสหน่วย",
-          type: "select",
-          required: true,
-          value: row?.["รหัสหน่วย"] || "",
-          options: unitRows.map((unit) => ({
-            value: String(unit["รหัสหน่วย"] || ""),
-            label: `${unit["รหัสหน่วย"] || "-"} - ${unit["หน่วย"] || ""}`
-          }))
-        },
-        {
-          name: "phone",
-          label: "โทรศัพท์",
-          type: "text",
-          value: row?.["โทร"] || "",
-          validate: (value) => (Validate.phone(value) ? null : "รูปแบบเบอร์โทรไม่ถูกต้อง")
-        },
-        { name: "birthDate", label: "วันเดือนปีเกิด", type: "date", value: row?.["วดปเกิด"] || null },
-        { name: "address", label: "บ้านเลขที่", type: "text", required: true, value: row?.["ที่อยู่"] || "" },
-        { name: "moo", label: "หมู่", type: "text", value: row?.["หมู่"] || "" },
-        { name: "subdistrict", label: "ตำบล", type: "text", required: true, value: row?.["ตำบล"] || "" },
-        { name: "district", label: "อำเภอ", type: "text", required: true, value: row?.["อำเภอ"] || "" },
-        { name: "province", label: "จังหวัด", type: "text", required: true, value: row?.["จังหวัด"] || "ตราด" }
-      ]
-    });
-  }
-
-  async openProductDialog(mode, row = null) {
-    return this.openEntityDialog({
-      title: mode === "add" ? "เพิ่มวัสดุทางการแพทย์" : "แก้ไขวัสดุทางการแพทย์",
-      hint: "กำหนดจุดสั่งซื้อขั้นต่ำเพื่อช่วยวิเคราะห์สถานะคลัง",
-      fields: [
-        { name: "productID", label: "รหัสวัสดุ", type: "text", required: true, value: row?.productID || "" },
-        { name: "productName", label: "ชื่อวัสดุ", type: "text", required: true, value: row?.productName || "" },
-        { name: "unit", label: "หน่วยนับ", type: "text", required: true, value: row?.unit || "ชิ้น" },
-        {
-          name: "price",
-          label: "ราคาต่อหน่วย",
-          type: "number",
-          required: true,
-          value: row?.price ?? 0,
-          min: 0,
-          step: "0.01",
-          validate: (value) => (Validate.nonNegative(value) ? null : "ราคาต้องเป็น 0 ขึ้นไป")
-        },
-        {
-          name: "reorderPoint",
-          label: "จุดสั่งซื้อขั้นต่ำ",
-          type: "number",
-          required: true,
-          value: row?.reorderPoint ?? row?.threshold ?? 10,
-          min: 0,
-          validate: (value) => (Validate.nonNegative(value) ? null : "จุดสั่งซื้อขั้นต่ำต้องเป็น 0 ขึ้นไป")
-        }
-      ]
-    });
-  }
-
-  async openSupplyMovementDialog(mode, productRow) {
-    const isIn = mode === "in";
-    return this.openEntityDialog({
-      title: isIn ? "บันทึกรับเข้าวัสดุ" : "บันทึกเบิกจ่ายวัสดุ",
-      hint: `${isIn ? "เพิ่ม" : "ลด"}สต็อกสำหรับ ${productRow.productID || "-"} - ${productRow.productName || "-"}`,
-      fields: [
-        {
-          name: "date",
-          label: "วันที่",
-          type: "date",
-          required: true,
-          value: Format.dateInputToIso(Format.todayDateInput())
-        },
-        {
-          name: "quantity",
-          label: "จำนวน",
-          type: "number",
-          required: true,
-          value: 1,
-          min: 1,
-          validate: (value) => (Validate.positive(value) ? null : "จำนวนต้องมากกว่า 0")
-        },
-        {
-          name: "typeCode",
-          label: isIn ? "ประเภทรายการรับเข้า" : "ประเภทรายการเบิกจ่าย",
-          type: "text",
-          required: true,
-          value: "11"
-        },
-        {
-          name: "ltcCode",
-          label: "รหัส LTC (เฉพาะเบิกจ่าย)",
-          type: "text",
-          value: "",
-          hidden: isIn
-        },
-        {
-          name: "round",
-          label: "รอบ (เฉพาะเบิกจ่าย)",
-          type: "text",
-          value: "",
-          hidden: isIn
-        }
-      ]
-    });
-  }
-
-  async openFinanceDialog(mode, parsed = null) {
-    const todayYear = new Date().getFullYear() + 543;
-    return this.openEntityDialog({
-      title: mode === "add" ? "เพิ่มรายการรายรับ-รายจ่าย" : "แก้ไขรายการรายรับ-รายจ่าย",
-      hint: "เพิ่ม/แก้ไขแล้วยอดรวมจะคำนวณใหม่ทันที",
-      fields: [
-        {
-          name: "type",
-          label: "ประเภท",
-          type: "select",
-          required: true,
-          value: parsed?.type || "income",
-          options: [
-            { value: "income", label: "รายรับ" },
-            { value: "expense", label: "รายจ่าย" }
-          ]
-        },
-        {
-          name: "category",
-          label: "หมวด",
-          type: "select",
-          required: true,
-          value: parsed?.category || "1",
-          options: [
-            { value: "1", label: "ประเภท 1" },
-            { value: "2", label: "ประเภท 2" },
-            { value: "3", label: "ประเภท 3" },
-            { value: "4", label: "ประเภท 4" }
-          ]
-        },
-        {
-          name: "amount",
-          label: "จำนวนเงิน",
-          type: "number",
-          required: true,
-          value: parsed?.amount ?? 0,
-          min: 0,
-          step: "0.01",
-          validate: (value) => (Validate.positive(value) ? null : "จำนวนเงินต้องมากกว่า 0")
-        },
-        {
-          name: "date",
-          label: "วันที่",
-          type: "date",
-          required: true,
-          value: parsed?.date || Format.dateInputToIso(Format.todayDateInput())
-        },
-        {
-          name: "year",
-          label: "ปีงบประมาณ (พ.ศ.)",
-          type: "number",
-          required: true,
-          value: Number(parsed?.year || todayYear),
-          min: 2500,
-          max: 2700,
-          validate: (value) => {
-            const year = Number(value);
-            if (!Number.isFinite(year)) return "ปีงบประมาณไม่ถูกต้อง";
-            if (year < 2500 || year > 2700) return "ปีงบประมาณต้องอยู่ในช่วง 2500-2700";
-            return null;
-          }
-        },
-        {
-          name: "note",
-          label: "หมายเหตุ",
-          type: "textarea",
-          wide: true,
-          value: parsed?.note || ""
-        }
-      ]
-    });
-  }
-
-  async openUnitDialog(mode, row = null) {
-    return this.openEntityDialog({
-      title: mode === "add" ? "เพิ่มหน่วยงาน" : "แก้ไขหน่วยงาน",
-      hint: "แก้ไขรหัสหน่วยได้ โดยระบบจะอัปเดตข้อมูลที่เชื่อมอยู่ให้อัตโนมัติ",
-      fields: [
-        { name: "unitCode", label: "รหัสหน่วย", type: "text", required: true, value: row?.["รหัสหน่วย"] || "" },
-        { name: "unitName", label: "ชื่อหน่วยงาน", type: "text", required: true, value: row?.["หน่วย"] || "" },
-        { name: "addressNo", label: "เลขที่", type: "text", required: true, value: row?.["เลขที่"] || "" },
-        { name: "moo", label: "หมู่", type: "text", value: row?.["หมู่"] || "" },
-        { name: "road", label: "ถนน", type: "text", value: row?.["ถนน"] || "" },
-        { name: "subdistrict", label: "ตำบล", type: "text", required: true, value: row?.["ตำบล"] || "" },
-        { name: "district", label: "อำเภอ", type: "text", required: true, value: row?.["อำเภอ"] || "" },
-        { name: "province", label: "จังหวัด", type: "text", required: true, value: row?.["จังหวัด"] || "ตราด" },
-        { name: "postcode", label: "รหัสไปรษณีย์", type: "text", value: row?.["รหัส"] || "" },
-        {
-          name: "phone",
-          label: "โทรศัพท์",
-          type: "text",
-          value: row?.["โทร"] || "",
-          validate: (value) => (Validate.phone(value) ? null : "รูปแบบเบอร์โทรไม่ถูกต้อง")
-        }
-      ]
-    });
-  }
-
-  async openEntityDialog(config) {
-    const { title, hint, fields } = config;
-
-    this.el.entityDialogTitle.textContent = title;
-    this.el.entityDialogHint.textContent = hint || "";
-    this.el.entityFormFields.innerHTML = "";
-
-    const controls = {};
-
-    for (const field of fields) {
-      if (field.hidden) continue;
-
-      const wrap = document.createElement("div");
-      wrap.className = `row-field${field.wide ? " wide" : ""}`;
-
-      const label = document.createElement("label");
-      label.innerHTML = `${Format.escapeHtml(field.label)}${field.required ? ' <span class="req">*</span>' : ""}`;
-      wrap.appendChild(label);
-
-      let control;
-      if (field.type === "select") {
-        control = document.createElement("select");
-
-        if (!field.required) {
-          const option = document.createElement("option");
-          option.value = "";
-          option.textContent = "-";
-          control.appendChild(option);
-        }
-
-        for (const optionData of field.options || []) {
-          const option = document.createElement("option");
-          if (typeof optionData === "object") {
-            option.value = optionData.value;
-            option.textContent = optionData.label;
-          } else {
-            option.value = String(optionData);
-            option.textContent = String(optionData);
-          }
-          control.appendChild(option);
-        }
-
-        control.value = field.value == null ? "" : String(field.value);
-      } else if (field.type === "textarea") {
-        control = document.createElement("textarea");
-        control.value = field.value == null ? "" : String(field.value);
-      } else {
-        control = document.createElement("input");
-        control.type =
-          field.type === "date"
-            ? "date"
-            : field.type === "number"
-              ? "number"
-              : field.type === "password"
-                ? "password"
-                : "text";
-        if (field.type === "date") {
-          control.value = Format.isoToDateInput(field.value);
-        } else {
-          control.value = field.value == null ? "" : String(field.value);
-        }
-        if (field.type === "password") {
-          control.autocomplete = "new-password";
-        }
-
-        if (field.min != null) control.min = String(field.min);
-        if (field.max != null) control.max = String(field.max);
-        if (field.step != null) control.step = String(field.step);
-      }
-
-      if (field.placeholder) control.placeholder = field.placeholder;
-      if (field.required) control.required = true;
-
-      control.name = field.name;
-      controls[field.name] = control;
-      wrap.appendChild(control);
-
-      if (field.help) {
-        const help = document.createElement("small");
-        help.textContent = field.help;
-        wrap.appendChild(help);
-      }
-
-      this.el.entityFormFields.appendChild(wrap);
-    }
-
-    return new Promise((resolve) => {
-      const cleanup = () => {
-        this.el.entityForm.removeEventListener("submit", onSubmit);
-        this.el.entityCancelBtn.removeEventListener("click", onCancel);
-        this.el.entityDialog.removeEventListener("close", onClose);
-      };
-
-      const onClose = () => {
-        cleanup();
-        resolve(null);
-      };
-
-      const onCancel = () => {
-        this.el.entityDialog.close();
-      };
-
-      const onSubmit = (event) => {
-        event.preventDefault();
-
-        const rawValues = {};
-        for (const field of fields) {
-          if (field.hidden) continue;
-          const control = controls[field.name];
-          rawValues[field.name] = control.value;
-        }
-
-        for (const field of fields) {
-          if (field.hidden) continue;
-          const value = Format.toText(rawValues[field.name]);
-          if (field.required && !value) {
-            alert(`กรุณากรอก ${field.label}`);
-            controls[field.name].focus();
-            return;
-          }
-
-          if (typeof field.validate === "function") {
-            const error = field.validate(rawValues[field.name], rawValues);
-            if (error) {
-              alert(error);
-              controls[field.name].focus();
-              return;
-            }
-          }
-        }
-
-        const parsed = {};
-        for (const field of fields) {
-          if (field.hidden) continue;
-
-          const raw = rawValues[field.name];
-          let value = raw;
-          if (field.type === "number") {
-            value = raw === "" ? 0 : Number(raw);
-          } else if (field.type === "date") {
-            value = Format.dateInputToIso(raw);
-          } else {
-            value = Format.cleanWhitespace(raw);
-            if (!value) value = null;
-          }
-
-          parsed[field.name] = value;
-        }
-
-        cleanup();
-        this.el.entityDialog.close();
-        resolve(parsed);
-      };
-
-      this.el.entityForm.addEventListener("submit", onSubmit);
-      this.el.entityCancelBtn.addEventListener("click", onCancel);
-      this.el.entityDialog.addEventListener("close", onClose);
-      this.el.entityDialog.showModal();
-    });
-  }
-
-  filterRows(rows, query, fields) {
-    if (!query) return rows;
-    return rows.filter((row) => {
-      const text = fields.map((field) => String(row[field] ?? "")).join(" ").toLowerCase();
-      return text.includes(query);
-    });
-  }
-
-  countBy(rows, selector) {
-    const result = {};
-    for (const row of rows) {
-      const key = selector(row);
-      result[key] = (result[key] || 0) + 1;
-    }
-    return result;
-  }
-
-  maxIndex(values) {
-    let index = 0;
-    let max = Number(values[0]) || 0;
-    for (let i = 1; i < values.length; i += 1) {
-      const value = Number(values[i]) || 0;
-      if (value > max) {
-        max = value;
-        index = i;
-      }
-    }
-    return index;
-  }
-
-  normalizeGender(value) {
-    const text = Format.toText(value);
-    if (["ชาย", "นาย", "ด.ช."].includes(text)) return "ชาย";
-    if (["หญิง", "นาง", "นางสาว", "น.ส.", "ด.ญ."].includes(text)) return "หญิง";
-    return text || "-";
-  }
-
-  inferGenderFromPrefix(prefix) {
-    const text = Format.normalizeFemalePrefix(Format.toText(prefix));
-    if (["นาย", "ด.ช."].includes(text)) return "ชาย";
-    if (["นาง", "นางสาว", "ด.ญ."].includes(text)) return "หญิง";
-    return "หญิง";
-  }
-
-  fullNameFromDependent(row) {
-    const prefix = Format.normalizeFemalePrefix(row["นาม"] || "");
-    const firstName = Format.toText(row["ชื่อ"] || "");
-    const lastName = Format.toText(row["สกุล"] || "");
-    return `${prefix}${firstName} ${lastName}`.replace(/\s+/g, " ").trim();
-  }
-
-  buildAddress(row) {
-    const home = String(row["ที่อยู่"] || "-");
-    const moo = String(row["หมู่"] || "-");
-    return `${home} หมู่ ${moo}`;
   }
 
   generateCgCode(cmCode, rows) {
@@ -2387,6 +1790,13 @@ class LtcApp {
 
   handleError = (error) => {
     console.error(error);
+    if (error?.authRequired) return;
+    if (error?.versionConflict) {
+      this.repo.clearTableCache();
+      this.renderAll().catch(() => {});
+      alert("ข้อมูลมีการแก้ไขจากผู้ใช้อื่น กรุณาตรวจสอบข้อมูลล่าสุดแล้วลองใหม่อีกครั้ง");
+      return;
+    }
     alert(error.message || "เกิดข้อผิดพลาดที่ไม่คาดคิด");
   };
 }

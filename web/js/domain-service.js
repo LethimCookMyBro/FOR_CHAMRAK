@@ -175,51 +175,6 @@ class DomainService {
     });
   }
 
-  async getSupplyMovements(limit = 30) {
-    const [products, inRows, outRows] = await Promise.all([
-      this.repo.getTable("t16_product"),
-      this.repo.getTable("t09_intproduct"),
-      this.repo.getTable("t13_outproduct")
-    ]);
-
-    const productNameByCode = {};
-    for (const row of products) {
-      productNameByCode[String(row.productID || "")] = String(row.productName || "-");
-    }
-
-    const combined = [];
-
-    for (const row of inRows) {
-      combined.push({
-        date: row.indate,
-        type: "รับเข้า",
-        productID: String(row.productID || ""),
-        productName: productNameByCode[String(row.productID || "")] || "-",
-        quantity: Number(row.quantity) || 0,
-        reference: row.inno || "-"
-      });
-    }
-
-    for (const row of outRows) {
-      combined.push({
-        date: row.outdate,
-        type: "เบิกจ่าย",
-        productID: String(row.productID || ""),
-        productName: productNameByCode[String(row.productID || "")] || "-",
-        quantity: Number(row.quantity) || 0,
-        reference: row.outno || "-"
-      });
-    }
-
-    combined.sort((a, b) => {
-      const dateDiff = new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime();
-      if (dateDiff !== 0) return dateDiff;
-      return String(b.reference).localeCompare(String(a.reference));
-    });
-
-    return combined.slice(0, limit);
-  }
-
   severityRank(status) {
     if (status === "หมดคลัง") return 0;
     if (status === "ใกล้หมด") return 1;

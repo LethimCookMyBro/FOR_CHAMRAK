@@ -21,6 +21,10 @@
         <span class="online-dot"></span>
         <span id="statusText">กำลังเริ่มต้น...</span>
       </div>
+      <div class="auth-actions">
+        <span id="authUserText" class="auth-user">ผู้ใช้: -</span>
+        <button id="logoutBtn" class="auth-logout" type="button">ออกจากระบบ</button>
+      </div>
       <button id="securityToggleBtn" class="security-toggle" type="button">🔐 โหมดแก้ไข: ล็อก</button>
     </div>
     <nav class="topnav">
@@ -31,6 +35,8 @@
       <button class="nav-btn" data-page="supplies" type="button">💊 วัสดุทางการแพทย์</button>
       <button class="nav-btn" data-page="finance" type="button">💰 รายรับ-รายจ่าย</button>
       <button class="nav-btn" data-page="units" type="button">🏘️ หน่วยงาน</button>
+      <button class="nav-btn" data-page="ai" type="button">🤖 AI Assistant</button>
+      <button class="nav-btn" data-page="logs" type="button">♻️ กู้คืนข้อมูล</button>
     </nav>
   </header>
 
@@ -248,24 +254,6 @@
         </table>
       </div>
 
-      <div class="section-head">
-        <h2>ประวัติการเคลื่อนไหวล่าสุด</h2>
-      </div>
-      <div class="table-card table-scroll slim-scroll">
-        <table>
-          <thead>
-            <tr>
-              <th>วันที่</th>
-              <th>ประเภท</th>
-              <th>รหัสวัสดุ</th>
-              <th>ชื่อวัสดุ</th>
-              <th>จำนวน</th>
-              <th>เลขอ้างอิง</th>
-            </tr>
-          </thead>
-          <tbody id="supplyTxnBody"></tbody>
-        </table>
-      </div>
     </section>
 
     <section id="page-finance" class="page">
@@ -355,11 +343,73 @@
         </table>
       </div>
     </section>
+
+    <section id="page-ai" class="page">
+      <div class="section-head">
+        <h2>AI Assistant</h2>
+        <div class="section-tools">
+          <button id="aiClearBtn" class="btn btn-muted" type="button">ล้างบทสนทนา</button>
+        </div>
+      </div>
+
+      <div class="ai-grid">
+        <section class="card ai-chat-card">
+          <header class="card-head">🤖 ผู้ช่วยวิเคราะห์ข้อมูล LTC</header>
+          <div id="aiChatBody" class="ai-chat-body"></div>
+          <div id="aiTyping" class="ai-typing" hidden>กำลังวิเคราะห์ข้อมูล...</div>
+          <footer class="ai-input-wrap">
+            <textarea id="aiInput" class="ai-input" placeholder="พิมพ์คำถาม เช่น สรุปรายรับรายจ่ายล่าสุด หรือ วัสดุใกล้หมดมีอะไรบ้าง"></textarea>
+            <button id="aiSendBtn" class="btn btn-primary" type="button">ส่งคำถาม</button>
+          </footer>
+        </section>
+
+        <section class="card ai-side-card">
+          <header class="card-head">⚡ คำถามด่วน</header>
+          <div class="card-body ai-quick-list">
+            <button class="ai-quick-btn" type="button" data-prompt="สรุปผู้รับบริการล่าสุด">สรุปผู้รับบริการล่าสุด</button>
+            <button class="ai-quick-btn" type="button" data-prompt="วิเคราะห์รายรับรายจ่ายล่าสุด">วิเคราะห์รายรับรายจ่าย</button>
+            <button class="ai-quick-btn" type="button" data-prompt="วัสดุใกล้หมดมีรายการไหนบ้าง">ตรวจวัสดุใกล้หมด</button>
+            <button class="ai-quick-btn" type="button" data-prompt="จำนวน CG CM และหน่วยงานตอนนี้">กำลังคนและหน่วยงาน</button>
+            <button class="ai-quick-btn" type="button" data-prompt="ช่วยทำกราฟรายรับรายจ่ายล่าสุด">สร้างกราฟการเงิน</button>
+            <button class="ai-quick-btn" type="button" data-prompt="ช่วยสร้างไฟล์รายงานสรุปการเงินแบบ CSV และ Markdown ให้ดาวน์โหลด">สร้างไฟล์รายงาน</button>
+          </div>
+          <div id="aiSuggestionWrap" class="ai-suggestion-wrap"></div>
+        </section>
+      </div>
+    </section>
+
+    <section id="page-logs" class="page">
+      <div class="section-head">
+        <h2>ข้อมูลที่ลบแล้ว (กู้คืนได้ภายใน 30 วัน)</h2>
+      </div>
+      <div class="section-head">
+        <div class="section-tools">
+          <button id="trashRestoreBtn" class="btn btn-primary" type="button" disabled>กู้คืนข้อมูลที่เลือก</button>
+          <button id="trashPurgeBtn" class="btn btn-danger" type="button">ล้างข้อมูลที่หมดอายุ</button>
+        </div>
+      </div>
+      <p id="trashSummary" class="table-note">รายการที่กู้คืนได้ 0 รายการ</p>
+      <div class="table-card table-scroll slim-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th class="check-col">เลือก</th>
+              <th>ตาราง</th>
+              <th>ข้อมูล</th>
+              <th>วันที่ลบ</th>
+              <th>ผู้ลบ</th>
+              <th>เหลือเวลา</th>
+            </tr>
+          </thead>
+          <tbody id="trashBody"></tbody>
+        </table>
+      </div>
+    </section>
   </main>
 
   <footer class="footer">
     ระบบดูแลระยะยาว (LTC) | เทศบาลชำราก<br>
-    <small>ใช้ข้อมูลจริงจาก `chamrak_export` และบันทึกการแก้ไขในเครื่อง (Local Storage)</small>
+    <small>ใช้ข้อมูลจริงจาก `chamrak_export` และบันทึกผ่าน Backend Security</small>
   </footer>
 
   <dialog id="entityDialog" class="row-dialog">
