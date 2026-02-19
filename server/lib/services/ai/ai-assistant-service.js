@@ -23,19 +23,168 @@ class AiAssistantService {
     }
   }
 
+  safeNumber(value) {
+    const num = Number(value);
+    if (!Number.isFinite(num)) return 0;
+    return num;
+  }
+
+  normalizeText(value) {
+    return String(value || "")
+      .trim()
+      .toLowerCase();
+  }
+
+  normalizeGender(value) {
+    const text = this.normalizeText(value);
+    if (text.includes("หญิง")) return "female";
+    if (text.includes("ชาย")) return "male";
+    return "unknown";
+  }
+
+  normalizeTai(value) {
+    return String(value || "")
+      .trim()
+      .toUpperCase();
+  }
+
+  thaiYearToGregorian(yearValue) {
+    const year = Number(yearValue);
+    if (!Number.isFinite(year)) return null;
+    if (year > 2200) return year - 543;
+    if (year < 1900 || year > 2600) return null;
+    return year;
+  }
+
+  formatMonthLabel(monthKey) {
+    const [year, month] = String(monthKey || "").split("-");
+    if (!year || !month) return "-";
+    return `${month}/${year}`;
+  }
+
+  extractFinanceMonth(row) {
+    const dateCandidates = [row?.exdate, row?.outdate, row?.date, row?.["วันที่"], row?.["วันเดือนปี"]];
+    for (const item of dateCandidates) {
+      const text = String(item || "").trim();
+      if (!text) continue;
+      const ts = new Date(text).getTime();
+      if (Number.isNaN(ts)) continue;
+      const date = new Date(ts);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      return `${year}-${month}`;
+    }
+
+    const year = this.thaiYearToGregorian(row?.["ปี"] || row?.year || row?.Year);
+    if (!year) return null;
+
+    const monthRaw = Number(row?.["เดือน"] || row?.month || row?.["รอบ"] || row?.round || 1);
+    const month = Number.isFinite(monthRaw) && monthRaw >= 1 && monthRaw <= 12 ? monthRaw : 1;
+    return `${year}-${String(month).padStart(2, "0")}`;
+  }
+
   summarizeFinance(rows) {
-    const totalIncome = rows.reduce(
-      (sum, row) => sum + (Number(row["รายรับ1"]) || 0) + (Number(row["รายรับ2"]) || 0) + (Number(row["รายรับ3"]) || 0) + (Number(row["รายรับ4"]) || 0),
-      0
-    );
-    const totalExpense = rows.reduce(
-      (sum, row) => sum + (Number(row["รายจ่าย1"]) || 0) + (Number(row["รายจ่าย2"]) || 0) + (Number(row["รายจ่าย3"]) || 0) + (Number(row["รายจ่าย4"]) || 0),
-      0
-    );
+    const income = [0, 0, 0, 0];
+    const expense = [0, 0, 0, 0];
+
+    for (const row of rows) {
+      income[0] += this.safeNumber(row["รายรับ1"]);
+      income[1] += this.safeNumber(row["รายรับ2"]);
+      income[2] += this.safeNumber(row["รายรับ3"]);
+      income[3] += this.safeNumber(row["รายรับ4"]);
+
+      expense[0] += this.safeNumber(row["รายจ่าย1"]);
+      expense[1] += this.safeNumber(row["รายจ่าย2"]);
+      expense[2] += this.safeNumber(row["รายจ่าย3"]);
+      expense[3] += this.safeNumber(row["รายจ่าย4"]);
+    }
+
+    const totalIncome = income.reduce((sum, value) => sum + value, 0);
+    const totalExpense = expense.reduce((sum, value) => sum + value, 0);
     return {
+      income,
+      expense,
       totalIncome,
       totalExpense,
       net: totalIncome - totalExpense
+    };
+  }
+
+  buildFinanceTimeline(rows) {
+    const monthMap = new Map();
+
+    for (const row of rows) {
+      const key = this.extractFinanceMonth(row);
+      if (!key) continue;
+
+      const income =
+        this.safeNumber(row["รายรับ1"]) +
+        this.safeNumber(row["รายรับ2"]) +
+        this.safeNumber(row["รายรับ3"]) +
+        this.safeNumber(row["รายรับ4"]);
+      const expense =
+        this.safeNumber(row["รายจ่าย1"]) +
+        this.safeNumber(row["รายจ่าย2"]) +
+        this.safeNumber(row["รายจ่าย3"]) +
+        this.safeNumber(row["รายจ่าย4"]);
+
+      const item = monthMap.get(key) || { month: key, income: 0, expense: 0, count: 0 };
+      item.income += income;
+      item.expense += expense;
+      item.count += 1;
+      monthMap.set(key, item);
+    }
+
+    const months = [...monthMap.values()]
+      .map((row) => ({ ...row, net: row.income - row.expense }))
+      .sort((a, b) => String(a.month).localeCompare(String(b.month)));
+
+    const recent = months.slice(-6);
+    const latest = recent[recent.length - 1] || null;
+    const previous = recent[recent.length - 2] || null;
+
+    return {
+      months: recent,
+      latest,
+      previous,
+      netDelta: latest && previous ? latest.net - previous.net : null
+    };
+  }
+
+  buildCareStats(dependents) {
+    const taiCounts = {
+      I1: 0,
+      I2: 0,
+      I3: 0,
+      B3: 0,
+      C2: 0,
+      C3: 0,
+      OTHER: 0
+    };
+
+    let male = 0;
+    let female = 0;
+    let unknown = 0;
+
+    for (const row of dependents) {
+      const tai = this.normalizeTai(row?.TAI);
+      if (taiCounts[tai] != null) taiCounts[tai] += 1;
+      else taiCounts.OTHER += 1;
+
+      const gender = this.normalizeGender(row?.["เพศ"]);
+      if (gender === "male") male += 1;
+      else if (gender === "female") female += 1;
+      else unknown += 1;
+    }
+
+    const highCount = taiCounts.I3 + taiCounts.B3 + taiCounts.C2 + taiCounts.C3;
+
+    return {
+      taiCounts,
+      highCount,
+      male,
+      female,
+      unknown
     };
   }
 
@@ -45,12 +194,12 @@ class AiAssistantService {
 
     for (const row of inRows) {
       const key = String(row.productID || "");
-      inMap[key] = (inMap[key] || 0) + (Number(row.quantity) || 0);
+      inMap[key] = (inMap[key] || 0) + this.safeNumber(row.quantity);
     }
 
     for (const row of outRows) {
       const key = String(row.productID || "");
-      outMap[key] = (outMap[key] || 0) + (Number(row.quantity) || 0);
+      outMap[key] = (outMap[key] || 0) + this.safeNumber(row.quantity);
     }
 
     const result = [];
@@ -59,62 +208,492 @@ class AiAssistantService {
       const inQty = inMap[productID] || 0;
       const outQty = outMap[productID] || 0;
       const balance = inQty - outQty;
-      const reorderPoint = Math.max(1, Number(row.reorderPoint || row.threshold || 10));
+      const reorderPoint = Math.max(1, this.safeNumber(row.reorderPoint || row.threshold || 10));
+      if (balance > reorderPoint) continue;
 
-      if (balance <= reorderPoint) {
-        result.push({
-          productID,
-          productName: String(row.productName || "-"),
-          balance,
-          reorderPoint,
-          status: balance <= 0 ? "หมดคลัง" : "ใกล้หมด"
-        });
-      }
+      result.push({
+        productID,
+        productName: String(row.productName || "-"),
+        unit: String(row.unit || "ชิ้น"),
+        price: this.safeNumber(row.price),
+        balance,
+        reorderPoint,
+        status: balance <= 0 ? "หมดคลัง" : "ใกล้หมด"
+      });
     }
 
-    return result.sort((a, b) => a.balance - b.balance);
+    return result.sort((a, b) => {
+      const severityA = a.status === "หมดคลัง" ? 0 : 1;
+      const severityB = b.status === "หมดคลัง" ? 0 : 1;
+      if (severityA !== severityB) return severityA - severityB;
+      return this.safeNumber(a.balance) - this.safeNumber(b.balance);
+    });
+  }
+
+  buildWorkforceByUnit(unitRows, cmRows, cgRows, dependents) {
+    const unitNameByCode = {};
+    const unitCodes = new Set();
+
+    for (const row of unitRows) {
+      const unitCode = String(row["รหัสหน่วย"] || "").trim();
+      if (!unitCode) continue;
+      unitCodes.add(unitCode);
+      unitNameByCode[unitCode] = String(row["หน่วย"] || "-");
+    }
+
+    const cmByUnit = {};
+    const cgByUnit = {};
+    const dependentsByUnit = {};
+    const cmCodeToUnit = {};
+
+    for (const row of cmRows) {
+      const cmCode = String(row["รหัสcm"] || "").trim();
+      const unitCode = String(row["รหัสหน่วย"] || "").trim();
+      if (!unitCode) continue;
+      unitCodes.add(unitCode);
+      cmByUnit[unitCode] = (cmByUnit[unitCode] || 0) + 1;
+      if (cmCode) cmCodeToUnit[cmCode] = unitCode;
+    }
+
+    for (const row of cgRows) {
+      const cmCode = String(row["รหัสcm"] || "").trim();
+      const unitCode = cmCodeToUnit[cmCode] || "";
+      if (!unitCode) continue;
+      unitCodes.add(unitCode);
+      cgByUnit[unitCode] = (cgByUnit[unitCode] || 0) + 1;
+    }
+
+    for (const row of dependents) {
+      const unitCode = String(row["รหัสหน่วย"] || "").trim();
+      if (!unitCode) continue;
+      unitCodes.add(unitCode);
+      dependentsByUnit[unitCode] = (dependentsByUnit[unitCode] || 0) + 1;
+    }
+
+    const rows = [...unitCodes].map((unitCode) => {
+      const cmCount = this.safeNumber(cmByUnit[unitCode]);
+      const cgCount = this.safeNumber(cgByUnit[unitCode]);
+      const dependentCount = this.safeNumber(dependentsByUnit[unitCode]);
+
+      return {
+        unitCode,
+        unitName: unitNameByCode[unitCode] || "-",
+        cmCount,
+        cgCount,
+        dependentCount,
+        dependentsPerCm: cmCount > 0 ? dependentCount / cmCount : null,
+        cgPerCm: cmCount > 0 ? cgCount / cmCount : null
+      };
+    });
+
+    rows.sort((a, b) => b.dependentCount - a.dependentCount || b.cgCount - a.cgCount || String(a.unitCode).localeCompare(String(b.unitCode)));
+
+    return {
+      rows,
+      topUnit: rows[0] || null,
+      coverageGap: rows.filter((row) => row.cmCount === 0 && row.dependentCount > 0)
+    };
+  }
+
+  maxIndex(values) {
+    if (!Array.isArray(values) || !values.length) return 0;
+    let bestIndex = 0;
+    let bestValue = Number.NEGATIVE_INFINITY;
+    for (let i = 0; i < values.length; i += 1) {
+      const value = this.safeNumber(values[i]);
+      if (value > bestValue) {
+        bestValue = value;
+        bestIndex = i;
+      }
+    }
+    return bestIndex;
+  }
+
+  ratioPercent(numerator, denominator) {
+    if (!denominator) return 0;
+    return (this.safeNumber(numerator) / this.safeNumber(denominator)) * 100;
   }
 
   buildGeneralAnswer(ctx) {
-    const stockText = ctx.stockAlerts.length
-      ? ctx.stockAlerts
-          .slice(0, 3)
-          .map((row) => `${row.productName} (${row.balance})`)
-          .join(", ")
-      : "ไม่พบรายการใกล้หมด";
+    const highPercent = this.ratioPercent(ctx.careStats.highCount, ctx.dependents.length);
+    const topUnit = ctx.workforce.topUnit;
+    const stockText =
+      ctx.stockAlerts.length > 0
+        ? ctx.stockAlerts
+            .slice(0, 3)
+            .map((row) => `${row.productName} (${row.balance})`)
+            .join(", ")
+        : "ไม่พบรายการใกล้หมด";
+
+    const latestMonth = ctx.financeTimeline.latest;
+    const monthText = latestMonth
+      ? `เดือนล่าสุด ${this.formatMonthLabel(latestMonth.month)} คงเหลือสุทธิ ${latestMonth.net.toLocaleString("th-TH")} บาท`
+      : "ไม่มีข้อมูลแนวโน้มรายเดือนเพียงพอ";
 
     return [
-      `สรุปข้อมูลล่าสุด: ผู้รับบริการ ${ctx.dependents.length} ราย, CG ${ctx.cgRows.length} คน, CM ${ctx.cmRows.length} คน, หน่วยงาน ${ctx.unitRows.length} หน่วย`,
-      `การเงิน: รายรับรวม ${ctx.finance.totalIncome.toLocaleString("th-TH")} บาท, รายจ่ายรวม ${ctx.finance.totalExpense.toLocaleString("th-TH")} บาท, คงเหลือ ${ctx.finance.net.toLocaleString("th-TH")} บาท`,
-      `คลังวัสดุที่ต้องติดตาม: ${stockText}`
+      "สรุปภาพรวม LTC ล่าสุด",
+      `- ผู้รับบริการ ${ctx.dependents.length} ราย (พึ่งพิงสูง ${ctx.careStats.highCount} ราย, ${highPercent.toFixed(1)}%)`,
+      `- CG ${ctx.cgRows.length} คน | CM ${ctx.cmRows.length} คน | หน่วยงาน ${ctx.unitRows.length} หน่วย`,
+      `- การเงิน รายรับ ${ctx.finance.totalIncome.toLocaleString("th-TH")} บาท | รายจ่าย ${ctx.finance.totalExpense.toLocaleString("th-TH")} บาท | คงเหลือ ${ctx.finance.net.toLocaleString("th-TH")} บาท`,
+      `- ${monthText}`,
+      `- วัสดุที่ต้องติดตาม: ${stockText}`,
+      topUnit
+        ? `- หน่วยที่มีผู้รับบริการสูงสุด: ${topUnit.unitName} (${topUnit.unitCode}) ${topUnit.dependentCount} ราย`
+        : "- ไม่มีข้อมูลภาระงานรายหน่วย"
     ].join("\n");
   }
 
-  safeNumber(value) {
-    const num = Number(value);
-    if (!Number.isFinite(num)) return 0;
-    return num;
+  buildDependentsAnswer(ctx) {
+    const tai = ctx.careStats.taiCounts;
+    const total = Math.max(1, ctx.dependents.length);
+    const highPercent = this.ratioPercent(ctx.careStats.highCount, total);
+
+    return [
+      "สรุปผู้รับบริการ",
+      `- ทั้งหมด ${ctx.dependents.length} ราย`,
+      `- กลุ่มพึ่งพิงสูง (I3/B3/C2/C3) ${ctx.careStats.highCount} ราย (${highPercent.toFixed(1)}%)`,
+      `- กระจาย TAI: I1 ${tai.I1} | I2 ${tai.I2} | I3 ${tai.I3} | B3 ${tai.B3} | C2 ${tai.C2} | C3 ${tai.C3}`,
+      `- เพศ: ชาย ${ctx.careStats.male} | หญิง ${ctx.careStats.female} | ไม่ระบุ ${ctx.careStats.unknown}`
+    ].join("\n");
+  }
+
+  buildFinanceAnswer(ctx) {
+    const highestIncomeCategory = this.maxIndex(ctx.finance.income) + 1;
+    const highestExpenseCategory = this.maxIndex(ctx.finance.expense) + 1;
+    const expenseRatio = this.ratioPercent(ctx.finance.totalExpense, ctx.finance.totalIncome);
+
+    const latest = ctx.financeTimeline.latest;
+    const previous = ctx.financeTimeline.previous;
+    const trendText =
+      latest && previous
+        ? `แนวโน้มสุทธิเดือนล่าสุด (${this.formatMonthLabel(latest.month)}) ${ctx.financeTimeline.netDelta >= 0 ? "ดีขึ้น" : "ลดลง"} ${Math.abs(
+            this.safeNumber(ctx.financeTimeline.netDelta)
+          ).toLocaleString("th-TH")} บาท เทียบเดือนก่อน (${this.formatMonthLabel(previous.month)})`
+        : "แนวโน้มรายเดือนยังไม่พอสำหรับเปรียบเทียบ";
+
+    return [
+      "สรุปการเงิน",
+      `- รายรับรวม ${ctx.finance.totalIncome.toLocaleString("th-TH")} บาท`,
+      `- รายจ่ายรวม ${ctx.finance.totalExpense.toLocaleString("th-TH")} บาท`,
+      `- คงเหลือสุทธิ ${ctx.finance.net.toLocaleString("th-TH")} บาท`,
+      `- รายจ่ายต่อรายรับ ${expenseRatio.toFixed(2)}%`,
+      `- หมวดรายรับสูงสุด: ประเภท ${highestIncomeCategory} | หมวดรายจ่ายสูงสุด: ประเภท ${highestExpenseCategory}`,
+      `- ${trendText}`
+    ].join("\n");
+  }
+
+  buildStockAnswer(ctx) {
+    if (!ctx.stockAlerts.length) {
+      return "คลังวัสดุ\n- ไม่พบรายการใกล้หมดหรือหมดคลังในข้อมูลล่าสุด";
+    }
+
+    const list = ctx.stockAlerts
+      .slice(0, 6)
+      .map(
+        (row) => `- ${row.productName} (${row.productID}) คงเหลือ ${row.balance} ${row.unit} | เกณฑ์ ${row.reorderPoint} | ${row.status}`
+      )
+      .join("\n");
+
+    return ["คลังวัสดุที่ต้องติดตาม", `- พบ ${ctx.stockAlerts.length} รายการ`, list].join("\n");
+  }
+
+  buildWorkforceAnswer(ctx) {
+    const topUnit = ctx.workforce.topUnit;
+    const coverageGapCount = ctx.workforce.coverageGap.length;
+
+    const lines = [
+      "สรุปกำลังคนและหน่วยงาน",
+      `- CG ${ctx.cgRows.length} คน | CM ${ctx.cmRows.length} คน | หน่วยงาน ${ctx.unitRows.length} หน่วย`,
+      `- ผู้รับบริการทั้งหมด ${ctx.dependents.length} ราย`
+    ];
+
+    if (topUnit) {
+      const ratioText = topUnit.dependentsPerCm == null ? "ไม่มี CM" : `${topUnit.dependentsPerCm.toFixed(2)} ราย/CM`;
+      lines.push(
+        `- หน่วยที่มีภาระสูงสุด: ${topUnit.unitName} (${topUnit.unitCode}) ผู้รับบริการ ${topUnit.dependentCount} ราย, CM ${topUnit.cmCount} คน (${ratioText})`
+      );
+    }
+
+    if (coverageGapCount > 0) {
+      lines.push(`- หน่วยที่มีผู้รับบริการแต่ยังไม่มี CM: ${coverageGapCount} หน่วย`);
+    }
+
+    return lines.join("\n");
+  }
+
+  buildAdviceAnswer(ctx) {
+    const points = [];
+
+    if (ctx.finance.net < 0) {
+      points.push(
+        `ควบคุมรายจ่ายเร่งด่วน เพราะงบสุทธิติดลบ ${Math.abs(ctx.finance.net).toLocaleString("th-TH")} บาท`
+      );
+    }
+
+    if (ctx.stockAlerts.length > 0) {
+      const critical = ctx.stockAlerts.filter((item) => item.status === "หมดคลัง").length;
+      points.push(
+        critical > 0
+          ? `เติมสต็อกทันที: มีรายการหมดคลัง ${critical} รายการ และใกล้หมดรวม ${ctx.stockAlerts.length} รายการ`
+          : `วางแผนสั่งซื้อ: มีรายการใกล้หมด ${ctx.stockAlerts.length} รายการ`
+      );
+    }
+
+    const highPercent = this.ratioPercent(ctx.careStats.highCount, ctx.dependents.length);
+    if (highPercent >= 35) {
+      points.push(`เพิ่มการติดตามกลุ่มพึ่งพิงสูง เพราะมีสัดส่วน ${highPercent.toFixed(1)}% ของผู้รับบริการทั้งหมด`);
+    }
+
+    const topUnit = ctx.workforce.topUnit;
+    if (topUnit && topUnit.dependentsPerCm != null && topUnit.dependentsPerCm > 20) {
+      points.push(
+        `ทบทวนการกระจาย CM ในหน่วย ${topUnit.unitName} (${topUnit.unitCode}) ซึ่งมีภาระสูง ${topUnit.dependentsPerCm.toFixed(1)} ราย/CM`
+      );
+    }
+
+    if (!points.length) {
+      points.push("ภาพรวมอยู่ในเกณฑ์ค่อนข้างสมดุล แนะนำติดตามแนวโน้มรายเดือนและเติมสต็อกเชิงป้องกันอย่างต่อเนื่อง");
+    }
+
+    return ["ข้อเสนอแนะเชิงปฏิบัติ", ...points.map((item) => `- ${item}`)].join("\n");
+  }
+
+  isGreetingPrompt(promptLower) {
+    return includesAny(promptLower, ["สวัสดี", "hello", "hi", "หวัดดี"]);
+  }
+
+  isSmallTalkPrompt(promptLower) {
+    return includesAny(promptLower, [
+      "คุยเล่น",
+      "คุยกัน",
+      "คุยได้ไหม",
+      "คุยไม่ได้",
+      "ทำไมคุณคุยไม่ได้",
+      "ทำไมคุยไม่ได้",
+      "ช่วยอะไรได้บ้าง",
+      "ทำอะไรได้บ้าง",
+      "คุณทำอะไรได้",
+      "เป็นไง",
+      "สบายดีไหม",
+      "ขอบคุณ",
+      "thank you"
+    ]);
+  }
+
+  buildSmallTalkAnswer(promptLower) {
+    if (includesAny(promptLower, ["คุยไม่ได้", "ทำไมคุณคุยไม่ได้", "ทำไมคุยไม่ได้"])) {
+      return [
+        "คุยได้ครับ ตอนนี้ผมถูกตั้งให้โฟกัสงานวิเคราะห์ข้อมูล LTC เป็นหลัก",
+        "- ถ้าต้องการคุยเล่นก็ได้ แต่คำตอบที่แม่นที่สุดจะเป็นเรื่องข้อมูลในระบบ",
+        "- ลองพิมพ์: สรุปผู้รับบริการ / วิเคราะห์การเงิน / ตรวจสต็อกใกล้หมด"
+      ].join("\n");
+    }
+
+    if (includesAny(promptLower, ["ขอบคุณ", "thank you"])) {
+      return "ยินดีครับ ถ้าพร้อม ผมช่วยวิเคราะห์ข้อมูล LTC ต่อได้เลย";
+    }
+
+    return [
+      "คุยได้ครับ",
+      "- ถ้าจะให้คุ้มสุด ลองสั่งงานเชิงข้อมูล เช่น สรุปผู้รับบริการ, วิเคราะห์การเงิน, หรือเช็กวัสดุใกล้หมด"
+    ].join("\n");
+  }
+
+  detectIntents(promptLower) {
+    const intents = new Set();
+
+    if (includesAny(promptLower, ["ผู้รับบริการ", "ผู้ป่วย", "ภาวะพึ่งพิง", "tai", "adl"])) intents.add("dependents");
+    if (includesAny(promptLower, ["รายรับ", "รายจ่าย", "การเงิน", "งบ", "budget", "คงเหลือ"])) intents.add("finance");
+    if (includesAny(promptLower, ["คลัง", "วัสดุ", "สต็อก", "stock", "เบิก", "รับเข้า", "ใกล้หมด", "หมดคลัง"])) intents.add("stock");
+    if (includesAny(promptLower, ["cg", "cm", "กำลังคน", "บุคลากร", "ทีมดูแล"])) intents.add("workforce");
+    if (includesAny(promptLower, ["หน่วย", "unit", "รพ.", "โรงพยาบาล", "รพสต"])) intents.add("unit");
+
+    if (includesAny(promptLower, ["แนวโน้ม", "trend", "เปรียบเทียบ", "เทียบ", "เดือน", "ไตรมาส"])) intents.add("trend");
+    if (includesAny(promptLower, ["แนะนำ", "ควร", "ปรับปรุง", "action", "แผน", "risk", "ความเสี่ยง", "ทำอย่างไร", "what should"])) {
+      intents.add("advice");
+    }
+
+    if (includesAny(promptLower, ["กราฟ", "แผนภูมิ", "chart", "visual", "plot"])) intents.add("chart");
+    if (includesAny(promptLower, ["ไฟล์", "export", "ดาวน์โหลด", "download", "csv", "json", "markdown", "รายงาน", "report"])) {
+      intents.add("artifact");
+    }
+    if (includesAny(promptLower, ["สรุป", "overview", "snapshot", "ภาพรวม"])) intents.add("summary");
+    if (this.isSmallTalkPrompt(promptLower) || this.isGreetingPrompt(promptLower)) intents.add("smalltalk");
+
+    return intents;
+  }
+
+  shouldUseGemini(promptLower, intents) {
+    if (!this.geminiClient || !this.geminiClient.isEnabled()) return false;
+    if (this.isGreetingPrompt(promptLower)) return false;
+
+    const hasDomainIntent = ["dependents", "finance", "stock", "workforce", "unit", "summary", "chart", "artifact", "advice", "trend"].some(
+      (intent) => intents.has(intent)
+    );
+    if (intents.has("smalltalk") && !hasDomainIntent) return false;
+
+    return true;
+  }
+
+  buildLocalAnswer(promptLower, ctx, intents) {
+    if (this.isGreetingPrompt(promptLower)) {
+      return [
+        "สวัสดีครับ ผมพร้อมช่วยวิเคราะห์ข้อมูล LTC ให้ทันที",
+        "- ลองพิมพ์: สรุปผู้รับบริการ, วิเคราะห์การเงิน, ตรวจสต็อกใกล้หมด, แนะนำแผนปรับปรุง"
+      ].join("\n");
+    }
+
+    if (intents.has("smalltalk")) {
+      return this.buildSmallTalkAnswer(promptLower);
+    }
+
+    const wantsOverview = intents.has("summary");
+    const sections = [];
+
+    if (intents.has("dependents") || wantsOverview) sections.push(this.buildDependentsAnswer(ctx));
+    if (intents.has("finance") || (wantsOverview && includesAny(promptLower, ["การเงิน", "งบ", "รายรับ", "รายจ่าย"]))) {
+      sections.push(this.buildFinanceAnswer(ctx));
+    }
+    if (intents.has("stock") || (wantsOverview && includesAny(promptLower, ["คลัง", "สต็อก", "วัสดุ"]))) {
+      sections.push(this.buildStockAnswer(ctx));
+    }
+    if (intents.has("workforce") || intents.has("unit") || (wantsOverview && includesAny(promptLower, ["cg", "cm", "หน่วย"]))) {
+      sections.push(this.buildWorkforceAnswer(ctx));
+    }
+
+    if (!sections.length) {
+      if (wantsOverview || intents.has("advice")) sections.push(this.buildGeneralAnswer(ctx));
+      else {
+        return [
+          "ผมคุยได้ครับ แต่ตอนนี้คำถามนี้ยังไม่ชัดว่าอยากดูข้อมูลด้านไหน",
+          "- ลองระบุเพิ่ม เช่น ผู้รับบริการ / การเงิน / คลังวัสดุ / หน่วยงาน"
+        ].join("\n");
+      }
+    }
+
+    if (intents.has("advice")) {
+      sections.push(this.buildAdviceAnswer(ctx));
+    }
+
+    return sections.join("\n\n");
+  }
+
+  cleanModelAnswer(text) {
+    const cleaned = String(text || "")
+      .replace(/\r/g, "")
+      .replace(/[\u0000-\u0008\u000B-\u001F\u007F]/g, "")
+      .trim();
+
+    if (!cleaned) return "";
+    return cleaned.slice(0, 3000);
+  }
+
+  buildGeminiPrompt(input) {
+    const stockLines = input.ctx.stockAlerts
+      .slice(0, 10)
+      .map((row) => `- ${row.productName} (${row.productID}) คงเหลือ ${row.balance} ${row.unit} | เกณฑ์ ${row.reorderPoint} | ${row.status}`)
+      .join("\n");
+
+    const workloadLines = input.ctx.workforce.rows
+      .slice(0, 8)
+      .map((row) => {
+        const ratio = row.dependentsPerCm == null ? "ไม่มี CM" : `${row.dependentsPerCm.toFixed(2)} ราย/CM`;
+        return `- ${row.unitName} (${row.unitCode}) ผู้รับบริการ ${row.dependentCount}, CM ${row.cmCount}, CG ${row.cgCount}, ภาระ ${ratio}`;
+      })
+      .join("\n");
+
+    const trendLines = input.ctx.financeTimeline.months
+      .slice(-6)
+      .map((row) => `- ${this.formatMonthLabel(row.month)} รายรับ ${row.income.toLocaleString("th-TH")} | รายจ่าย ${row.expense.toLocaleString("th-TH")} | สุทธิ ${row.net.toLocaleString("th-TH")}`)
+      .join("\n");
+
+    const historyLines = (Array.isArray(input.history) ? input.history : [])
+      .slice(-8)
+      .map((item) => {
+        const role = String(item?.role || "").toLowerCase() === "assistant" ? "assistant" : "user";
+        const text = sanitizeText(item?.text || "", 500);
+        return `${role}: ${text}`;
+      })
+      .filter(Boolean)
+      .join("\n");
+
+    const facts = [
+      `FACT total_dependents=${input.ctx.dependents.length}`,
+      `FACT high_dependents=${input.ctx.careStats.highCount}`,
+      `FACT cg=${input.ctx.cgRows.length}`,
+      `FACT cm=${input.ctx.cmRows.length}`,
+      `FACT units=${input.ctx.unitRows.length}`,
+      `FACT total_income=${input.ctx.finance.totalIncome}`,
+      `FACT total_expense=${input.ctx.finance.totalExpense}`,
+      `FACT net=${input.ctx.finance.net}`,
+      `FACT stock_alerts=${input.ctx.stockAlerts.length}`
+    ].join("\n");
+
+    return [
+      "บทบาท: คุณคือผู้ช่วยวิเคราะห์ข้อมูล LTC ภาษาไทย",
+      "กติกา:",
+      "1) ใช้เฉพาะข้อมูลใน FACT และ CONTEXT ด้านล่างเท่านั้น",
+      "2) ห้ามสร้างตัวเลขใหม่ หรือเดาข้อมูลที่ไม่มี",
+      "3) ถ้าข้อมูลไม่พอ ให้บอกตรงๆว่าไม่พอ",
+      "4) ตอบเป็นภาษาไทย กระชับ อ่านง่าย เป็น bullet ได้",
+      "",
+      `คำถามผู้ใช้: ${input.prompt}`,
+      historyLines ? `บทสนทนาล่าสุด:\n${historyLines}` : "บทสนทนาล่าสุด: ไม่มี",
+      "",
+      facts,
+      "",
+      "CONTEXT-CARE:",
+      `- TAI I1=${input.ctx.careStats.taiCounts.I1} I2=${input.ctx.careStats.taiCounts.I2} I3=${input.ctx.careStats.taiCounts.I3} B3=${input.ctx.careStats.taiCounts.B3} C2=${input.ctx.careStats.taiCounts.C2} C3=${input.ctx.careStats.taiCounts.C3}`,
+      `- เพศ ชาย=${input.ctx.careStats.male} หญิง=${input.ctx.careStats.female} ไม่ระบุ=${input.ctx.careStats.unknown}`,
+      "",
+      "CONTEXT-FINANCE-TREND:",
+      trendLines || "- ไม่มีข้อมูลรายเดือน",
+      "",
+      "CONTEXT-STOCK-ALERTS:",
+      stockLines || "- ไม่พบรายการ",
+      "",
+      "CONTEXT-WORKFORCE-BY-UNIT:",
+      workloadLines || "- ไม่พบข้อมูล",
+      "",
+      `คำตอบพื้นฐานจากระบบ (fallback):\n${input.localAnswer}`,
+      "",
+      "ให้ตอบโดยอ้างอิง FACT เป็นหลัก และขยายความเชิงวิเคราะห์เฉพาะที่ข้อมูลรองรับได้"
+    ].join("\n");
+  }
+
+  async refineWithGemini(prompt, promptLower, intents, ctx, localAnswer, history = []) {
+    if (!this.shouldUseGemini(promptLower, intents)) {
+      return {
+        answer: localAnswer,
+        source: "local-rule-based"
+      };
+    }
+
+    try {
+      const geminiPrompt = this.buildGeminiPrompt({ prompt, ctx, localAnswer, history });
+      const answer = await this.geminiClient.generate(geminiPrompt);
+      const cleaned = this.cleanModelAnswer(answer);
+      if (!cleaned) {
+        return { answer: localAnswer, source: "local-fallback-empty" };
+      }
+      return { answer: cleaned, source: "gemini" };
+    } catch {
+      return { answer: localAnswer, source: "local-fallback-error" };
+    }
   }
 
   buildCareDistributionChart(ctx) {
     const keys = ["I1", "I2", "I3", "B3", "C2", "C3"];
-    const counts = {};
-    for (const key of keys) counts[key] = 0;
-    for (const row of ctx.dependents) {
-      const key = String(row.TAI || "").toUpperCase();
-      if (counts[key] != null) counts[key] += 1;
-    }
-
     return {
-      title: "กราฟการกระจายระดับการดูแล (TAI)",
+      title: "การกระจายระดับการดูแล (TAI)",
       type: "bar",
       unit: "ราย",
       labels: keys,
       datasets: [
         {
-          label: "จำนวนผู้รับบริการ",
+          label: "ผู้รับบริการ",
           color: "#2f7fc2",
-          data: keys.map((key) => counts[key] || 0)
+          data: keys.map((key) => this.safeNumber(ctx.careStats.taiCounts[key]))
         }
       ]
     };
@@ -122,7 +701,7 @@ class AiAssistantService {
 
   buildFinanceChart(ctx) {
     return {
-      title: "กราฟรายรับ-รายจ่าย",
+      title: "รายรับ-รายจ่ายภาพรวม",
       type: "bar",
       unit: "บาท",
       labels: ["รายรับรวม", "รายจ่ายรวม", "คงเหลือสุทธิ"],
@@ -136,9 +715,38 @@ class AiAssistantService {
     };
   }
 
+  buildFinanceTrendChart(ctx) {
+    const rows = ctx.financeTimeline.months;
+    if (!rows.length) return null;
+
+    return {
+      title: "แนวโน้มการเงิน 6 เดือนล่าสุด",
+      type: "bar",
+      unit: "บาท",
+      labels: rows.map((row) => this.formatMonthLabel(row.month)),
+      datasets: [
+        {
+          label: "รายรับ",
+          color: "#0ea5e9",
+          data: rows.map((row) => this.safeNumber(row.income))
+        },
+        {
+          label: "รายจ่าย",
+          color: "#ef4444",
+          data: rows.map((row) => this.safeNumber(row.expense))
+        },
+        {
+          label: "สุทธิ",
+          color: "#16a34a",
+          data: rows.map((row) => this.safeNumber(row.net))
+        }
+      ]
+    };
+  }
+
   buildWorkforceChart(ctx) {
     return {
-      title: "กราฟกำลังคนและหน่วยงาน",
+      title: "กำลังคนและหน่วยงาน",
       type: "bar",
       unit: "จำนวน",
       labels: ["ผู้รับบริการ", "CG", "CM", "หน่วยงาน"],
@@ -152,13 +760,43 @@ class AiAssistantService {
     };
   }
 
+  buildUnitLoadChart(ctx) {
+    const rows = ctx.workforce.rows.slice(0, 6);
+    if (!rows.length) return null;
+
+    return {
+      title: "ภาระงานต่อหน่วย (Top 6)",
+      type: "bar",
+      unit: "ราย",
+      labels: rows.map((row) => `${row.unitName} (${row.unitCode})`),
+      datasets: [
+        {
+          label: "ผู้รับบริการ",
+          color: "#f97316",
+          data: rows.map((row) => this.safeNumber(row.dependentCount))
+        },
+        {
+          label: "CM",
+          color: "#2563eb",
+          data: rows.map((row) => this.safeNumber(row.cmCount))
+        },
+        {
+          label: "CG",
+          color: "#a855f7",
+          data: rows.map((row) => this.safeNumber(row.cgCount))
+        }
+      ]
+    };
+  }
+
   buildStockAlertsChart(ctx) {
     const rows = [...ctx.stockAlerts]
       .sort((a, b) => this.safeNumber(a.balance) - this.safeNumber(b.balance))
       .slice(0, 8);
     if (!rows.length) return null;
+
     return {
-      title: "กราฟวัสดุใกล้หมด/หมดคลัง",
+      title: "วัสดุใกล้หมด/หมดคลัง",
       type: "bar",
       unit: "ชิ้น",
       labels: rows.map((row) => String(row.productName || row.productID || "-")),
@@ -205,24 +843,36 @@ class AiAssistantService {
     };
   }
 
-  buildCharts(promptLower, ctx) {
-    const wantsChart = includesAny(promptLower, ["กราฟ", "แผนภูมิ", "chart", "visual", "plot"]);
+  buildCharts(promptLower, ctx, intents) {
+    const wantsChart = intents.has("chart") || includesAny(promptLower, ["กราฟ", "แผนภูมิ", "chart", "plot", "visual"]);
     if (!wantsChart) return [];
 
     const charts = [];
-    if (includesAny(promptLower, ["รายรับ", "รายจ่าย", "การเงิน", "งบ"])) {
+
+    if (intents.has("finance")) {
       charts.push(this.buildFinanceChart(ctx));
-    } else if (includesAny(promptLower, ["วัสดุ", "สต็อก", "คลัง", "ใกล้หมด", "หมดคลัง"])) {
+      if (intents.has("trend") || includesAny(promptLower, ["trend", "แนวโน้ม", "เดือน", "เปรียบเทียบ"])) {
+        charts.push(this.buildFinanceTrendChart(ctx));
+      }
+    }
+
+    if (intents.has("stock")) {
       charts.push(this.buildStockAlertsChart(ctx));
-    } else if (includesAny(promptLower, ["ผู้รับบริการ", "ภาวะพึ่งพิง", "tai"])) {
+    }
+
+    if (intents.has("dependents")) {
       charts.push(this.buildCareDistributionChart(ctx));
-    } else if (includesAny(promptLower, ["cg", "cm", "หน่วย", "กำลังคน"])) {
-      charts.push(this.buildWorkforceChart(ctx));
-    } else {
+    }
+
+    if (intents.has("workforce") || intents.has("unit")) {
+      charts.push(this.buildWorkforceChart(ctx), this.buildUnitLoadChart(ctx));
+    }
+
+    if (!charts.length) {
       charts.push(this.buildFinanceChart(ctx), this.buildWorkforceChart(ctx));
     }
 
-    return charts.map((item) => this.normalizeChart(item)).filter(Boolean).slice(0, 2);
+    return charts.map((item) => this.normalizeChart(item)).filter(Boolean).slice(0, 3);
   }
 
   sanitizeFileName(name) {
@@ -262,15 +912,47 @@ class AiAssistantService {
   buildStockCsv(ctx) {
     const header = "product_id,product_name,balance,reorder_point,status";
     const rows = ctx.stockAlerts
-      .slice(0, 50)
+      .slice(0, 100)
       .map(
         (row) =>
-          `${String(row.productID || "").replaceAll(",", " ")},${String(row.productName || "").replaceAll(",", " ")},${this.safeNumber(row.balance)},${this.safeNumber(row.reorderPoint)},${String(row.status || "")}`
+          `${String(row.productID || "").replaceAll(",", " ")},${String(row.productName || "").replaceAll(",", " ")},${this.safeNumber(
+            row.balance
+          )},${this.safeNumber(row.reorderPoint)},${String(row.status || "")}`
       );
     return [header, ...rows].join("\n");
   }
 
+  buildWorkforceCsv(ctx) {
+    const header = "unit_code,unit_name,dependents,cm,cg,dependents_per_cm";
+    const rows = ctx.workforce.rows.slice(0, 100).map((row) => {
+      const ratio = row.dependentsPerCm == null ? "" : row.dependentsPerCm.toFixed(2);
+      return `${String(row.unitCode || "")},${String(row.unitName || "").replaceAll(",", " ")},${this.safeNumber(
+        row.dependentCount
+      )},${this.safeNumber(row.cmCount)},${this.safeNumber(row.cgCount)},${ratio}`;
+    });
+    return [header, ...rows].join("\n");
+  }
+
+  buildCareCsv(ctx) {
+    const tai = ctx.careStats.taiCounts;
+    const lines = [
+      "metric,value",
+      `I1,${tai.I1}`,
+      `I2,${tai.I2}`,
+      `I3,${tai.I3}`,
+      `B3,${tai.B3}`,
+      `C2,${tai.C2}`,
+      `C3,${tai.C3}`,
+      `high_dependency,${ctx.careStats.highCount}`,
+      `male,${ctx.careStats.male}`,
+      `female,${ctx.careStats.female}`,
+      `unknown_gender,${ctx.careStats.unknown}`
+    ];
+    return lines.join("\n");
+  }
+
   buildMarkdownSummary(prompt, ctx, answer) {
+    const latestMonth = ctx.financeTimeline.latest;
     const lines = [
       "# LTC AI Report",
       "",
@@ -284,12 +966,16 @@ class AiAssistantService {
       "## Snapshot",
       "",
       `- ผู้รับบริการ: ${ctx.dependents.length}`,
+      `- พึ่งพิงสูง: ${ctx.careStats.highCount}`,
       `- CG: ${ctx.cgRows.length}`,
       `- CM: ${ctx.cmRows.length}`,
       `- หน่วยงาน: ${ctx.unitRows.length}`,
       `- รายรับรวม: ${ctx.finance.totalIncome.toLocaleString("th-TH")} บาท`,
       `- รายจ่ายรวม: ${ctx.finance.totalExpense.toLocaleString("th-TH")} บาท`,
-      `- คงเหลือสุทธิ: ${ctx.finance.net.toLocaleString("th-TH")} บาท`
+      `- คงเหลือสุทธิ: ${ctx.finance.net.toLocaleString("th-TH")} บาท`,
+      latestMonth
+        ? `- เดือนล่าสุด (${this.formatMonthLabel(latestMonth.month)}) สุทธิ: ${latestMonth.net.toLocaleString("th-TH")} บาท`
+        : "- เดือนล่าสุด: ไม่มีข้อมูล"
     ];
     return lines.join("\n");
   }
@@ -299,29 +985,45 @@ class AiAssistantService {
       generatedAt: nowIso(),
       totals: {
         dependents: ctx.dependents.length,
+        highDependents: ctx.careStats.highCount,
         cg: ctx.cgRows.length,
         cm: ctx.cmRows.length,
         units: ctx.unitRows.length
       },
       finance: ctx.finance,
-      stockAlerts: ctx.stockAlerts.slice(0, 20)
+      financeTimeline: ctx.financeTimeline,
+      care: ctx.careStats,
+      workforceTop: ctx.workforce.rows.slice(0, 10),
+      stockAlerts: ctx.stockAlerts.slice(0, 30)
     };
     return JSON.stringify(payload, null, 2);
   }
 
-  buildArtifacts(promptLower, prompt, ctx, answer) {
-    const wantsFile = includesAny(promptLower, ["ไฟล์", "export", "ดาวน์โหลด", "download", "csv", "json", "markdown", "รายงาน", "report"]);
+  buildArtifacts(promptLower, prompt, ctx, answer, intents) {
+    const wantsFile =
+      intents.has("artifact") || includesAny(promptLower, ["ไฟล์", "export", "ดาวน์โหลด", "download", "csv", "json", "markdown", "รายงาน", "report"]);
     if (!wantsFile) return [];
 
     const artifacts = [];
     const timeKey = new Date().toISOString().slice(0, 10);
+    const wantsCsv = includesAny(promptLower, ["csv"]);
+    const hasDomainIntent =
+      intents.has("finance") || intents.has("stock") || intents.has("workforce") || intents.has("unit") || intents.has("dependents");
 
-    if (includesAny(promptLower, ["csv", "รายรับ", "รายจ่าย", "งบ", "การเงิน"])) {
+    if (intents.has("finance") || includesAny(promptLower, ["รายรับ", "รายจ่าย", "งบ", "การเงิน"])) {
       artifacts.push(this.makeArtifact(`finance-summary-${timeKey}.csv`, "text/csv;charset=utf-8", this.buildFinanceCsv(ctx)));
     }
 
-    if (includesAny(promptLower, ["csv", "วัสดุ", "สต็อก", "คลัง", "ใกล้หมด"])) {
+    if (intents.has("stock") || includesAny(promptLower, ["วัสดุ", "สต็อก", "คลัง", "ใกล้หมด"])) {
       artifacts.push(this.makeArtifact(`stock-alerts-${timeKey}.csv`, "text/csv;charset=utf-8", this.buildStockCsv(ctx)));
+    }
+
+    if (intents.has("workforce") || intents.has("unit") || includesAny(promptLower, ["หน่วย", "cg", "cm", "กำลังคน"])) {
+      artifacts.push(this.makeArtifact(`workforce-summary-${timeKey}.csv`, "text/csv;charset=utf-8", this.buildWorkforceCsv(ctx)));
+    }
+
+    if (intents.has("dependents") || includesAny(promptLower, ["tai", "ภาวะพึ่งพิง", "ผู้รับบริการ"])) {
+      artifacts.push(this.makeArtifact(`care-summary-${timeKey}.csv`, "text/csv;charset=utf-8", this.buildCareCsv(ctx)));
     }
 
     if (includesAny(promptLower, ["json"])) {
@@ -332,71 +1034,51 @@ class AiAssistantService {
       artifacts.push(this.makeArtifact(`ltc-report-${timeKey}.md`, "text/markdown;charset=utf-8", this.buildMarkdownSummary(prompt, ctx, answer)));
     }
 
+    if (wantsCsv && !hasDomainIntent && !artifacts.length) {
+      artifacts.push(this.makeArtifact(`finance-summary-${timeKey}.csv`, "text/csv;charset=utf-8", this.buildFinanceCsv(ctx)));
+    }
+
     if (!artifacts.length) {
       artifacts.push(this.makeArtifact(`ltc-report-${timeKey}.md`, "text/markdown;charset=utf-8", this.buildMarkdownSummary(prompt, ctx, answer)));
     }
 
-    return artifacts.slice(0, 3);
-  }
-
-  buildGeminiPrompt(input) {
-    const stockLines = input.ctx.stockAlerts
-      .slice(0, 10)
-      .map((row) => `${row.productName} (${row.productID}) คงเหลือ ${row.balance} เกณฑ์ ${row.reorderPoint} สถานะ ${row.status}`)
-      .join("\n");
-
-    const historyLines = (Array.isArray(input.history) ? input.history : [])
-      .slice(-8)
-      .map((item) => {
-        const role = String(item?.role || "").toLowerCase() === "assistant" ? "assistant" : "user";
-        const text = sanitizeText(item?.text || "", 500);
-        return `${role}: ${text}`;
-      })
-      .filter(Boolean)
-      .join("\n");
-
-    const promptLines = [
-      "คุณคือผู้ช่วยวิเคราะห์ข้อมูลระบบ LTC ให้ตอบภาษาไทยอย่างกระชับ ใช้ข้อมูลจริงที่ให้เท่านั้น",
-      "ถ้าข้อมูลไม่พอ ให้บอกตรงๆว่าไม่พอ",
-      `คำถามผู้ใช้: ${input.prompt}`,
-      historyLines ? `บริบทบทสนทนาล่าสุด:\n${historyLines}` : "บริบทบทสนทนาล่าสุด: ไม่มี",
-      "สรุปข้อมูลฐานล่าสุด:",
-      `- ผู้รับบริการ: ${input.ctx.dependents.length} ราย`,
-      `- CG: ${input.ctx.cgRows.length} คน`,
-      `- CM: ${input.ctx.cmRows.length} คน`,
-      `- หน่วยงาน: ${input.ctx.unitRows.length} หน่วย`,
-      `- รายรับรวม: ${input.ctx.finance.totalIncome.toLocaleString("th-TH")} บาท`,
-      `- รายจ่ายรวม: ${input.ctx.finance.totalExpense.toLocaleString("th-TH")} บาท`,
-      `- คงเหลือสุทธิ: ${input.ctx.finance.net.toLocaleString("th-TH")} บาท`,
-      "- วัสดุใกล้หมด/หมดคลัง:",
-      stockLines || "ไม่พบรายการ",
-      "",
-      `คำตอบพื้นฐานของระบบ (fallback): ${input.localAnswer}`,
-      "",
-      "ตอบแบบ bullet หรือย่อหน้าอ่านง่าย และห้ามสร้างตัวเลขใหม่เอง"
-    ];
-
-    return promptLines.join("\n");
-  }
-
-  async refineWithGemini(prompt, ctx, localAnswer, history = []) {
-    if (!this.geminiClient || !this.geminiClient.isEnabled()) {
-      return {
-        answer: localAnswer,
-        source: "local-rule-based"
-      };
+    const unique = [];
+    const seen = new Set();
+    for (const item of artifacts) {
+      const key = `${item.fileName}|${item.mimeType}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      unique.push(item);
     }
 
-    try {
-      const geminiPrompt = this.buildGeminiPrompt({ prompt, ctx, localAnswer, history });
-      const answer = await this.geminiClient.generate(geminiPrompt);
-      if (!answer) {
-        return { answer: localAnswer, source: "local-fallback-empty" };
-      }
-      return { answer, source: "gemini" };
-    } catch {
-      return { answer: localAnswer, source: "local-fallback-error" };
+    return unique.slice(0, 4);
+  }
+
+  buildSuggestions(ctx, intents) {
+    const suggestions = [];
+
+    if (!intents.has("dependents")) suggestions.push("สรุปผู้รับบริการและกลุ่มพึ่งพิงสูง");
+    if (!intents.has("finance")) suggestions.push("วิเคราะห์รายรับรายจ่ายและเงินคงเหลือ");
+    if (!intents.has("stock")) suggestions.push("ตรวจรายการวัสดุใกล้หมด/หมดคลัง");
+    if (!intents.has("workforce") && !intents.has("unit")) suggestions.push("ภาระงานต่อหน่วยและสัดส่วน CM/CG");
+
+    if (ctx.stockAlerts.length > 0) {
+      suggestions.push("แนะนำแผนเติมสต็อกเร่งด่วน");
     }
+    if (ctx.financeTimeline.months.length >= 2) {
+      suggestions.push("แนวโน้มการเงิน 6 เดือนล่าสุด");
+    }
+
+    const unique = [];
+    const seen = new Set();
+    for (const item of suggestions) {
+      const key = String(item || "").trim();
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      unique.push(key);
+    }
+
+    return unique.slice(0, 5);
   }
 
   async loadContextSnapshot() {
@@ -411,13 +1093,23 @@ class AiAssistantService {
       this.readRows("t26_unit")
     ]);
 
+    const finance = this.summarizeFinance(financeRows);
+    const financeTimeline = this.buildFinanceTimeline(financeRows);
+    const careStats = this.buildCareStats(dependents);
+    const stockAlerts = this.computeStockAlerts(productRows, inRows, outRows);
+    const workforce = this.buildWorkforceByUnit(unitRows, cmRows, cgRows, dependents);
+
     return {
       dependents,
       cgRows,
       cmRows,
       unitRows,
-      finance: this.summarizeFinance(financeRows),
-      stockAlerts: this.computeStockAlerts(productRows, inRows, outRows)
+      financeRows,
+      finance,
+      financeTimeline,
+      careStats,
+      stockAlerts,
+      workforce
     };
   }
 
@@ -457,51 +1149,29 @@ class AiAssistantService {
     }
 
     const ctx = await this.getContextSnapshot();
-    const dependents = ctx.dependents;
-    const cgRows = ctx.cgRows;
-    const cmRows = ctx.cmRows;
-    const unitRows = ctx.unitRows;
-
     const lower = prompt.toLowerCase();
-    let localAnswer = "";
+    const intents = this.detectIntents(lower);
+    const localAnswer = this.buildLocalAnswer(lower, ctx, intents);
 
-    if (includesAny(lower, ["ผู้รับบริการ", "ผู้ป่วย", "ภาวะพึ่งพิง", "ltc"])) {
-      const high = dependents.filter((row) => ["I3", "B3", "C2", "C3"].includes(String(row.TAI || "").toUpperCase())).length;
-      localAnswer = `ข้อมูลผู้รับบริการล่าสุด: ทั้งหมด ${dependents.length} ราย และเป็นกลุ่มพึ่งพิงสูง ${high} ราย`;
-    } else if (includesAny(lower, ["รายรับ", "รายจ่าย", "การเงิน", "งบ", "คงเหลือ"])) {
-      localAnswer = `สรุปการเงิน: รายรับรวม ${ctx.finance.totalIncome.toLocaleString("th-TH")} บาท, รายจ่ายรวม ${ctx.finance.totalExpense.toLocaleString("th-TH")} บาท, คงเหลือสุทธิ ${ctx.finance.net.toLocaleString("th-TH")} บาท`;
-    } else if (includesAny(lower, ["คลัง", "วัสดุ", "สต็อก", "เบิก", "ใกล้หมด", "หมดคลัง"])) {
-      if (!ctx.stockAlerts.length) {
-        localAnswer = "ไม่พบรายการวัสดุที่ใกล้หมดหรือหมดคลังในข้อมูลล่าสุด";
-      } else {
-        const lines = ctx.stockAlerts
-          .slice(0, 5)
-          .map((row) => `- ${row.productName} (${row.productID}) คงเหลือ ${row.balance} | สถานะ ${row.status}`)
-          .join("\n");
-        localAnswer = `รายการวัสดุที่ต้องติดตาม:\n${lines}`;
-      }
-    } else if (includesAny(lower, ["cg", "cm", "หน่วย", "เขตรับผิดชอบ"])) {
-      localAnswer = `กำลังคนและหน่วยงาน: CG ${cgRows.length} คน, CM ${cmRows.length} คน, หน่วยงาน ${unitRows.length} หน่วย`;
-    } else {
-      localAnswer = this.buildGeneralAnswer(ctx);
-    }
-
-    const refined = await this.refineWithGemini(prompt, ctx, localAnswer, history);
-    const charts = this.buildCharts(lower, ctx);
-    const artifacts = this.buildArtifacts(lower, prompt, ctx, refined.answer);
+    const refined = await this.refineWithGemini(prompt, lower, intents, ctx, localAnswer, history);
+    const charts = this.buildCharts(lower, ctx, intents);
+    const artifacts = this.buildArtifacts(lower, prompt, ctx, refined.answer, intents);
+    const suggestions = this.buildSuggestions(ctx, intents);
 
     return {
       answer: refined.answer,
       source: refined.source,
       charts,
       artifacts,
-      suggestions: ["สรุปผู้รับบริการ", "วิเคราะห์รายรับรายจ่าย", "ตรวจรายการวัสดุใกล้หมด"],
+      suggestions,
       context: {
-        dependents: dependents.length,
-        cg: cgRows.length,
-        cm: cmRows.length,
-        units: unitRows.length,
-        stockAlerts: ctx.stockAlerts.length
+        dependents: ctx.dependents.length,
+        highDependents: ctx.careStats.highCount,
+        cg: ctx.cgRows.length,
+        cm: ctx.cmRows.length,
+        units: ctx.unitRows.length,
+        stockAlerts: ctx.stockAlerts.length,
+        financeNet: ctx.finance.net
       }
     };
   }

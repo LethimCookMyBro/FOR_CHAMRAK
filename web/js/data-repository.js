@@ -29,11 +29,16 @@ class DataRepository {
     const message = String(payload?.error || `request error ${response.status}`);
     const error = new Error(message);
     error.status = response.status;
+    const requestIdFromHeader = response?.headers?.get?.("x-request-id");
 
     if (payload && typeof payload === "object") {
       if (payload.code) error.code = String(payload.code);
       if (payload.currentVersion) error.currentVersion = String(payload.currentVersion);
       if (payload.retryAfter) error.retryAfter = Number(payload.retryAfter) || 0;
+      if (payload.requestId) error.requestId = String(payload.requestId);
+    }
+    if (!error.requestId && requestIdFromHeader) {
+      error.requestId = String(requestIdFromHeader);
     }
 
     if (response.status === 401) {
@@ -51,7 +56,17 @@ class DataRepository {
   }
 
   async requestJson(url, options = {}) {
-    const response = await fetch(url, { cache: "no-store", ...options });
+    const headers = new Headers(options.headers || {});
+    if (!headers.has("X-Requested-With")) {
+      headers.set("X-Requested-With", "XMLHttpRequest");
+    }
+
+    const response = await fetch(url, {
+      cache: "no-store",
+      credentials: "same-origin",
+      ...options,
+      headers
+    });
     let payload = null;
     try {
       payload = await response.json();
@@ -250,7 +265,11 @@ class DataRepository {
     if (filters.action) params.set("action", String(filters.action));
 
     const query = params.toString();
-    const response = await fetch(`${this.apiBase}/logs/export${query ? `?${query}` : ""}`, { cache: "no-store" });
+    const response = await fetch(`${this.apiBase}/logs/export${query ? `?${query}` : ""}`, {
+      cache: "no-store",
+      credentials: "same-origin",
+      headers: { "X-Requested-With": "XMLHttpRequest" }
+    });
     if (response.status === 401) {
       const error = new Error("ต้องเข้าสู่ระบบใหม่");
       error.authRequired = true;
@@ -294,6 +313,17 @@ class DataRepository {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({})
+    });
+  }
+
+  async purgeAllTrash(options = {}) {
+    return this.requestJson(`${this.apiBase}/trash/purge-all`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        alias: options.alias ? String(options.alias) : "",
+        includeRestored: options.includeRestored !== false
+      })
     });
   }
 

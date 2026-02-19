@@ -1,4 +1,15 @@
-export const API_BASE = "/api";
+function normalizeBasePath(value, fallback) {
+  const raw = String(value || "").trim();
+  const withSlash = raw ? (raw.startsWith("/") ? raw : `/${raw}`) : fallback;
+  const normalized = withSlash.length > 1 ? withSlash.replace(/\/+$/, "") : withSlash;
+  if (!/^\/[A-Za-z0-9/_-]*$/.test(normalized)) return fallback;
+  return normalized || fallback;
+}
+
+const runtimeConfig = globalThis.__LTC_RUNTIME_CONFIG__ || {};
+
+export const API_BASE = normalizeBasePath(runtimeConfig.apiBase, "/api");
+export const AUTH_BASE = normalizeBasePath(runtimeConfig.authBase, "/auth");
 export const DATA_ROOT = "./chamrak_export";
 export const STORAGE_PREFIX = "chamrak_edit_";
 export const INTERNAL_KEYS = new Set(["__rowid"]);

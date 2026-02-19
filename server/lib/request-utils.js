@@ -6,7 +6,8 @@ function createRequestUtils(activityLogs) {
   function getActor(req) {
     return {
       username: sanitizeText(req.auth?.username || "anonymous", 80),
-      ip: sanitizeText(req.ip || "-", 120)
+      ip: sanitizeText(req.ip || "-", 120),
+      requestId: sanitizeText(req.requestId || "-", 120)
     };
   }
 

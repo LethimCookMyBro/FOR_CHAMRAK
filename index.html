@@ -25,7 +25,6 @@
         <span id="authUserText" class="auth-user">ผู้ใช้: -</span>
         <button id="logoutBtn" class="auth-logout" type="button">ออกจากระบบ</button>
       </div>
-      <button id="securityToggleBtn" class="security-toggle" type="button">🔐 โหมดแก้ไข: ล็อก</button>
     </div>
     <nav class="topnav">
       <button class="nav-btn active" data-page="overview" type="button">📊 ภาพรวม</button>
@@ -214,6 +213,7 @@
               <th>ครั้งดูแล/ปี</th>
               <th>ค่าตอบแทน CM/ครั้ง</th>
               <th>รวมต่อปี</th>
+              <th>จัดการ</th>
             </tr>
           </thead>
           <tbody id="cmRateBody"></tbody>
@@ -385,6 +385,7 @@
       <div class="section-head">
         <div class="section-tools">
           <button id="trashRestoreBtn" class="btn btn-primary" type="button" disabled>กู้คืนข้อมูลที่เลือก</button>
+          <button id="trashPurgeAllBtn" class="btn btn-danger" type="button">ลบข้อมูลทั้งหมด</button>
           <button id="trashPurgeBtn" class="btn btn-danger" type="button">ล้างข้อมูลที่หมดอายุ</button>
         </div>
       </div>
@@ -424,6 +425,7 @@
     </form>
   </dialog>
 
+  <script src="/public/runtime-config.js"></script>
   <script type="module" src="./web/app.js"></script>
 </body>
 </html>

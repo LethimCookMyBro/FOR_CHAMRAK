@@ -11,6 +11,17 @@ class SecurityAuditService {
     this.adminPassword = config.adminPassword;
     this.geminiEnabled = Boolean(config.geminiEnabled);
     this.aiCoordinator = config.aiCoordinator;
+    this.requestBodyLimit = String(config.requestBodyLimit || "unknown");
+    this.requireAjaxHeader = config.requireAjaxHeader !== false;
+    this.allowedOrigins = Array.isArray(config.allowedOrigins) ? config.allowedOrigins : [];
+    this.tableMaxRows = Number(config.tableMaxRows || 0);
+    this.tableMaxPayloadBytes = Number(config.tableMaxPayloadBytes || 0);
+    this.trustProxyHops = Math.max(0, Number(config.trustProxyHops || 0));
+    this.debugRequests = Boolean(config.debugRequests);
+    this.ipBlockEnabled = config.ipBlockEnabled !== false;
+    this.ipBlockWindowMs = Math.max(1000, Number(config.ipBlockWindowMs || 0));
+    this.ipBlockMaxHits = Math.max(1, Number(config.ipBlockMaxHits || 0));
+    this.ipBlockDurationMs = Math.max(1000, Number(config.ipBlockDurationMs || 0));
   }
 
   run() {
@@ -57,6 +68,53 @@ class SecurityAuditService {
         label: "AI Concurrency Control",
         status: aiLimits && aiLimits.maxConcurrent >= 2 && aiLimits.maxQueue >= 10 ? "pass" : "warn",
         detail: "มีตัวควบคุมจำนวนคำขอ AI พร้อมกันและคิวรอ"
+      },
+      {
+        id: "ajax_state_change_guard",
+        label: "AJAX Guard (State-Changing API)",
+        status: this.requireAjaxHeader ? "pass" : "warn",
+        detail: "คำขอแก้ไขข้อมูล API ต้องส่ง X-Requested-With"
+      },
+      {
+        id: "body_limit",
+        label: "Request Body Limit",
+        status: /\d/.test(this.requestBodyLimit) ? "pass" : "warn",
+        detail: `กำหนด request body limit = ${this.requestBodyLimit}`
+      },
+      {
+        id: "table_limits",
+        label: "Table Payload Limits",
+        status: this.tableMaxRows > 0 && this.tableMaxPayloadBytes > 0 ? "pass" : "warn",
+        detail: `maxRows=${this.tableMaxRows}, maxPayloadBytes=${this.tableMaxPayloadBytes}`
+      },
+      {
+        id: "allowed_origins",
+        label: "Allowed Origins",
+        status: this.allowedOrigins.length > 0 ? "pass" : "warn",
+        detail: this.allowedOrigins.length > 0 ? this.allowedOrigins.join(", ") : "ใช้ค่า dynamic ตาม host ปัจจุบัน"
+      },
+      {
+        id: "proxy_ip_source",
+        label: "Proxy IP Source",
+        status: this.trustProxyHops > 0 ? "pass" : "warn",
+        detail:
+          this.trustProxyHops > 0
+            ? `trust proxy hops = ${this.trustProxyHops}`
+            : "ยังไม่ตั้ง TRUST_PROXY_HOPS (ถ้าอยู่หลัง reverse proxy ควรกำหนด)"
+      },
+      {
+        id: "request_debug_trace",
+        label: "Request Debug Trace",
+        status: this.debugRequests ? "warn" : "pass",
+        detail: this.debugRequests ? "DEBUG_REQUESTS=1 ควรเปิดเฉพาะช่วง debug ชั่วคราว" : "ปิด debug request log"
+      },
+      {
+        id: "ip_spam_block",
+        label: "IP Spam Block",
+        status: this.ipBlockEnabled && this.ipBlockMaxHits > 0 && this.ipBlockDurationMs > 0 ? "pass" : "warn",
+        detail: this.ipBlockEnabled
+          ? `window=${this.ipBlockWindowMs}ms, maxHits=${this.ipBlockMaxHits}, block=${this.ipBlockDurationMs}ms`
+          : "ปิดการ block IP อัตโนมัติ (IP_BLOCK_ENABLED=0)"
       }
     ];
 

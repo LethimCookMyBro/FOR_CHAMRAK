@@ -333,10 +333,13 @@ class AiAssistantPage {
   handleError = (error) => {
     console.error(error);
     const baseMessage = error?.message || "เกิดข้อผิดพลาดระหว่างใช้งาน AI";
-    const message =
+    let message =
       error?.aiBusy && error?.retryAfter
         ? `${baseMessage} (ลองใหม่ใน ${Number(error.retryAfter)} วินาที)`
         : baseMessage;
+    if (error?.requestId) {
+      message = `${message}\nรหัสติดตาม: ${error.requestId}`;
+    }
     this.pushAssistantMessage(message);
     this.setBusy(false);
   };

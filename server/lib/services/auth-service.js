@@ -27,7 +27,11 @@ class AuthService {
     for (const part of parts) {
       const [rawKey, ...rest] = part.trim().split("=");
       if (!rawKey) continue;
-      result[decodeURIComponent(rawKey)] = decodeURIComponent(rest.join("="));
+      try {
+        result[decodeURIComponent(rawKey)] = decodeURIComponent(rest.join("="));
+      } catch {
+        // ignore malformed cookie pair
+      }
     }
     return result;
   }
@@ -98,7 +102,7 @@ class AuthService {
   setAuthCookie(res, token, maxAgeSeconds) {
     res.cookie(this.cookieName, token, {
       httpOnly: true,
-      sameSite: "lax",
+      sameSite: "strict",
       secure: this.secureCookies,
       path: "/",
       maxAge: maxAgeSeconds * 1000
@@ -108,7 +112,7 @@ class AuthService {
   clearAuthCookie(res) {
     res.clearCookie(this.cookieName, {
       httpOnly: true,
-      sameSite: "lax",
+      sameSite: "strict",
       secure: this.secureCookies,
       path: "/"
     });

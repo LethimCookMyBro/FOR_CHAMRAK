@@ -8,38 +8,6 @@ class EntityDialogService {
     this.helpers = helpers;
   }
 
-  async requestPinDialog(config = {}) {
-    const { title = "ยืนยัน PIN", hint = "", confirm = false } = config;
-    const fields = [
-      {
-        name: "pin",
-        label: "PIN",
-        type: "password",
-        required: true,
-        value: "",
-        placeholder: "อย่างน้อย 6 ตัวอักษร/ตัวเลข",
-        validate: (value) => {
-          if (String(value || "").trim().length < 1) return "กรุณากรอก PIN";
-          return null;
-        }
-      }
-    ];
-    if (confirm) {
-      fields.push({
-        name: "pinConfirm",
-        label: "ยืนยัน PIN",
-        type: "password",
-        required: true,
-        value: ""
-      });
-    }
-    return this.openEntityDialog({
-      title,
-      hint,
-      fields
-    });
-  }
-
   async openDependentDialog(mode, row = null) {
     const [unitRows, cmRows, cgRows] = await Promise.all([
       this.repo.getTable("t26_unit"),
@@ -272,6 +240,44 @@ class EntityDialogService {
         { name: "subdistrict", label: "ตำบล", type: "text", required: true, value: row?.["ตำบล"] || "" },
         { name: "district", label: "อำเภอ", type: "text", required: true, value: row?.["อำเภอ"] || "" },
         { name: "province", label: "จังหวัด", type: "text", required: true, value: row?.["จังหวัด"] || "ตราด" }
+      ]
+    });
+  }
+
+  async openCmRateDialog(row = null) {
+    const group = String(row?.Group || "");
+    const groupLabelMap = {
+      "1": "I1",
+      "2": "I2",
+      "3": "I3",
+      "4": "B3/C2/C3"
+    };
+    const groupLabel = groupLabelMap[group] || group || "-";
+
+    return this.openEntityDialog({
+      title: "แก้ไขอัตราการดูแลและค่าตอบแทน CM",
+      hint: `กลุ่ม ${groupLabel}`,
+      fields: [
+        {
+          name: "visitsPerYear",
+          label: "ครั้งดูแล/ปี",
+          type: "number",
+          required: true,
+          value: Number(row?.number || 0),
+          min: 0,
+          step: 1,
+          validate: (value) => (Validate.nonNegative(value) ? null : "จำนวนครั้งต้องไม่ติดลบ")
+        },
+        {
+          name: "rateCm",
+          label: "ค่าตอบแทน CM/ครั้ง (บาท)",
+          type: "number",
+          required: true,
+          value: Number(row?.rateCm || 0),
+          min: 0,
+          step: 0.01,
+          validate: (value) => (Validate.nonNegative(value) ? null : "ค่าตอบแทนต้องไม่ติดลบ")
+        }
       ]
     });
   }

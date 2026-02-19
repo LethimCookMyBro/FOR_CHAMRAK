@@ -1,5 +1,7 @@
 "use strict";
 
+const { getClientIp } = require("../ip-utils");
+
 class LoginAttemptLimiter {
   constructor(config) {
     this.windowMs = config.windowMs;
@@ -9,7 +11,7 @@ class LoginAttemptLimiter {
   }
 
   getClientKey(req) {
-    return String(req.ip || req.headers["x-forwarded-for"] || "unknown");
+    return getClientIp(req);
   }
 
   pruneState(state, now) {

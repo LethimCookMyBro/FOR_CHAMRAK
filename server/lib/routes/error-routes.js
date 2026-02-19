@@ -1,23 +1,36 @@
 "use strict";
 
-function registerErrorRoutes(app) {
+const { matchesPrefix } = require("../http-path");
+
+function registerErrorRoutes(app, deps = {}) {
+  const apiPrefix = String(deps.apiPrefix || "/api");
+  const authPrefix = String(deps.authPrefix || "/auth");
+  const apiLikePrefixes = [...new Set([apiPrefix, authPrefix, "/api", "/auth"])];
+
   app.use((req, res) => {
-    if (req.path.startsWith("/api/") || req.path.startsWith("/auth/")) {
-      return res.status(404).json({ error: "ไม่พบ endpoint" });
+    if (apiLikePrefixes.some((prefix) => matchesPrefix(req.path, prefix))) {
+      return res.status(404).json({
+        error: "ไม่พบ endpoint",
+        requestId: req.requestId || null
+      });
     }
     return res.redirect("/login.html");
   });
 
-  app.use((error, _req, res, _next) => {
+  app.use((error, req, res, _next) => {
     const status = Number(error.status || 500);
     const message = error.message || "เกิดข้อผิดพลาดในเซิร์ฟเวอร์";
+    const requestId = req.requestId || "-";
     if (status >= 500) {
-      console.error(error);
+      console.error(`[ltc-backend][${requestId}]`, error);
     } else {
-      console.warn(`[ltc-backend] ${status} ${error.code || "ERROR"}: ${message}`);
+      console.warn(`[ltc-backend][${requestId}] ${status} ${error.code || "ERROR"}: ${message}`);
     }
 
-    const payload = { error: message };
+    const payload = {
+      error: message,
+      requestId: req.requestId || null
+    };
     if (error.code) payload.code = error.code;
     if (error.currentVersion) payload.currentVersion = error.currentVersion;
     if (error.retryAfter) {

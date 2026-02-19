@@ -1,4 +1,14 @@
 const REMEMBER_KEY = "ltc_login_remember_v2";
+const AUTH_BASE = resolveAuthBase();
+
+function resolveAuthBase() {
+  const value = globalThis.__LTC_RUNTIME_CONFIG__?.authBase;
+  const raw = String(value || "").trim();
+  const withSlash = raw ? (raw.startsWith("/") ? raw : `/${raw}`) : "/auth";
+  const normalized = withSlash.length > 1 ? withSlash.replace(/\/+$/, "") : withSlash;
+  if (!/^\/[A-Za-z0-9/_-]*$/.test(normalized)) return "/auth";
+  return normalized || "/auth";
+}
 
 function loadRememberPreference() {
   try {
@@ -32,7 +42,7 @@ function saveRememberPreference(remember, username) {
 
 async function isAuthenticated() {
   try {
-    const response = await fetch("/auth/me", { cache: "no-store" });
+    const response = await fetch(`${AUTH_BASE}/me`, { cache: "no-store" });
     return response.ok;
   } catch {
     return false;
@@ -80,9 +90,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     loginSubmitBtn.textContent = "กำลังเข้าสู่ระบบ...";
 
     try {
-      const response = await fetch("/auth/login", {
+      const response = await fetch(`${AUTH_BASE}/login`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "X-Requested-With": "XMLHttpRequest"
+        },
         body: JSON.stringify({
           username,
           password,
@@ -92,7 +105,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) {
-        loginError.textContent = payload.error || "เข้าสู่ระบบไม่สำเร็จ";
+        const requestId = String(payload?.requestId || response.headers.get("x-request-id") || "").trim();
+        const requestNote = requestId ? ` (รหัสติดตาม: ${requestId})` : "";
+        loginError.textContent = `${payload.error || "เข้าสู่ระบบไม่สำเร็จ"}${requestNote}`;
         return;
       }
 

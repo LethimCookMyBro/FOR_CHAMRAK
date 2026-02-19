@@ -5,11 +5,15 @@ const path = require("node:path");
 const { canonicalize, sha1 } = require("../helpers");
 
 const INTERNAL_KEYS = new Set(["__rowid"]);
+const FORBIDDEN_OBJECT_KEYS = new Set(["__proto__", "prototype", "constructor"]);
 
 class TableStore {
-  constructor(sourceDir, overrideDir) {
+  constructor(sourceDir, overrideDir, options = {}) {
     this.sourceDir = sourceDir;
     this.overrideDir = overrideDir;
+    this.maxRows = Math.max(100, Number(options.maxRows || 50000));
+    this.maxPayloadBytes = Math.max(1024 * 100, Number(options.maxPayloadBytes || 8 * 1024 * 1024));
+    this.maxDepth = Math.max(3, Number(options.maxDepth || 40));
     this.writeChains = new Map();
     this.candidateIdentityKeys = [
       "ID",
@@ -74,20 +78,49 @@ class TableStore {
     return [];
   }
 
-  stripInternalKeysDeep(value) {
-    if (Array.isArray(value)) return value.map((item) => this.stripInternalKeysDeep(item));
+  buildValidationError(message) {
+    const error = new Error(message);
+    error.status = 400;
+    error.code = "INVALID_PAYLOAD";
+    return error;
+  }
+
+  stripInternalKeysDeep(value, depth = 0) {
+    if (depth > this.maxDepth) {
+      throw this.buildValidationError(`ข้อมูลซ้อนลึกเกินกำหนด (max depth ${this.maxDepth})`);
+    }
+    if (Array.isArray(value)) return value.map((item) => this.stripInternalKeysDeep(item, depth + 1));
     if (!value || typeof value !== "object") return value;
 
-    const next = {};
+    const next = Object.create(null);
     for (const [key, nested] of Object.entries(value)) {
       if (INTERNAL_KEYS.has(key)) continue;
-      next[key] = this.stripInternalKeysDeep(nested);
+      if (FORBIDDEN_OBJECT_KEYS.has(key)) continue;
+      next[key] = this.stripInternalKeysDeep(nested, depth + 1);
     }
     return next;
   }
 
   cleanRow(row) {
     return this.stripInternalKeysDeep(row || {});
+  }
+
+  assertRowsWithinLimits(alias, rows) {
+    if (rows.length > this.maxRows) {
+      const error = new Error(`จำนวนข้อมูลของตาราง ${alias} เกินกำหนด (${rows.length}/${this.maxRows})`);
+      error.status = 413;
+      error.code = "TABLE_ROWS_LIMIT";
+      throw error;
+    }
+
+    const payloadText = JSON.stringify(rows);
+    const payloadBytes = Buffer.byteLength(payloadText, "utf8");
+    if (payloadBytes > this.maxPayloadBytes) {
+      const error = new Error(`ขนาดข้อมูลของตาราง ${alias} เกินกำหนด (${payloadBytes} bytes)`);
+      error.status = 413;
+      error.code = "TABLE_PAYLOAD_LIMIT";
+      throw error;
+    }
   }
 
   rowIdentityKey(alias, row) {
@@ -210,7 +243,13 @@ class TableStore {
       }
 
       const rows = this.normalizeRows(incomingRows);
+      for (const row of rows) {
+        if (!row || typeof row !== "object" || Array.isArray(row)) {
+          throw this.buildValidationError("ข้อมูลแต่ละแถวต้องเป็น object");
+        }
+      }
       const cleaned = rows.map((row) => this.cleanRow(row));
+      this.assertRowsWithinLimits(alias, cleaned);
 
       await this.ensureDirectories();
       const targetPath = this.overrideFile(alias);

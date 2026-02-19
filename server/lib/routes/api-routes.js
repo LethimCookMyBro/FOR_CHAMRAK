@@ -1,27 +1,63 @@
 "use strict";
 
 const { sanitizeText } = require("../helpers");
+const { routePath } = require("../http-path");
 
 function registerApiRoutes(app, deps) {
   const {
     config,
+    apiPrefix = "/api",
     requireApiAuth,
     tableStore,
     activityLogs,
     trashStore,
     geminiClient,
     aiCoordinator,
+    ipSpamBlocker,
     aiAssistant,
     securityAudit,
     getActor,
     writeAudit
   } = deps;
+  const MAX_BULK_IDS = Math.max(100, Math.min(config.TABLE_MAX_ROWS || 50000, 10000));
 
-  app.use("/api", requireApiAuth);
+  function parseAlias(rawAlias) {
+    const alias = sanitizeText(rawAlias || "", 80);
+    if (!/^[A-Za-z0-9_]+$/.test(alias)) {
+      const error = new Error("alias ไม่ถูกต้อง");
+      error.status = 400;
+      throw error;
+    }
+    return alias;
+  }
 
-  app.get("/api/storage", async (_req, res) => {
+  function parseIds(raw, fieldName) {
+    const ids = Array.isArray(raw) ? raw.map((item) => sanitizeText(item || "", 120)).filter(Boolean) : [];
+    if (!ids.length) {
+      const error = new Error(`${fieldName} ต้องเป็น array ที่มีค่าอย่างน้อย 1 รายการ`);
+      error.status = 400;
+      throw error;
+    }
+    if (ids.length > MAX_BULK_IDS) {
+      const error = new Error(`${fieldName} มากเกินกำหนด (${ids.length}/${MAX_BULK_IDS})`);
+      error.status = 413;
+      throw error;
+    }
+    return ids;
+  }
+
+  function requestTag(req) {
+    return `rid=${sanitizeText(req.requestId || "-", 80)}`;
+  }
+
+  const prefix = String(apiPrefix || "/api").replace(/\/+$/, "") || "/api";
+
+  app.use(prefix, requireApiAuth);
+
+  app.get(routePath(prefix, "/storage"), async (_req, res) => {
     const trash = await trashStore.list({ includeRestored: false });
     const aiMetrics = aiCoordinator.metrics();
+    const ipBlockMetrics = ipSpamBlocker?.metrics?.() || null;
     res.json({
       mode: "backend",
       sourceDataDir: config.SOURCE_DATA_DIR,
@@ -34,29 +70,33 @@ function registerApiRoutes(app, deps) {
       geminiModel: geminiClient.isEnabled() ? config.GEMINI_MODEL : null,
       aiContextCacheMs: config.AI_CONTEXT_CACHE_MS,
       aiConcurrency: aiMetrics,
+      ipBlock: ipBlockMetrics,
       description: "แก้ไขจะถูกเก็บใน runtime_data/overrides/*.json โดยไม่ทับไฟล์ต้นฉบับ"
     });
   });
 
-  app.post("/api/security/scan", async (req, res) => {
+  app.post(routePath(prefix, "/security/scan"), async (req, res) => {
     const result = securityAudit.run();
     const actor = getActor(req);
 
     await writeAudit({
       type: "security",
       action: "SECURITY_SCAN",
-      resource: "/api/security/scan",
+      resource: routePath(prefix, "/security/scan"),
       user: actor.username,
       ip: actor.ip,
-      detail: `score=${result.score}`,
+      detail: `${requestTag(req)}, score=${result.score}`,
       status: result.score >= 70 ? "ok" : "warn"
     });
 
     res.json({ ok: true, ...result });
   });
 
-  app.post("/api/ai/chat", async (req, res, next) => {
+  app.post(routePath(prefix, "/ai/chat"), async (req, res, next) => {
     try {
+      if (!req.body || typeof req.body !== "object" || Array.isArray(req.body)) {
+        return res.status(400).json({ error: "รูปแบบคำขอไม่ถูกต้อง" });
+      }
       const prompt = sanitizeText(req.body?.message || "", config.AI_MAX_PROMPT_CHARS);
       const actor = getActor(req);
       const clientKey = `${actor.username}|${actor.ip}`;
@@ -75,10 +115,10 @@ function registerApiRoutes(app, deps) {
       await writeAudit({
         type: "ai",
         action: "AI_CHAT",
-        resource: "/api/ai/chat",
+        resource: routePath(prefix, "/ai/chat"),
         user: actor.username,
         ip: actor.ip,
-        detail: `source=${reply?.source || "unknown"}, waitMs=${execution.waitedMs}, queue=${aiMetrics.queued}, charts=${Array.isArray(reply?.charts) ? reply.charts.length : 0}, files=${Array.isArray(reply?.artifacts) ? reply.artifacts.length : 0}, prompt=${prompt.slice(0, 120)}`,
+        detail: `${requestTag(req)}, source=${reply?.source || "unknown"}, waitMs=${execution.waitedMs}, queue=${aiMetrics.queued}, charts=${Array.isArray(reply?.charts) ? reply.charts.length : 0}, files=${Array.isArray(reply?.artifacts) ? reply.artifacts.length : 0}, prompt=${prompt.slice(0, 120)}`,
         status: "ok"
       });
 
@@ -88,7 +128,7 @@ function registerApiRoutes(app, deps) {
     }
   });
 
-  app.get("/api/logs/export", async (req, res, next) => {
+  app.get(routePath(prefix, "/logs/export"), async (req, res, next) => {
     try {
       const csv = await activityLogs.exportCsv({
         from: req.query.from,
@@ -105,7 +145,7 @@ function registerApiRoutes(app, deps) {
     }
   });
 
-  app.get("/api/logs", async (req, res, next) => {
+  app.get(routePath(prefix, "/logs"), async (req, res, next) => {
     try {
       const payload = await activityLogs.query({
         from: req.query.from,
@@ -122,7 +162,7 @@ function registerApiRoutes(app, deps) {
     }
   });
 
-  app.get("/api/trash", async (req, res, next) => {
+  app.get(routePath(prefix, "/trash"), async (req, res, next) => {
     try {
       const payload = await trashStore.list({
         alias: req.query.alias,
@@ -134,18 +174,22 @@ function registerApiRoutes(app, deps) {
     }
   });
 
-  app.post("/api/trash/restore", async (req, res, next) => {
+  app.post(routePath(prefix, "/trash/restore"), async (req, res, next) => {
     try {
+      if (!req.body || typeof req.body !== "object" || Array.isArray(req.body)) {
+        return res.status(400).json({ error: "รูปแบบคำขอไม่ถูกต้อง" });
+      }
       const actor = getActor(req);
-      const result = await trashStore.restore(req.body?.trashIds, actor);
+      const trashIds = parseIds(req.body?.trashIds, "trashIds");
+      const result = await trashStore.restore(trashIds, actor);
 
       await writeAudit({
         type: "trash",
         action: "RESTORE_ROWS",
-        resource: "/api/trash/restore",
+        resource: routePath(prefix, "/trash/restore"),
         user: actor.username,
         ip: actor.ip,
-        detail: `requested=${result.requested}, restored=${result.restored}, skipped=${result.skipped}`,
+        detail: `${requestTag(req)}, requested=${result.requested}, restored=${result.restored}, skipped=${result.skipped}`,
         status: result.restored > 0 ? "ok" : "warn"
       });
 
@@ -155,7 +199,7 @@ function registerApiRoutes(app, deps) {
     }
   });
 
-  app.post("/api/trash/purge-expired", async (req, res, next) => {
+  app.post(routePath(prefix, "/trash/purge-expired"), async (req, res, next) => {
     try {
       const result = await trashStore.purgeExpired();
       const actor = getActor(req);
@@ -163,10 +207,10 @@ function registerApiRoutes(app, deps) {
       await writeAudit({
         type: "trash",
         action: "PURGE_EXPIRED_TRASH",
-        resource: "/api/trash/purge-expired",
+        resource: routePath(prefix, "/trash/purge-expired"),
         user: actor.username,
         ip: actor.ip,
-        detail: `removed=${result.removed}`,
+        detail: `${requestTag(req)}, removed=${result.removed}`,
         status: "ok"
       });
 
@@ -176,7 +220,35 @@ function registerApiRoutes(app, deps) {
     }
   });
 
-  app.get("/api/tables", async (_req, res, next) => {
+  app.post(routePath(prefix, "/trash/purge-all"), async (req, res, next) => {
+    try {
+      if (!req.body || typeof req.body !== "object" || Array.isArray(req.body)) {
+        return res.status(400).json({ error: "รูปแบบคำขอไม่ถูกต้อง" });
+      }
+      const actor = getActor(req);
+      const aliasRaw = sanitizeText(req.body?.alias || "", 80);
+      const result = await trashStore.purgeAll({
+        alias: aliasRaw ? parseAlias(aliasRaw) : "",
+        includeRestored: req.body?.includeRestored !== false
+      });
+
+      await writeAudit({
+        type: "trash",
+        action: "PURGE_ALL_TRASH",
+        resource: routePath(prefix, "/trash/purge-all"),
+        user: actor.username,
+        ip: actor.ip,
+        detail: `${requestTag(req)}, removed=${result.removed}, remaining=${result.remaining}`,
+        status: "ok"
+      });
+
+      return res.json({ ok: true, ...result });
+    } catch (error) {
+      return next(error);
+    }
+  });
+
+  app.get(routePath(prefix, "/tables"), async (_req, res, next) => {
     try {
       const aliases = await tableStore.listAliases();
       res.json({ count: aliases.length, aliases });
@@ -185,9 +257,9 @@ function registerApiRoutes(app, deps) {
     }
   });
 
-  app.get("/api/tables/:alias", async (req, res, next) => {
+  app.get(routePath(prefix, "/tables/:alias"), async (req, res, next) => {
     try {
-      const alias = String(req.params.alias || "");
+      const alias = parseAlias(req.params.alias);
       const loaded = await tableStore.loadTable(alias);
       res.json({ alias, source: loaded.source, version: loaded.version, rows: loaded.rows });
     } catch (error) {
@@ -195,9 +267,9 @@ function registerApiRoutes(app, deps) {
     }
   });
 
-  app.put("/api/tables/:alias", async (req, res, next) => {
+  app.put(routePath(prefix, "/tables/:alias"), async (req, res, next) => {
     try {
-      const alias = String(req.params.alias || "");
+      const alias = parseAlias(req.params.alias);
       const incoming = Array.isArray(req.body) ? req.body : req.body?.rows;
       const ifVersion = sanitizeText(req.body?.ifVersion || req.headers["if-version"] || "", 120);
       if (!Array.isArray(incoming)) {
@@ -214,7 +286,7 @@ function registerApiRoutes(app, deps) {
         resource: alias,
         user: actor.username,
         ip: actor.ip,
-        detail: `rows=${saved.rows}`,
+        detail: `${requestTag(req)}, rows=${saved.rows}`,
         status: "ok"
       });
 
@@ -232,10 +304,10 @@ function registerApiRoutes(app, deps) {
     }
   });
 
-  app.post("/api/tables/:alias/delete", async (req, res, next) => {
+  app.post(routePath(prefix, "/tables/:alias/delete"), async (req, res, next) => {
     try {
-      const alias = String(req.params.alias || "");
-      const rowIds = req.body?.rowIds;
+      const alias = parseAlias(req.params.alias);
+      const rowIds = parseIds(req.body?.rowIds, "rowIds");
       const ifVersion = sanitizeText(req.body?.ifVersion || req.headers["if-version"] || "", 120);
       const actor = getActor(req);
 
@@ -249,7 +321,7 @@ function registerApiRoutes(app, deps) {
         resource: alias,
         user: actor.username,
         ip: actor.ip,
-        detail: `deleted=${result.deleted}, trashSaved=${result.trashSaved}`,
+        detail: `${requestTag(req)}, deleted=${result.deleted}, trashSaved=${result.trashSaved}`,
         status: result.deleted > 0 ? "ok" : "warn"
       });
 
@@ -259,9 +331,9 @@ function registerApiRoutes(app, deps) {
     }
   });
 
-  app.delete("/api/tables/:alias/override", async (req, res, next) => {
+  app.delete(routePath(prefix, "/tables/:alias/override"), async (req, res, next) => {
     try {
-      const alias = String(req.params.alias || "");
+      const alias = parseAlias(req.params.alias);
       await tableStore.deleteOverride(alias);
       const actor = getActor(req);
 
@@ -271,7 +343,7 @@ function registerApiRoutes(app, deps) {
         resource: alias,
         user: actor.username,
         ip: actor.ip,
-        detail: "removed override file",
+        detail: `${requestTag(req)}, removed override file`,
         status: "ok"
       });
 

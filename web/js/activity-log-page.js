@@ -6,10 +6,12 @@ class ActivityLogPage {
     this.el = config.elements;
     this.onDataRestored = typeof config.onDataRestored === "function" ? config.onDataRestored : null;
     this.trashSelected = new Set();
+    this.trashCount = 0;
   }
 
   init() {
     this.el.trashRestoreBtn?.addEventListener("click", () => this.restoreSelected().catch(this.handleError));
+    this.el.trashPurgeAllBtn?.addEventListener("click", () => this.purgeAll().catch(this.handleError));
     this.el.trashPurgeBtn?.addEventListener("click", () => this.purgeExpired().catch(this.handleError));
 
     this.el.trashBody?.addEventListener("change", (event) => {
@@ -33,6 +35,7 @@ class ActivityLogPage {
     const payload = await this.repo.listTrash({ includeRestored: false });
     const rows = Array.isArray(payload?.items) ? payload.items : [];
     this.trashSelected.clear();
+    this.trashCount = rows.length;
 
     if (this.el.trashSummary) {
       this.el.trashSummary.textContent = `รายการที่กู้คืนได้ ${Format.number(rows.length)} รายการ`;
@@ -63,6 +66,12 @@ class ActivityLogPage {
     this.el.trashRestoreBtn.disabled = this.trashSelected.size === 0;
     this.el.trashRestoreBtn.textContent =
       this.trashSelected.size > 0 ? `กู้คืนข้อมูลที่เลือก (${this.trashSelected.size})` : "กู้คืนข้อมูลที่เลือก";
+
+    if (this.el.trashPurgeAllBtn) {
+      this.el.trashPurgeAllBtn.disabled = this.trashCount === 0;
+      this.el.trashPurgeAllBtn.textContent =
+        this.trashCount > 0 ? `ลบข้อมูลทั้งหมด (${this.trashCount})` : "ลบข้อมูลทั้งหมด";
+    }
   }
 
   async restoreSelected() {
@@ -86,9 +95,25 @@ class ActivityLogPage {
     await this.loadTrash();
   }
 
+  async purgeAll() {
+    if (this.trashCount <= 0) {
+      throw new Error("ไม่มีข้อมูลที่รอลบ");
+    }
+
+    const confirmed = confirm(`ยืนยันการลบข้อมูลที่ถูกลบทั้งหมด ${this.trashCount} รายการ?\nการกระทำนี้ไม่สามารถย้อนกลับได้`);
+    if (!confirmed) return;
+
+    const payload = await this.repo.purgeAllTrash({ includeRestored: false });
+    this.trashSelected.clear();
+    alert(`ลบข้อมูลทั้งหมดสำเร็จ ${payload.removed} รายการ`);
+    await this.loadTrash();
+  }
+
   handleError = (error) => {
     console.error(error);
-    alert(error?.message || "เกิดข้อผิดพลาดในหน้ากู้คืนข้อมูล");
+    const base = error?.message || "เกิดข้อผิดพลาดในหน้ากู้คืนข้อมูล";
+    const requestNote = error?.requestId ? `\nรหัสติดตาม: ${error.requestId}` : "";
+    alert(`${base}${requestNote}`);
   };
 }
 

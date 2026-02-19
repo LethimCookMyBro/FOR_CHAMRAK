@@ -1,6 +1,8 @@
+import { AUTH_BASE } from "./config.js";
+
 async function checkSession() {
   try {
-    const response = await fetch("/auth/me", { cache: "no-store" });
+    const response = await fetch(`${AUTH_BASE}/me`, { cache: "no-store" });
     return response.ok;
   } catch {
     return false;

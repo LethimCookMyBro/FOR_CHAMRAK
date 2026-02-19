@@ -95,6 +95,37 @@ class TrashStore {
     };
   }
 
+  async purgeAll(options = {}) {
+    const alias = sanitizeText(options.alias || "", 80);
+    const includeRestored = options.includeRestored !== false;
+    const rows = await this.readAll();
+
+    const kept = [];
+    let removed = 0;
+
+    for (const row of rows) {
+      if (alias && String(row.alias || "") !== alias) {
+        kept.push(row);
+        continue;
+      }
+      if (!includeRestored && row.restoredAt) {
+        kept.push(row);
+        continue;
+      }
+
+      removed += 1;
+    }
+
+    if (removed > 0) {
+      await this.writeAll(kept);
+    }
+
+    return {
+      removed,
+      remaining: kept.length
+    };
+  }
+
   getDaysLeft(record, now = Date.now()) {
     const expires = toDateTs(record?.expiresAt);
     if (!expires) return 0;
