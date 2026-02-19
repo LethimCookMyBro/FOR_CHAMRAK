@@ -332,12 +332,13 @@ class LtcAppRenderMethodCarrier {
     }
 
     const issues = [...outRows]
-      .map((row) => {
+      .map((row, index) => {
         const productID = String(row.productID || "").trim();
         const product = productByCode[productID] || {};
         const recipientCode = String(row["รหัสltc"] || "").trim();
         const recipientName = String(row.recipientName || dependentNameByCode[recipientCode] || "-").trim();
         return {
+          rowId: String(row.__rowid || `issue_${index}`),
           outdate: row.outdate || null,
           productID,
           productName: String(row.productName || product.productName || "-"),
@@ -360,17 +361,56 @@ class LtcAppRenderMethodCarrier {
       });
 
     const totalIssueQty = issues.reduce((sum, row) => sum + (Number(row.quantity) || 0), 0);
+    if (!issues.some((row) => row.rowId === this.state.selected.supplyIssues)) {
+      this.state.selected.supplyIssues = null;
+    }
+    this.reconcileChecked(
+      "supplyIssues",
+      issues.map((row) => row.rowId)
+    );
+
+    const query = Format.toText(this.state.queries.supplyIssues || "").toLowerCase();
+    const filteredIssues = query
+      ? issues.filter((row) => {
+          const searchable = [
+            Format.formatDateCompact(row.outdate),
+            row.productID,
+            row.productName,
+            row.brand,
+            row.machineCode,
+            row.quantity,
+            row.unit,
+            row.recipientCode,
+            row.recipientName,
+            row.round,
+            row.reference,
+            row.note
+          ]
+            .join(" ")
+            .toLowerCase();
+          return searchable.includes(query);
+        })
+      : issues;
+
+    const filteredIssueQty = filteredIssues.reduce((sum, row) => sum + (Number(row.quantity) || 0), 0);
     if (this.el.suppliesIssueSummary) {
-      this.el.suppliesIssueSummary.textContent = `ประวัติเบิกจ่ายล่าสุด ${Format.number(issues.length)} รายการ | รวมจ่าย ${Format.number(totalIssueQty)} หน่วย`;
+      const left = query
+        ? `ประวัติเบิกจ่ายแสดงผล ${Format.number(filteredIssues.length)} จาก ${Format.number(issues.length)} รายการ`
+        : `ประวัติเบิกจ่ายล่าสุด ${Format.number(issues.length)} รายการ`;
+      const right = query
+        ? `รวมจ่ายที่แสดง ${Format.number(filteredIssueQty)} หน่วย (รวมทั้งหมด ${Format.number(totalIssueQty)} หน่วย)`
+        : `รวมจ่าย ${Format.number(totalIssueQty)} หน่วย`;
+      this.el.suppliesIssueSummary.textContent = `${left} | ${right}`;
     }
 
     if (this.el.suppliesIssueBody) {
-      this.el.suppliesIssueBody.innerHTML = issues.length
-        ? issues
-            .slice(0, 80)
+      const emptyText = query ? "ยังไม่พบประวัติเบิกจ่ายที่ตรงกับคำค้น" : "ยังไม่พบประวัติเบิกจ่าย";
+      this.el.suppliesIssueBody.innerHTML = filteredIssues.length
+        ? filteredIssues
             .map(
               (row) => `
-                <tr>
+                <tr data-rowid="${Format.escapeHtml(row.rowId)}" class="${row.rowId === this.state.selected.supplyIssues ? "is-selected" : ""}">
+                  <td class="check-col"><input class="row-check" type="checkbox" ${this.getCheckedSet("supplyIssues").has(row.rowId) ? "checked" : ""} aria-label="เลือกแถว"></td>
                   <td>${Format.escapeHtml(Format.formatDateCompact(row.outdate))}</td>
                   <td><span class="unit-badge">${Format.escapeHtml(row.productID || "-")}</span></td>
                   <td>${Format.escapeHtml(row.productName || "-")}</td>
@@ -385,7 +425,9 @@ class LtcAppRenderMethodCarrier {
               `
             )
             .join("")
-        : `<tr><td colspan="10" class="empty-row">ยังไม่พบประวัติเบิกจ่าย</td></tr>`;
+        : `<tr><td colspan="11" class="empty-row">${emptyText}</td></tr>`;
+      this.paintSelection(this.el.suppliesIssueBody, this.state.selected.supplyIssues);
+      this.syncSelectAllCheckbox(this.el.suppliesIssueBody, "supplyIssues", this.el.suppliesIssueSelectAll);
     }
   }
 

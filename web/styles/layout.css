@@ -197,3 +197,7 @@
   font-size: 15px;
   margin-bottom: 10px;
 }
+
+#suppliesIssueSummary.table-note {
+  margin: 0;
+}

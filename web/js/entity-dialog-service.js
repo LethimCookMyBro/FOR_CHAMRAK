@@ -321,14 +321,15 @@ class EntityDialogService {
     });
   }
 
-  async openSupplyMovementDialog(mode, productRow) {
+  async openSupplyMovementDialog(mode, productRow, defaults = null) {
     const isIn = mode === "in";
+    const initial = defaults && typeof defaults === "object" ? defaults : {};
     const [typeRows, dependentRows] = await Promise.all([
       this.repo.getTable(isIn ? "t11_intype" : "t15_outtype").catch(() => []),
       isIn ? Promise.resolve([]) : this.repo.getTable("t04_dataj").catch(() => [])
     ]);
 
-    const typeOptions = (Array.isArray(typeRows) ? typeRows : [])
+    let typeOptions = (Array.isArray(typeRows) ? typeRows : [])
       .map((row) => {
         const value = Format.toText(row?.intypeID ?? row?.outtypeID ?? row?.intype ?? row?.outtype ?? "");
         if (!value) return null;
@@ -340,7 +341,12 @@ class EntityDialogService {
       })
       .filter(Boolean);
 
-    const dependentOptions = (Array.isArray(dependentRows) ? dependentRows : [])
+    const initialTypeCode = Format.toText(initial.typeCode || "");
+    if (initialTypeCode && !typeOptions.some((item) => String(item.value || "") === initialTypeCode)) {
+      typeOptions = [{ value: initialTypeCode, label: `${initialTypeCode} - (เดิม)` }, ...typeOptions];
+    }
+
+    let dependentOptions = (Array.isArray(dependentRows) ? dependentRows : [])
       .map((row) => {
         const citizenId = Format.toText(row?.["เลขประชาชน"]);
         if (!citizenId) return null;
@@ -354,13 +360,18 @@ class EntityDialogService {
       .filter(Boolean)
       .sort((a, b) => a.label.localeCompare(b.label, "th"));
 
+    const initialLtcCode = Format.toText(initial.ltcCode || "");
+    if (initialLtcCode && !dependentOptions.some((item) => String(item.value || "") === initialLtcCode)) {
+      dependentOptions = [{ value: initialLtcCode, label: `${initialLtcCode} - (ไม่พบในรายชื่อปัจจุบัน)` }, ...dependentOptions];
+    }
+
     const fields = [
       {
         name: "typeCode",
         label: isIn ? "ประเภทรายการรับเข้า" : "ประเภทการเบิก",
         type: typeOptions.length ? "select" : "text",
         required: true,
-        value: typeOptions[0]?.value || "11",
+        value: initialTypeCode || typeOptions[0]?.value || "11",
         options: typeOptions,
         placeholder: typeOptions.length ? "" : "เช่น 11"
       },
@@ -369,14 +380,14 @@ class EntityDialogService {
         label: "วันที่",
         type: "date",
         required: true,
-        value: Format.todayDateInput()
+        value: initial.date || Format.todayDateInput()
       },
       {
         name: "quantity",
         label: "จำนวน",
         type: "number",
         required: true,
-        value: 1,
+        value: Math.max(1, Number(initial.quantity || 1)),
         min: 1,
         validate: (value) => (Validate.positive(value) ? null : "จำนวนต้องมากกว่า 0")
       }
@@ -391,7 +402,7 @@ class EntityDialogService {
               type: "select",
               required: false,
               options: dependentOptions,
-              value: "",
+              value: initialLtcCode,
               validate: (value) => (Format.toText(value) ? null : "กรุณาเลือกผู้รับเบิก")
             }
           : {
@@ -399,7 +410,7 @@ class EntityDialogService {
               label: "ผู้รับเบิก (เลขประชาชน)",
               type: "text",
               required: true,
-              value: "",
+              value: initialLtcCode,
               placeholder: "เลขประชาชน 13 หลัก"
             },
         {
@@ -407,7 +418,7 @@ class EntityDialogService {
           label: "รอบ",
           type: "number",
           required: true,
-          value: 1,
+          value: Math.max(1, Number(initial.round || 1)),
           min: 1,
           step: 1,
           validate: (value) => (Validate.positive(value) ? null : "รอบต้องมากกว่า 0")
@@ -416,13 +427,13 @@ class EntityDialogService {
           name: "brand",
           label: "ยี่ห้อที่จ่าย",
           type: "text",
-          value: productRow.brand || ""
+          value: initial.brand ?? (productRow.brand || "")
         },
         {
           name: "machineCode",
           label: "รหัสเครื่องที่จ่าย",
           type: "text",
-          value: productRow.machineCode || "",
+          value: initial.machineCode ?? (productRow.machineCode || ""),
           help: "ระบุกรณีเป็นอุปกรณ์รายเครื่อง"
         }
       );
@@ -434,19 +445,19 @@ class EntityDialogService {
         label: "เลขอ้างอิง",
         type: "text",
         required: true,
-        value: ""
+        value: Format.toText(initial.reference || "")
       },
       {
         name: "note",
         label: "หมายเหตุ",
         type: "textarea",
         wide: true,
-        value: ""
+        value: Format.toText(initial.note || "")
       }
     );
 
     return this.openEntityDialog({
-      title: isIn ? "รับเข้าวัสดุ (+)" : "เบิกจ่ายวัสดุ (-)",
+      title: Format.toText(initial.dialogTitle) || (isIn ? "รับเข้าวัสดุ (+)" : "เบิกจ่ายวัสดุ (-)"),
       hint: `${productRow.productName || "-"} (${productRow.productID || "-"})`,
       fields
     });

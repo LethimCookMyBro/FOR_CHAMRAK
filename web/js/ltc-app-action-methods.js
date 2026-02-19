@@ -704,6 +704,132 @@ class LtcAppActionMethodCarrier {
 
       rows.push(newRow);
       await this.repo.saveTable("t13_outproduct", rows);
+      this.state.selected.supplyIssues = newRow.__rowid;
+    });
+  }
+
+  async handleEditSupplyIssue() {
+    await this.runProtected("แก้ไขประวัติเบิกจ่าย", async () => {
+      const selected = await this.getSelectedRow("t13_outproduct", "supplyIssues");
+      if (!selected) {
+        alert("กรุณาเลือกประวัติเบิกจ่ายก่อน");
+        return;
+      }
+
+      const [outRows, inRows, productRows, dependents] = await Promise.all([
+        this.repo.cloneTable("t13_outproduct"),
+        this.repo.getTable("t09_intproduct"),
+        this.repo.getTable("t16_product"),
+        this.repo.getTable("t04_dataj")
+      ]);
+
+      const index = outRows.findIndex((row) => row.__rowid === selected.__rowid);
+      if (index < 0) return;
+
+      const current = outRows[index];
+      const productId = String(current.productID || "").trim();
+      const product =
+        productRows.find((row) => String(row.productID || "").trim() === productId) ||
+        ({
+          productID: productId,
+          productName: current.productName || "-",
+          brand: current.brand || "",
+          machineCode: current.machineCode || ""
+        });
+
+      const form = await this.dialogs.openSupplyMovementDialog("out", product, {
+        dialogTitle: "แก้ไขประวัติเบิกจ่าย",
+        typeCode: current.outtype,
+        date: current.outdate,
+        quantity: Number(current.quantity || 1),
+        ltcCode: current["รหัสltc"],
+        round: current.round,
+        brand: current.brand || product.brand || "",
+        machineCode: current.machineCode || product.machineCode || "",
+        reference: current.reference || "",
+        note: current.note || ""
+      });
+      if (!form) return;
+
+      const quantity = Number(form.quantity);
+      if (!Number.isFinite(quantity) || quantity <= 0) {
+        throw new Error("จำนวนเบิกจ่ายต้องมากกว่า 0");
+      }
+
+      const inTotal = inRows
+        .filter((row) => String(row.productID || "").trim() === productId)
+        .reduce((sum, row) => sum + (Number(row.quantity) || 0), 0);
+      const outTotal = outRows
+        .filter((row) => String(row.productID || "").trim() === productId)
+        .reduce((sum, row) => sum + (Number(row.quantity) || 0), 0);
+      const oldQuantity = Number(current.quantity) || 0;
+      const availableForEdit = inTotal - (outTotal - oldQuantity);
+      if (quantity > availableForEdit) {
+        throw new Error(`จำนวนเบิกจ่ายเกินคงเหลือ (แก้ไขได้สูงสุด ${availableForEdit})`);
+      }
+
+      const ltcCode = Format.cleanWhitespace(form.ltcCode);
+      const recipient = dependents.find((row) => String(row["เลขประชาชน"] || "").trim() === ltcCode);
+      if (dependents.length && !recipient) {
+        throw new Error("ไม่พบผู้รับเบิกจากเลขประชาชนที่ระบุ");
+      }
+
+      const recipientName = recipient ? this.helpers.fullNameFromDependent(recipient) : null;
+      const outType = Format.cleanWhitespace(form.typeCode) || "11";
+      const round = String(Math.max(1, Number(form.round) || 1));
+      const brand = Format.cleanWhitespace(form.brand || product.brand || "") || null;
+      const machineCode = Format.cleanWhitespace(form.machineCode || product.machineCode || "") || null;
+
+      outRows[index] = {
+        ...current,
+        outdate: form.date,
+        outtype: outType,
+        quantity,
+        "รหัสltc": ltcCode || null,
+        recipientName,
+        brand,
+        machineCode,
+        round,
+        reference: form.reference || null,
+        note: form.note || null
+      };
+
+      await this.repo.saveTable("t13_outproduct", outRows);
+    });
+  }
+
+  async handleDeleteSupplyIssue() {
+    await this.runProtected("ลบประวัติเบิกจ่าย", async () => {
+      const selected = await this.getSelectedRow("t13_outproduct", "supplyIssues");
+      if (!selected) {
+        alert("กรุณาเลือกประวัติเบิกจ่ายก่อน");
+        return;
+      }
+
+      if (!confirm("ยืนยันการลบประวัติเบิกจ่ายที่เลือก?")) return;
+
+      await this.repo.deleteRows("t13_outproduct", [selected.__rowid]);
+      this.state.selected.supplyIssues = null;
+      this.getCheckedSet("supplyIssues").delete(selected.__rowid);
+    });
+  }
+
+  async handleDeleteSupplyIssueBatch() {
+    await this.runProtected("ลบประวัติเบิกจ่ายหลายรายการ", async () => {
+      const rowIds = [...this.getCheckedSet("supplyIssues")];
+      if (!rowIds.length) {
+        alert("กรุณาติ๊กเลือกประวัติเบิกจ่ายที่ต้องการลบ");
+        return;
+      }
+
+      if (!confirm(`ยืนยันการลบประวัติเบิกจ่าย ${rowIds.length} รายการ?`)) return;
+
+      const idSet = new Set(rowIds);
+      await this.repo.deleteRows("t13_outproduct", rowIds);
+      this.clearChecked("supplyIssues");
+      if (this.state.selected.supplyIssues && idSet.has(this.state.selected.supplyIssues)) {
+        this.state.selected.supplyIssues = null;
+      }
     });
   }
 

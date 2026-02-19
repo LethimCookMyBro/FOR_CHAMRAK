@@ -534,6 +534,143 @@ class AiAssistantService {
     return ["คลังวัสดุที่ต้องติดตาม", `- พบ ${ctx.stockAlerts.length} รายการ`, list].join("\n");
   }
 
+  matchPromptValue(promptLower, promptCompact, rawValue) {
+    const value = this.normalizeText(rawValue);
+    if (!value || value === "-") return false;
+    if (value.length <= 1) return false;
+    if (promptLower.includes(value)) return true;
+
+    const compactValue = value.replace(/\s+/g, "");
+    if (!compactValue || compactValue.length <= 1) return false;
+    return promptCompact.includes(compactValue);
+  }
+
+  extractDispenseQueryFilter(history, promptLower) {
+    const prompt = this.normalizeText(promptLower);
+    const promptCompact = prompt.replace(/\s+/g, "");
+    const filter = {
+      productIDs: new Set(),
+      productNames: new Set(),
+      recipientCodes: new Set(),
+      recipientNames: new Set(),
+      brands: new Set(),
+      machineCodes: new Set(),
+      labels: []
+    };
+
+    for (const row of history.rows) {
+      if (this.matchPromptValue(prompt, promptCompact, row.productID)) {
+        filter.productIDs.add(String(row.productID || "").trim());
+      }
+      if (this.matchPromptValue(prompt, promptCompact, row.productName)) {
+        filter.productNames.add(String(row.productName || "").trim());
+      }
+      if (this.matchPromptValue(prompt, promptCompact, row.recipientCode)) {
+        filter.recipientCodes.add(String(row.recipientCode || "").trim());
+      }
+      if (this.matchPromptValue(prompt, promptCompact, row.recipientName)) {
+        filter.recipientNames.add(String(row.recipientName || "").trim());
+      }
+      if (this.matchPromptValue(prompt, promptCompact, row.brand)) {
+        filter.brands.add(String(row.brand || "").trim());
+      }
+      if (this.matchPromptValue(prompt, promptCompact, row.machineCode)) {
+        filter.machineCodes.add(String(row.machineCode || "").trim());
+      }
+    }
+
+    filter.labels = [
+      ...[...filter.productNames].slice(0, 2),
+      ...[...filter.productIDs].slice(0, 2),
+      ...[...filter.recipientNames].slice(0, 2),
+      ...[...filter.recipientCodes].slice(0, 2),
+      ...[...filter.brands].slice(0, 2),
+      ...[...filter.machineCodes].slice(0, 2)
+    ].filter(Boolean);
+
+    filter.hasFilter =
+      filter.productIDs.size > 0 ||
+      filter.productNames.size > 0 ||
+      filter.recipientCodes.size > 0 ||
+      filter.recipientNames.size > 0 ||
+      filter.brands.size > 0 ||
+      filter.machineCodes.size > 0;
+
+    return filter;
+  }
+
+  filterDispenseRows(rows, filter) {
+    if (!filter?.hasFilter) return rows;
+
+    return rows.filter((row) => {
+      const productID = String(row.productID || "").trim();
+      const productName = String(row.productName || "").trim();
+      const recipientCode = String(row.recipientCode || "").trim();
+      const recipientName = String(row.recipientName || "").trim();
+      const brand = String(row.brand || "").trim();
+      const machineCode = String(row.machineCode || "").trim();
+
+      return (
+        filter.productIDs.has(productID) ||
+        filter.productNames.has(productName) ||
+        filter.recipientCodes.has(recipientCode) ||
+        filter.recipientNames.has(recipientName) ||
+        filter.brands.has(brand) ||
+        filter.machineCodes.has(machineCode)
+      );
+    });
+  }
+
+  summarizeDispenseRows(rows) {
+    const productAgg = {};
+    const recipientAgg = {};
+    let totalQuantity = 0;
+
+    for (const row of rows) {
+      const quantity = this.safeNumber(row.quantity);
+      totalQuantity += quantity;
+
+      const productKey = `${row.productID || "-"}|${row.productName || "-"}`;
+      const productItem = productAgg[productKey] || {
+        productID: String(row.productID || "-"),
+        productName: String(row.productName || "-"),
+        quantity: 0,
+        count: 0,
+        unit: String(row.unit || "ชิ้น")
+      };
+      productItem.quantity += quantity;
+      productItem.count += 1;
+      productAgg[productKey] = productItem;
+
+      const recipientKey = `${row.recipientCode || "-"}|${row.recipientName || "-"}`;
+      const recipientItem = recipientAgg[recipientKey] || {
+        recipientCode: String(row.recipientCode || "-"),
+        recipientName: String(row.recipientName || "-"),
+        quantity: 0,
+        count: 0
+      };
+      recipientItem.quantity += quantity;
+      recipientItem.count += 1;
+      recipientAgg[recipientKey] = recipientItem;
+    }
+
+    const topProducts = Object.values(productAgg)
+      .sort((a, b) => this.safeNumber(b.quantity) - this.safeNumber(a.quantity) || this.safeNumber(b.count) - this.safeNumber(a.count))
+      .slice(0, 8);
+
+    const topRecipients = Object.values(recipientAgg)
+      .sort((a, b) => this.safeNumber(b.quantity) - this.safeNumber(a.quantity) || this.safeNumber(b.count) - this.safeNumber(a.count))
+      .slice(0, 8);
+
+    return {
+      totalRows: rows.length,
+      totalQuantity,
+      topProducts,
+      topRecipients,
+      recentRows: rows.slice(0, 12)
+    };
+  }
+
   buildDispenseAnswer(ctx, promptLower = "") {
     const history = ctx.dispenseHistory;
     if (!history?.totalRows) {
@@ -549,8 +686,29 @@ class AiAssistantService {
       `- ทั้งหมด ${history.totalRows.toLocaleString("th-TH")} รายการ | จำนวนจ่ายรวม ${history.totalQuantity.toLocaleString("th-TH")} หน่วย`
     ];
 
-    if (history.recentRows.length) {
-      const latestRows = history.recentRows
+    const queryFilter = this.extractDispenseQueryFilter(history, promptLower);
+    const filteredRows = this.filterDispenseRows(history.rows, queryFilter);
+    const data = queryFilter.hasFilter ? this.summarizeDispenseRows(filteredRows) : history;
+
+    if (queryFilter.hasFilter) {
+      if (!data.totalRows) {
+        const queryText = queryFilter.labels.length ? queryFilter.labels.join(", ") : promptLower;
+        return [
+          "ประวัติเบิกจ่าย",
+          `- ไม่พบรายการที่ตรงกับ "${queryText}" ในข้อมูลล่าสุด`,
+          "- ลองค้นใหม่ด้วยชื่อวัสดุ/รหัสวัสดุ/ชื่อผู้รับเบิก"
+        ].join("\n");
+      }
+      lines.push(
+        `- ตรงเงื่อนไข ${data.totalRows.toLocaleString("th-TH")} รายการ | จำนวนจ่าย ${data.totalQuantity.toLocaleString("th-TH")} หน่วย`
+      );
+      if (queryFilter.labels.length) {
+        lines.push(`- ค้นหา: ${queryFilter.labels.join(", ")}`);
+      }
+    }
+
+    if (data.recentRows.length) {
+      const latestRows = data.recentRows
         .slice(0, 8)
         .map(
           (row) =>
@@ -563,8 +721,8 @@ class AiAssistantService {
     }
 
     const wantsRecipient = includesAny(promptLower, ["ใคร", "ผู้รับ", "คนไหน"]);
-    if (wantsRecipient && history.topRecipients.length) {
-      const topRecipient = history.topRecipients
+    if (wantsRecipient && data.topRecipients.length) {
+      const topRecipient = data.topRecipients
         .slice(0, 5)
         .map((row) => `- ${row.recipientName} (${row.recipientCode}) รับไป ${row.quantity.toLocaleString("th-TH")} หน่วย (${row.count} รายการ)`)
         .join("\n");
@@ -572,8 +730,8 @@ class AiAssistantService {
     }
 
     const wantsProduct = includesAny(promptLower, ["เครื่อง", "วัสดุ", "อะไร"]);
-    if (wantsProduct && history.topProducts.length) {
-      const topProducts = history.topProducts
+    if (wantsProduct && data.topProducts.length) {
+      const topProducts = data.topProducts
         .slice(0, 5)
         .map((row) => `- ${row.productName} (${row.productID || "-"}) จ่ายรวม ${row.quantity.toLocaleString("th-TH")} ${row.unit}`)
         .join("\n");
@@ -744,10 +902,32 @@ class AiAssistantService {
   detectIntents(promptLower) {
     const intents = new Set();
 
+    const hasDispenseVerb = includesAny(promptLower, ["เบิก", "เบิกจ่าย", "จ่าย", "รับเบิก", "เบิกไปใช้", "จ่ายให้", "จ่ายไป"]);
+    const hasDispenseSubject = includesAny(promptLower, ["วัสดุ", "เวชภัณฑ์", "เครื่อง", "อุปกรณ์", "ผู้รับ", "ใคร", "คนไหน"]);
+    const looksLikeDispense = hasDispenseVerb && hasDispenseSubject;
+
     if (includesAny(promptLower, ["ผู้รับบริการ", "ผู้ป่วย", "ภาวะพึ่งพิง", "tai", "adl"])) intents.add("dependents");
     if (includesAny(promptLower, ["รายรับ", "รายจ่าย", "การเงิน", "งบ", "budget", "คงเหลือ"])) intents.add("finance");
     if (includesAny(promptLower, ["คลัง", "วัสดุ", "สต็อก", "stock", "ใกล้หมด", "หมดคลัง", "คงคลัง", "คงเหลือวัสดุ"])) intents.add("stock");
-    if (includesAny(promptLower, ["เบิกจ่าย", "ผู้รับเบิก", "ประวัติเบิก", "จ่ายให้ใคร", "เบิกอะไร", "เครื่องอะไรไปแล้ว", "ใครรับ"])) {
+    if (
+      looksLikeDispense ||
+      includesAny(promptLower, [
+        "เบิกจ่าย",
+        "ผู้รับเบิก",
+        "ประวัติเบิก",
+        "จ่ายให้ใคร",
+        "เบิกอะไร",
+        "เครื่องอะไรไปแล้ว",
+        "ใครรับ",
+        "ใครเบิก",
+        "มีใครเบิก",
+        "เบิกไปใช้",
+        "เบิกไปแล้ว",
+        "เบิกให้",
+        "เบิกวัสดุ",
+        "เบิกเครื่อง"
+      ])
+    ) {
       intents.add("dispense");
     }
     if (includesAny(promptLower, ["cg", "cm", "กำลังคน", "บุคลากร", "ทีมดูแล"])) intents.add("workforce");
@@ -1483,7 +1663,7 @@ class AiAssistantService {
     }
 
     const lower = prompt.toLowerCase();
-    const forceFresh = includesAny(lower, ["ล่าสุด", "เมื่อกี้", "เพิ่ง", "เรียลไทม์", "เบิกจ่าย", "ผู้รับเบิก"]);
+    const forceFresh = includesAny(lower, ["ล่าสุด", "เมื่อกี้", "เพิ่ง", "เรียลไทม์", "เบิกจ่าย", "ผู้รับเบิก", "ใครเบิก", "เบิกไปใช้"]);
     const ctx = await this.getContextSnapshot({ forceFresh });
     const intents = this.detectIntents(lower);
     const localAnswer = this.buildLocalAnswer(lower, ctx, intents);

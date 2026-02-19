@@ -11,7 +11,7 @@ const { registerAuthRoutes } = require("./lib/routes/auth-routes");
 const { registerPageRoutes } = require("./lib/routes/page-routes");
 const { registerApiRoutes } = require("./lib/routes/api-routes");
 const { registerErrorRoutes } = require("./lib/routes/error-routes");
-const { matchesPrefix } = require("./lib/http-path");
+const { matchesPrefix, routePath } = require("./lib/http-path");
 
 const services = createDependencies(config);
 const requestUtils = createRequestUtils(services.activityLogs);
@@ -49,6 +49,14 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
   const isProtectedPath = matchesPrefix(req.path, config.API_PREFIX) || matchesPrefix(req.path, config.AUTH_PREFIX);
   if (!isProtectedPath) return next();
+
+  // Count only sensitive traffic for IP blocking to avoid false positives
+  // when many users behind the same NAT browse/read data simultaneously.
+  const method = String(req.method || "").toUpperCase();
+  const isMutating = method === "POST" || method === "PUT" || method === "PATCH" || method === "DELETE";
+  const isLogin = req.path === routePath(config.AUTH_PREFIX, "/login");
+  const isAiChat = req.path === routePath(config.API_PREFIX, "/ai/chat");
+  if (!(isMutating || isLogin || isAiChat)) return next();
 
   const verdict = services.ipSpamBlocker.consume(req);
   if (!verdict.blocked) return next();

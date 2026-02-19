@@ -256,11 +256,27 @@
         </table>
       </div>
 
-      <p id="suppliesIssueSummary" class="table-note">ประวัติเบิกจ่ายล่าสุด</p>
+      <div class="section-head">
+        <p id="suppliesIssueSummary" class="table-note">ประวัติเบิกจ่ายล่าสุด</p>
+        <div class="section-tools">
+          <button id="supplyIssueEditBtn" class="btn btn-soft" type="button">แก้ไขที่เลือก</button>
+          <button id="supplyIssueDeleteBtn" class="btn btn-danger" type="button">ลบที่เลือก</button>
+          <button id="supplyIssueDeleteBatchBtn" class="btn btn-danger" type="button">ลบที่ติ๊กหลายรายการ</button>
+        </div>
+      </div>
+      <div class="search-row">
+        <input
+          id="suppliesIssueSearch"
+          class="search-input"
+          type="search"
+          placeholder="ค้นหาจากรหัสวัสดุ/ชื่อวัสดุ/ยี่ห้อ/รหัสเครื่อง/ผู้รับเบิก/เลขอ้างอิง"
+        >
+      </div>
       <div class="table-card table-scroll slim-scroll">
-        <table>
+        <table class="table-selectable">
           <thead>
             <tr>
+              <th class="check-col"><input id="suppliesIssueSelectAll" class="select-all-check" type="checkbox" aria-label="เลือกทั้งหมด"></th>
               <th>วันที่เบิก</th>
               <th>รหัสวัสดุ</th>
               <th>ชื่อวัสดุ</th>

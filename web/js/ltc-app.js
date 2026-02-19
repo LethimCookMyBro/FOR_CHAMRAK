@@ -20,13 +20,15 @@ class LtcApp {
       page: "overview",
       queries: {
         dependents: "",
-        cg: ""
+        cg: "",
+        supplyIssues: ""
       },
       selected: {
         dependents: null,
         cg: null,
         cm: null,
         supplies: null,
+        supplyIssues: null,
         finance: null,
         units: null
       },
@@ -35,6 +37,7 @@ class LtcApp {
         cg: new Set(),
         cm: new Set(),
         supplies: new Set(),
+        supplyIssues: new Set(),
         finance: new Set(),
         units: new Set()
       }
@@ -90,8 +93,13 @@ class LtcApp {
       supplyInBtn: document.getElementById("supplyInBtn"),
       supplyOutBtn: document.getElementById("supplyOutBtn"),
       suppliesSelectAll: document.getElementById("suppliesSelectAll"),
+      suppliesIssueSearch: document.getElementById("suppliesIssueSearch"),
       suppliesIssueSummary: document.getElementById("suppliesIssueSummary"),
       suppliesIssueBody: document.getElementById("suppliesIssueBody"),
+      supplyIssueEditBtn: document.getElementById("supplyIssueEditBtn"),
+      supplyIssueDeleteBtn: document.getElementById("supplyIssueDeleteBtn"),
+      supplyIssueDeleteBatchBtn: document.getElementById("supplyIssueDeleteBatchBtn"),
+      suppliesIssueSelectAll: document.getElementById("suppliesIssueSelectAll"),
 
       financeIncomeCard: document.getElementById("financeIncomeCard"),
       financeExpenseCard: document.getElementById("financeExpenseCard"),
@@ -184,11 +192,16 @@ class LtcApp {
       this.state.queries.cg = Format.toText(event.target.value).toLowerCase();
       this.renderCg().catch(this.handleError);
     });
+    this.el.suppliesIssueSearch?.addEventListener("input", (event) => {
+      this.state.queries.supplyIssues = Format.toText(event.target.value).toLowerCase();
+      this.renderSupplies().catch(this.handleError);
+    });
 
     this.bindSelectableTable(this.el.dependentsBody, "dependents", this.el.dependentsSelectAll);
     this.bindSelectableTable(this.el.cgBody, "cg", this.el.cgSelectAll);
     this.bindSelectableTable(this.el.cmBody, "cm", this.el.cmSelectAll);
     this.bindSelectableTable(this.el.suppliesBody, "supplies", this.el.suppliesSelectAll);
+    this.bindSelectableTable(this.el.suppliesIssueBody, "supplyIssues", this.el.suppliesIssueSelectAll);
     this.bindSelectableTable(this.el.financeBody, "finance", this.el.financeSelectAll);
     this.bindSelectableTable(this.el.unitBody, "units", this.el.unitsSelectAll);
 
@@ -223,6 +236,9 @@ class LtcApp {
     this.el.supplyDeleteBatchBtn.addEventListener("click", () => this.handleDeleteProductBatch().catch(this.handleError));
     this.el.supplyInBtn.addEventListener("click", () => this.handleSupplyIn().catch(this.handleError));
     this.el.supplyOutBtn.addEventListener("click", () => this.handleSupplyOut().catch(this.handleError));
+    this.el.supplyIssueEditBtn?.addEventListener("click", () => this.handleEditSupplyIssue().catch(this.handleError));
+    this.el.supplyIssueDeleteBtn?.addEventListener("click", () => this.handleDeleteSupplyIssue().catch(this.handleError));
+    this.el.supplyIssueDeleteBatchBtn?.addEventListener("click", () => this.handleDeleteSupplyIssueBatch().catch(this.handleError));
 
     this.el.financeAddBtn.addEventListener("click", () => this.handleAddFinance().catch(this.handleError));
     this.el.financeEditBtn.addEventListener("click", () => this.handleEditFinance().catch(this.handleError));

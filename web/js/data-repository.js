@@ -8,6 +8,8 @@ class DataRepository {
     this.workingCache = new Map();
     this.tableVersions = new Map();
     this.mode = "unknown";
+    this.runtimeApiBaseCache = "";
+    this.runtimeApiBaseCacheAt = 0;
   }
 
   redirectToLogin() {
@@ -23,6 +25,75 @@ class DataRepository {
       throw new Error("alias ไม่ถูกต้อง");
     }
     return text;
+  }
+
+  normalizeBasePath(value, fallback = "") {
+    const raw = String(value || "").trim();
+    const withSlash = raw ? (raw.startsWith("/") ? raw : `/${raw}`) : fallback;
+    const normalized = withSlash.length > 1 ? withSlash.replace(/\/+$/, "") : withSlash;
+    if (!normalized) return "";
+    if (!/^\/[A-Za-z0-9/_-]*$/.test(normalized)) return fallback || "";
+    return normalized;
+  }
+
+  parseRuntimeApiBase(scriptText) {
+    const script = String(scriptText || "");
+    const match = script.match(/__LTC_RUNTIME_CONFIG__\s*=\s*(\{[\s\S]*?\})\s*;/);
+    if (!match) return "";
+
+    try {
+      const parsed = JSON.parse(match[1]);
+      return this.normalizeBasePath(parsed?.apiBase, "");
+    } catch {
+      return "";
+    }
+  }
+
+  async getRuntimeApiBase() {
+    if (typeof window === "undefined") return "";
+
+    const fromWindow = this.normalizeBasePath(window.__LTC_RUNTIME_CONFIG__?.apiBase, "");
+    if (fromWindow) return fromWindow;
+
+    const now = Date.now();
+    if (this.runtimeApiBaseCache && now - this.runtimeApiBaseCacheAt < 60 * 1000) {
+      return this.runtimeApiBaseCache;
+    }
+
+    try {
+      const response = await fetch("/public/runtime-config.js", {
+        cache: "no-store",
+        credentials: "same-origin",
+        headers: { "X-Requested-With": "XMLHttpRequest" }
+      });
+      if (!response.ok) return this.runtimeApiBaseCache;
+      const script = await response.text();
+      const parsed = this.parseRuntimeApiBase(script);
+      if (parsed) {
+        this.runtimeApiBaseCache = parsed;
+        this.runtimeApiBaseCacheAt = now;
+      }
+      return parsed || this.runtimeApiBaseCache;
+    } catch {
+      return this.runtimeApiBaseCache;
+    }
+  }
+
+  buildAiApiCandidates(runtimeApiBase) {
+    const candidates = [
+      this.normalizeBasePath(this.apiBase, ""),
+      this.normalizeBasePath(runtimeApiBase, ""),
+      "/api"
+    ];
+    return [...new Set(candidates.filter(Boolean))];
+  }
+
+  requestAiChat(apiBase, text, safeHistory) {
+    return this.requestJson(`${apiBase}/ai/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: text, history: safeHistory })
+    });
   }
 
   buildRequestError(response, payload) {
@@ -232,35 +303,40 @@ class DataRepository {
         text: String(item?.text || "").slice(0, 800)
       }));
 
-    const request = () =>
-      this.requestJson(`${this.apiBase}/ai/chat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text, history: safeHistory })
-      });
-
-    let payload;
-    try {
-      payload = await request();
-    } catch (error) {
-      if (error?.authRequired) {
-        this.redirectToLogin();
-        throw error;
-      }
-      // Retry once for transient network issues from browser/proxy.
-      if (!error?.networkError) throw error;
-      await new Promise((resolve) => setTimeout(resolve, 350));
+    const requestWithRetry = async (apiBase) => {
       try {
-        payload = await request();
-      } catch (retryError) {
-        if (retryError?.authRequired) {
+        return await this.requestAiChat(apiBase, text, safeHistory);
+      } catch (error) {
+        if (!error?.networkError) throw error;
+        // Retry once for transient browser/proxy network issues.
+        await new Promise((resolve) => setTimeout(resolve, 350));
+        return this.requestAiChat(apiBase, text, safeHistory);
+      }
+    };
+
+    const runtimeApiBase = await this.getRuntimeApiBase();
+    const candidates = this.buildAiApiCandidates(runtimeApiBase);
+    let lastError = null;
+
+    for (let i = 0; i < candidates.length; i += 1) {
+      const apiBase = candidates[i];
+      try {
+        const payload = await requestWithRetry(apiBase);
+        this.apiBase = apiBase;
+        return payload;
+      } catch (error) {
+        if (error?.authRequired) {
           this.redirectToLogin();
+          throw error;
         }
-        throw retryError;
+
+        lastError = error;
+        const shouldTryNext = (error?.status === 404 || error?.networkError) && i < candidates.length - 1;
+        if (!shouldTryNext) throw error;
       }
     }
 
-    return payload;
+    throw lastError || new Error("ไม่สามารถเชื่อมต่อ AI endpoint ได้");
   }
 
   async runSecurityScan() {
