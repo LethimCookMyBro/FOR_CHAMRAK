@@ -861,24 +861,14 @@ class LtcAppActionMethodCarrier {
         return;
       }
 
-      const unitCode = String(selected["รหัสหน่วย"] || "");
-      const [dependentRows, cmRows] = await Promise.all([
-        this.repo.getTable("t04_dataj"),
-        this.repo.getTable("t02_cm")
-      ]);
+      const result = await this.deleteUnitsWithRelations({
+        unitRowIds: [selected.__rowid],
+        unitCodes: [String(selected["รหัสหน่วย"] || "")],
+        confirmText: "ยืนยันการลบหน่วยงานที่เลือก?"
+      });
+      if (!result?.deleted) return;
 
-      const linkedDependents = dependentRows.filter((row) => String(row["รหัสหน่วย"] || "") === unitCode).length;
-      const linkedCm = cmRows.filter((row) => String(row["รหัสหน่วย"] || "") === unitCode).length;
-
-      if (linkedDependents > 0 || linkedCm > 0) {
-        throw new Error(`ลบไม่ได้: มีข้อมูลเชื่อมอยู่ (CM ${linkedCm} คน, LTC ${linkedDependents} ราย)`);
-      }
-
-      if (!confirm("ยืนยันการลบหน่วยงานที่เลือก?")) return;
-
-      await this.repo.deleteRows("t26_unit", [selected.__rowid]);
-      this.state.selected.units = null;
-      this.getCheckedSet("units").delete(selected.__rowid);
+      this.applyDeletionState(result);
     });
   }
 
@@ -894,26 +884,116 @@ class LtcAppActionMethodCarrier {
       const selectedUnits = rows.filter((row) => rowIds.includes(row.__rowid));
       if (!selectedUnits.length) return;
 
-      const unitCodeSet = new Set(selectedUnits.map((row) => String(row["รหัสหน่วย"] || "")));
-      const [dependentRows, cmRows] = await Promise.all([
-        this.repo.getTable("t04_dataj"),
-        this.repo.getTable("t02_cm")
-      ]);
-      const linkedDependents = dependentRows.filter((row) => unitCodeSet.has(String(row["รหัสหน่วย"] || ""))).length;
-      const linkedCm = cmRows.filter((row) => unitCodeSet.has(String(row["รหัสหน่วย"] || ""))).length;
-      if (linkedDependents > 0 || linkedCm > 0) {
-        throw new Error(`ลบไม่ได้: มีข้อมูลเชื่อมอยู่ (CM ${linkedCm} คน, LTC ${linkedDependents} ราย)`);
-      }
+      const result = await this.deleteUnitsWithRelations({
+        unitRowIds: rowIds,
+        unitCodes: selectedUnits.map((row) => String(row["รหัสหน่วย"] || "")),
+        confirmText: `ยืนยันการลบหน่วยงาน ${selectedUnits.length} รายการ?`
+      });
+      if (!result?.deleted) return;
 
-      if (!confirm(`ยืนยันการลบหน่วยงาน ${selectedUnits.length} รายการ?`)) return;
-
-      const idSet = new Set(rowIds);
-      await this.repo.deleteRows("t26_unit", rowIds);
-      this.clearChecked("units");
-      if (this.state.selected.units && idSet.has(this.state.selected.units)) {
-        this.state.selected.units = null;
-      }
+      this.applyDeletionState(result);
     });
+  }
+
+  async collectLinkedRecordsForUnits(unitCodes) {
+    const unitCodeSet = new Set((Array.isArray(unitCodes) ? unitCodes : []).map((item) => String(item || "").trim()).filter(Boolean));
+    const [dependentRows, cmRows, cgRows] = await Promise.all([
+      this.repo.getTable("t04_dataj"),
+      this.repo.getTable("t02_cm"),
+      this.repo.getTable("t01_cg")
+    ]);
+
+    const linkedCmRows = cmRows.filter((row) => unitCodeSet.has(String(row["รหัสหน่วย"] || "")));
+    const cmCodeSet = new Set(linkedCmRows.map((row) => String(row["รหัสcm"] || "")).filter(Boolean));
+
+    const linkedCgRows = cgRows.filter((row) => cmCodeSet.has(String(row["รหัสcm"] || "")));
+    const cgCodeSet = new Set(linkedCgRows.map((row) => String(row["รหัสcg"] || "")).filter(Boolean));
+
+    const linkedDependentRows = dependentRows.filter((row) => {
+      const unitCode = String(row["รหัสหน่วย"] || "");
+      const cmCode = String(row["รหัสcm"] || "");
+      const cgCode = String(row["รหัสcg"] || "");
+      return unitCodeSet.has(unitCode) || cmCodeSet.has(cmCode) || cgCodeSet.has(cgCode);
+    });
+
+    return {
+      dependentRowIds: linkedDependentRows.map((row) => row.__rowid),
+      cgRowIds: linkedCgRows.map((row) => row.__rowid),
+      cmRowIds: linkedCmRows.map((row) => row.__rowid),
+      linkedDependents: linkedDependentRows.length,
+      linkedCgs: linkedCgRows.length,
+      linkedCm: linkedCmRows.length
+    };
+  }
+
+  async deleteUnitsWithRelations(config) {
+    const unitRowIds = Array.isArray(config?.unitRowIds) ? config.unitRowIds.map((item) => String(item || "")).filter(Boolean) : [];
+    const unitCodes = Array.isArray(config?.unitCodes) ? config.unitCodes : [];
+    if (!unitRowIds.length) return { deleted: false };
+
+    const links = await this.collectLinkedRecordsForUnits(unitCodes);
+    const hasLinks = links.linkedDependents > 0 || links.linkedCgs > 0 || links.linkedCm > 0;
+
+    if (!hasLinks) {
+      if (!confirm(String(config?.confirmText || "ยืนยันการลบหน่วยงานที่เลือก?"))) return { deleted: false };
+      await this.repo.deleteRows("t26_unit", unitRowIds);
+      return {
+        deleted: true,
+        unitRowIds,
+        dependentRowIds: [],
+        cgRowIds: [],
+        cmRowIds: []
+      };
+    }
+
+    const cascadeConfirm = confirm(
+      [
+        "หน่วยงานที่เลือกมีข้อมูลเชื่อมอยู่",
+        `- CM ${Format.number(links.linkedCm)} คน`,
+        `- CG ${Format.number(links.linkedCgs)} คน`,
+        `- LTC ${Format.number(links.linkedDependents)} ราย`,
+        "",
+        "ต้องการลบหน่วยงาน พร้อมข้อมูลเชื่อมทั้งหมดหรือไม่?",
+        "ข้อมูลที่ลบสามารถกู้คืนจากถังขยะได้ภายใน 30 วัน"
+      ].join("\n")
+    );
+    if (!cascadeConfirm) return { deleted: false };
+
+    if (links.dependentRowIds.length) {
+      await this.repo.deleteRows("t04_dataj", links.dependentRowIds);
+    }
+    if (links.cgRowIds.length) {
+      await this.repo.deleteRows("t01_cg", links.cgRowIds);
+    }
+    if (links.cmRowIds.length) {
+      await this.repo.deleteRows("t02_cm", links.cmRowIds);
+    }
+    await this.repo.deleteRows("t26_unit", unitRowIds);
+
+    return {
+      deleted: true,
+      unitRowIds,
+      dependentRowIds: links.dependentRowIds,
+      cgRowIds: links.cgRowIds,
+      cmRowIds: links.cmRowIds
+    };
+  }
+
+  applyDeletionState(result) {
+    const dependentIdSet = new Set(Array.isArray(result?.dependentRowIds) ? result.dependentRowIds : []);
+    const cgIdSet = new Set(Array.isArray(result?.cgRowIds) ? result.cgRowIds : []);
+    const cmIdSet = new Set(Array.isArray(result?.cmRowIds) ? result.cmRowIds : []);
+    const unitIdSet = new Set(Array.isArray(result?.unitRowIds) ? result.unitRowIds : []);
+
+    for (const rowId of dependentIdSet) this.getCheckedSet("dependents").delete(rowId);
+    for (const rowId of cgIdSet) this.getCheckedSet("cg").delete(rowId);
+    for (const rowId of cmIdSet) this.getCheckedSet("cm").delete(rowId);
+    for (const rowId of unitIdSet) this.getCheckedSet("units").delete(rowId);
+
+    if (this.state.selected.dependents && dependentIdSet.has(this.state.selected.dependents)) this.state.selected.dependents = null;
+    if (this.state.selected.cg && cgIdSet.has(this.state.selected.cg)) this.state.selected.cg = null;
+    if (this.state.selected.cm && cmIdSet.has(this.state.selected.cm)) this.state.selected.cm = null;
+    if (this.state.selected.units && unitIdSet.has(this.state.selected.units)) this.state.selected.units = null;
   }
 
   async runProtected(actionLabel, handler) {

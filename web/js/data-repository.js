@@ -243,10 +243,21 @@ class DataRepository {
     try {
       payload = await request();
     } catch (error) {
+      if (error?.authRequired) {
+        this.redirectToLogin();
+        throw error;
+      }
       // Retry once for transient network issues from browser/proxy.
       if (!error?.networkError) throw error;
       await new Promise((resolve) => setTimeout(resolve, 350));
-      payload = await request();
+      try {
+        payload = await request();
+      } catch (retryError) {
+        if (retryError?.authRequired) {
+          this.redirectToLogin();
+        }
+        throw retryError;
+      }
     }
 
     return payload;

@@ -344,6 +344,14 @@ class AiAssistantService {
   }
 
   buildDependentsAnswer(ctx) {
+    if (!ctx.dependents.length) {
+      return [
+        "สรุปผู้รับบริการ",
+        "- ยังไม่พบข้อมูลผู้รับบริการในระบบ",
+        "- เพิ่มข้อมูลผู้รับบริการก่อน แล้วผมจะสรุปกลุ่มพึ่งพิงและแนวโน้มให้ทันที"
+      ].join("\n");
+    }
+
     const tai = ctx.careStats.taiCounts;
     const total = Math.max(1, ctx.dependents.length);
     const highPercent = this.ratioPercent(ctx.careStats.highCount, total);
@@ -358,6 +366,14 @@ class AiAssistantService {
   }
 
   buildFinanceAnswer(ctx) {
+    if (!ctx.financeRows.length) {
+      return [
+        "สรุปการเงิน",
+        "- ยังไม่มีข้อมูลรายรับ/รายจ่ายในระบบ",
+        "- เพิ่มรายการการเงินก่อน แล้วผมจะวิเคราะห์สัดส่วนและแนวโน้มให้อัตโนมัติ"
+      ].join("\n");
+    }
+
     const highestIncomeCategory = this.maxIndex(ctx.finance.income) + 1;
     const highestExpenseCategory = this.maxIndex(ctx.finance.expense) + 1;
     const expenseRatio = this.ratioPercent(ctx.finance.totalExpense, ctx.finance.totalIncome);
@@ -422,6 +438,14 @@ class AiAssistantService {
   }
 
   buildAdviceAnswer(ctx) {
+    if (!ctx.dependents.length && !ctx.financeRows.length && !ctx.stockAlerts.length) {
+      return [
+        "ข้อเสนอแนะเชิงปฏิบัติ",
+        "- ตอนนี้ฐานข้อมูลยังว่าง จึงยังวิเคราะห์เชิงปฏิบัติการไม่ได้",
+        "- เริ่มจากเพิ่มข้อมูลผู้รับบริการ, การเงิน และวัสดุอย่างน้อยอย่างละบางส่วนก่อน"
+      ].join("\n");
+    }
+
     const points = [];
 
     if (ctx.finance.net < 0) {
@@ -473,6 +497,9 @@ class AiAssistantService {
       "ช่วยอะไรได้บ้าง",
       "ทำอะไรได้บ้าง",
       "คุณทำอะไรได้",
+      "คุยเรื่องชีวิต",
+      "อยากคุย",
+      "ชีวิต",
       "เป็นไง",
       "สบายดีไหม",
       "ขอบคุณ",
@@ -480,7 +507,51 @@ class AiAssistantService {
     ]);
   }
 
+  isEmotionalSupportPrompt(promptLower) {
+    return includesAny(promptLower, [
+      "ชีวิตผมแย่",
+      "ชีวิตหนูแย่",
+      "ชีวิตแย่",
+      "เครียด",
+      "ท้อ",
+      "หมดไฟ",
+      "เหนื่อยใจ",
+      "เศร้า",
+      "แย่มาก",
+      "ไม่มีแรง",
+      "อยากระบาย",
+      "รู้สึกแย่",
+      "ไม่ไหว"
+    ]);
+  }
+
+  isCrisisPrompt(promptLower) {
+    return includesAny(promptLower, ["อยากตาย", "ฆ่าตัวตาย", "ไม่อยากมีชีวิต", "ทำร้ายตัวเอง"]);
+  }
+
+  buildEmotionalSupportAnswer(promptLower) {
+    if (this.isCrisisPrompt(promptLower)) {
+      return [
+        "ผมอยู่ข้างคุณนะ และเรื่องนี้สำคัญมาก",
+        "- ตอนนี้ขอให้คุณติดต่อคนที่ไว้ใจได้ใกล้ตัวทันที",
+        "- ถ้าไม่ปลอดภัย ให้โทร 1669 (ฉุกเฉิน) หรือสายด่วนสุขภาพจิต 1323 ทันที",
+        "- ถ้าคุณอยาก ผมช่วยวางแผน 3 ขั้นตอนสั้นๆ เพื่อพาคุณผ่านคืนนี้ไปก่อน"
+      ].join("\n");
+    }
+
+    return [
+      "ขอบคุณที่บอกผมนะ ผมรับฟังอยู่",
+      "- ถ้าตอนนี้หนักมาก ลองหายใจลึกช้าๆ 5 รอบก่อน",
+      "- ถ้าอยาก ผมช่วยคุยเป็นขั้นตอน: ระบายสิ่งที่หนักสุดตอนนี้ > แยกสิ่งที่คุมได้ > วางแผนเล็กๆ ภายในวันนี้",
+      "- ถ้าความเครียดรุนแรงต่อเนื่อง โทรสายด่วนสุขภาพจิต 1323 ได้ตลอด 24 ชั่วโมง"
+    ].join("\n");
+  }
+
   buildSmallTalkAnswer(promptLower) {
+    if (this.isEmotionalSupportPrompt(promptLower) || this.isCrisisPrompt(promptLower)) {
+      return this.buildEmotionalSupportAnswer(promptLower);
+    }
+
     if (includesAny(promptLower, ["คุยไม่ได้", "ทำไมคุณคุยไม่ได้", "ทำไมคุยไม่ได้"])) {
       return [
         "คุยได้ครับ ตอนนี้ผมถูกตั้งให้โฟกัสงานวิเคราะห์ข้อมูล LTC เป็นหลัก",
@@ -494,8 +565,9 @@ class AiAssistantService {
     }
 
     return [
-      "คุยได้ครับ",
-      "- ถ้าจะให้คุ้มสุด ลองสั่งงานเชิงข้อมูล เช่น สรุปผู้รับบริการ, วิเคราะห์การเงิน, หรือเช็กวัสดุใกล้หมด"
+      "คุยได้ครับ เรื่องชีวิตหรือความรู้สึกก็คุยกันได้",
+      "- ถ้าอยากระบาย ลองเล่าเรื่องที่หนักที่สุดตอนนี้มาได้เลย ผมจะช่วยค่อยๆแยกทีละส่วน",
+      "- ถ้าต้องการกลับมางาน LTC เมื่อไหร่ ผมพร้อมสลับไปวิเคราะห์ข้อมูลให้ทันที"
     ].join("\n");
   }
 
@@ -518,19 +590,17 @@ class AiAssistantService {
       intents.add("artifact");
     }
     if (includesAny(promptLower, ["สรุป", "overview", "snapshot", "ภาพรวม"])) intents.add("summary");
-    if (this.isSmallTalkPrompt(promptLower) || this.isGreetingPrompt(promptLower)) intents.add("smalltalk");
+    if (this.isSmallTalkPrompt(promptLower) || this.isGreetingPrompt(promptLower) || this.isEmotionalSupportPrompt(promptLower)) {
+      intents.add("smalltalk");
+    }
 
     return intents;
   }
 
   shouldUseGemini(promptLower, intents) {
     if (!this.geminiClient || !this.geminiClient.isEnabled()) return false;
-    if (this.isGreetingPrompt(promptLower)) return false;
-
-    const hasDomainIntent = ["dependents", "finance", "stock", "workforce", "unit", "summary", "chart", "artifact", "advice", "trend"].some(
-      (intent) => intents.has(intent)
-    );
-    if (intents.has("smalltalk") && !hasDomainIntent) return false;
+    // Keep deterministic local response for crisis/safety prompts.
+    if (this.isCrisisPrompt(promptLower)) return false;
 
     return true;
   }

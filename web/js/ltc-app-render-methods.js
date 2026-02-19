@@ -247,7 +247,7 @@ class LtcAppRenderMethodCarrier {
         const total = count * visits * rateCm;
         const tagClass = group === "1" ? "tag-I1" : group === "2" ? "tag-I2" : group === "3" ? "tag-I3" : "tag-B3";
         return `
-          <tr>
+          <tr data-cm-rate-rowid="${Format.escapeHtml(String(row.__rowid || ""))}" data-cm-rate-group="${Format.escapeHtml(group)}">
             <td><span class="tag ${tagClass}">${Format.escapeHtml(groupLabel[group] || group)}</span></td>
             <td>${Format.number(count)} ราย</td>
             <td>${Format.number(visits)} ครั้ง</td>

@@ -205,10 +205,13 @@ class LtcApp {
     this.el.cmDeleteBtn.addEventListener("click", () => this.handleDeleteCm().catch(this.handleError));
     this.el.cmDeleteBatchBtn.addEventListener("click", () => this.handleDeleteCmBatch().catch(this.handleError));
     this.el.cmRateBody.addEventListener("click", (event) => {
-      const button = event.target.closest("button[data-cm-rate-rowid], button[data-cm-rate-group]");
-      if (!button) return;
-      const rowId = String(button.dataset.cmRateRowid || "");
-      const group = String(button.dataset.cmRateGroup || "");
+      const trigger = event.target.closest(
+        "button[data-cm-rate-rowid], button[data-cm-rate-group], tr[data-cm-rate-rowid], tr[data-cm-rate-group]"
+      );
+      if (!trigger) return;
+      const rowId = String(trigger.dataset.cmRateRowid || "");
+      const group = String(trigger.dataset.cmRateGroup || "");
+      if (!rowId && !group) return;
       this.handleEditCmRate(rowId, group).catch(this.handleError);
     });
 
