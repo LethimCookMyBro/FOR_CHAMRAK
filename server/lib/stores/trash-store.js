@@ -12,6 +12,7 @@ class TrashStore {
     this.filePath = filePath;
     this.retentionDays = retentionDays;
     this.tableStore = tableStore;
+    this.writeChain = Promise.resolve();
   }
 
   async ensure() {
@@ -23,17 +24,218 @@ class TrashStore {
     }
   }
 
+  async runExclusive(handler) {
+    const previous = this.writeChain || Promise.resolve();
+    let release = null;
+    const current = new Promise((resolve) => {
+      release = resolve;
+    });
+    this.writeChain = previous.then(() => current);
+
+    await previous;
+    try {
+      return await handler();
+    } finally {
+      release();
+    }
+  }
+
+  sanitizeRecord(record) {
+    if (!record || typeof record !== "object" || Array.isArray(record)) return null;
+    return { ...record };
+  }
+
+  normalizeRecordList(value) {
+    if (!Array.isArray(value)) return [];
+    return value.map((item) => this.sanitizeRecord(item)).filter(Boolean);
+  }
+
+  extractJsonChunks(text) {
+    const chunks = [];
+    const source = String(text || "");
+    let index = 0;
+
+    while (index < source.length) {
+      while (index < source.length && /\s/.test(source[index])) index += 1;
+      if (index >= source.length) break;
+
+      const start = source[index];
+      if (start !== "[" && start !== "{") break;
+
+      const stack = [start];
+      let inString = false;
+      let escaped = false;
+      let cursor = index + 1;
+
+      for (; cursor < source.length; cursor += 1) {
+        const ch = source[cursor];
+        if (inString) {
+          if (escaped) {
+            escaped = false;
+            continue;
+          }
+          if (ch === "\\") {
+            escaped = true;
+            continue;
+          }
+          if (ch === '"') inString = false;
+          continue;
+        }
+
+        if (ch === '"') {
+          inString = true;
+          continue;
+        }
+
+        if (ch === "[" || ch === "{") {
+          stack.push(ch);
+          continue;
+        }
+
+        if (ch === "]") {
+          if (stack[stack.length - 1] !== "[") return chunks;
+          stack.pop();
+          if (!stack.length) {
+            cursor += 1;
+            break;
+          }
+          continue;
+        }
+
+        if (ch === "}") {
+          if (stack[stack.length - 1] !== "{") return chunks;
+          stack.pop();
+          if (!stack.length) {
+            cursor += 1;
+            break;
+          }
+        }
+      }
+
+      if (stack.length > 0) break;
+      chunks.push(source.slice(index, cursor));
+      index = cursor;
+    }
+
+    return chunks;
+  }
+
+  parseRecords(rawText) {
+    const text = String(rawText || "").trim();
+    if (!text) {
+      return { records: [], repaired: false, reason: "" };
+    }
+
+    try {
+      const parsed = JSON.parse(text);
+      if (Array.isArray(parsed)) {
+        return {
+          records: this.normalizeRecordList(parsed),
+          repaired: false,
+          reason: ""
+        };
+      }
+      const single = this.sanitizeRecord(parsed);
+      return {
+        records: single ? [single] : [],
+        repaired: true,
+        reason: "wrapped-object"
+      };
+    } catch {
+      // Fall through to salvage mode.
+    }
+
+    const chunks = this.extractJsonChunks(text);
+    if (chunks.length) {
+      const merged = [];
+      let parsedChunks = 0;
+      for (const chunk of chunks) {
+        try {
+          const parsed = JSON.parse(chunk);
+          if (Array.isArray(parsed)) {
+            merged.push(...this.normalizeRecordList(parsed));
+          } else {
+            const item = this.sanitizeRecord(parsed);
+            if (item) merged.push(item);
+          }
+          parsedChunks += 1;
+        } catch {
+          // Skip broken chunk and continue salvage.
+        }
+      }
+      if (parsedChunks > 0) {
+        return {
+          records: merged,
+          repaired: true,
+          reason: "chunk-salvage"
+        };
+      }
+    }
+
+    const lines = text
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter(Boolean);
+    const lineRecords = [];
+    for (const line of lines) {
+      try {
+        const parsed = JSON.parse(line);
+        if (Array.isArray(parsed)) {
+          lineRecords.push(...this.normalizeRecordList(parsed));
+        } else {
+          const item = this.sanitizeRecord(parsed);
+          if (item) lineRecords.push(item);
+        }
+      } catch {
+        // Skip broken line and continue salvage.
+      }
+    }
+    if (lineRecords.length > 0) {
+      return {
+        records: lineRecords,
+        repaired: true,
+        reason: "line-salvage"
+      };
+    }
+
+    return {
+      records: [],
+      repaired: true,
+      reason: "reset-empty"
+    };
+  }
+
+  async backupCorruptedRaw(rawText) {
+    try {
+      const backupPath = `${this.filePath}.corrupt-${Date.now()}.json`;
+      await fs.writeFile(backupPath, String(rawText || ""), "utf8");
+    } catch (error) {
+      console.warn(`[trash-store] failed to write corrupted backup: ${error.message || error}`);
+    }
+  }
+
   async readAll() {
     await this.ensure();
     const raw = await fs.readFile(this.filePath, "utf8");
-    const parsed = JSON.parse(raw || "[]");
-    if (!Array.isArray(parsed)) return [];
-    return parsed;
+    const parsed = this.parseRecords(raw);
+    if (!parsed.repaired) return parsed.records;
+
+    await this.backupCorruptedRaw(raw);
+    await this.writeAll(parsed.records);
+    console.warn(`[trash-store] repaired malformed trash file (${parsed.reason}), records=${parsed.records.length}`);
+    return parsed.records;
+  }
+
+  async writeFileAtomic(text) {
+    await this.ensure();
+    const tmpPath = `${this.filePath}.tmp-${process.pid}-${Date.now()}`;
+    await fs.writeFile(tmpPath, text, "utf8");
+    await fs.rename(tmpPath, this.filePath);
   }
 
   async writeAll(records) {
-    await this.ensure();
-    await fs.writeFile(this.filePath, `${JSON.stringify(records, null, 2)}\n`, "utf8");
+    const normalized = this.normalizeRecordList(records);
+    await this.writeFileAtomic(`${JSON.stringify(normalized, null, 2)}\n`);
   }
 
   expiresAtDate() {
@@ -56,74 +258,80 @@ class TrashStore {
   }
 
   async addDeletedRows(alias, rows, actor) {
-    const records = await this.readAll();
-    const deletedAt = nowIso();
-    const expiresAt = this.expiresAtDate();
+    return this.runExclusive(async () => {
+      const records = await this.readAll();
+      const deletedAt = nowIso();
+      const expiresAt = this.expiresAtDate();
 
-    const added = rows.map((row) => {
-      const clean = this.tableStore.cleanRow(row);
-      return {
-        trashId: crypto.randomUUID(),
-        alias,
-        row: clean,
-        rowIdentity: this.tableStore.rowIdentityKey(alias, clean),
-        preview: this.buildRowPreview(clean),
-        deletedAt,
-        expiresAt,
-        deletedBy: sanitizeText(actor?.username || "anonymous", 80),
-        deletedByIp: sanitizeText(actor?.ip || "-", 120),
-        restoredAt: null,
-        restoredBy: null,
-        restoreResult: null
-      };
+      const added = rows.map((row) => {
+        const clean = this.tableStore.cleanRow(row);
+        return {
+          trashId: crypto.randomUUID(),
+          alias,
+          row: clean,
+          rowIdentity: this.tableStore.rowIdentityKey(alias, clean),
+          preview: this.buildRowPreview(clean),
+          deletedAt,
+          expiresAt,
+          deletedBy: sanitizeText(actor?.username || "anonymous", 80),
+          deletedByIp: sanitizeText(actor?.ip || "-", 120),
+          restoredAt: null,
+          restoredBy: null,
+          restoreResult: null
+        };
+      });
+
+      records.push(...added);
+      await this.writeAll(records);
+      return added;
     });
-
-    records.push(...added);
-    await this.writeAll(records);
-    return added;
   }
 
   async purgeExpired() {
-    const now = Date.now();
-    const rows = await this.readAll();
-    const filtered = rows.filter((row) => !this.isExpired(row, now));
-    if (filtered.length !== rows.length) {
-      await this.writeAll(filtered);
-    }
-    return {
-      removed: rows.length - filtered.length
-    };
+    return this.runExclusive(async () => {
+      const now = Date.now();
+      const rows = await this.readAll();
+      const filtered = rows.filter((row) => !this.isExpired(row, now));
+      if (filtered.length !== rows.length) {
+        await this.writeAll(filtered);
+      }
+      return {
+        removed: rows.length - filtered.length
+      };
+    });
   }
 
   async purgeAll(options = {}) {
-    const alias = sanitizeText(options.alias || "", 80);
-    const includeRestored = options.includeRestored !== false;
-    const rows = await this.readAll();
+    return this.runExclusive(async () => {
+      const alias = sanitizeText(options.alias || "", 80);
+      const includeRestored = options.includeRestored !== false;
+      const rows = await this.readAll();
 
-    const kept = [];
-    let removed = 0;
+      const kept = [];
+      let removed = 0;
 
-    for (const row of rows) {
-      if (alias && String(row.alias || "") !== alias) {
-        kept.push(row);
-        continue;
+      for (const row of rows) {
+        if (alias && String(row.alias || "") !== alias) {
+          kept.push(row);
+          continue;
+        }
+        if (!includeRestored && row.restoredAt) {
+          kept.push(row);
+          continue;
+        }
+
+        removed += 1;
       }
-      if (!includeRestored && row.restoredAt) {
-        kept.push(row);
-        continue;
+
+      if (removed > 0) {
+        await this.writeAll(kept);
       }
 
-      removed += 1;
-    }
-
-    if (removed > 0) {
-      await this.writeAll(kept);
-    }
-
-    return {
-      removed,
-      remaining: kept.length
-    };
+      return {
+        removed,
+        remaining: kept.length
+      };
+    });
   }
 
   getDaysLeft(record, now = Date.now()) {
@@ -174,71 +382,70 @@ class TrashStore {
       throw error;
     }
 
-    await this.purgeExpired();
-    const now = Date.now();
-    const restoreTimestamp = nowIso();
-    const records = await this.readAll();
+    return this.runExclusive(async () => {
+      const now = Date.now();
+      const restoreTimestamp = nowIso();
+      const records = await this.readAll();
+      const byAlias = new Map();
 
-    const byAlias = new Map();
-    for (const record of records) {
-      if (!ids.has(String(record.trashId || ""))) continue;
-      const list = byAlias.get(record.alias) || [];
-      list.push(record);
-      byAlias.set(record.alias, list);
-    }
+      for (const record of records) {
+        if (this.isExpired(record, now)) continue;
+        if (!ids.has(String(record.trashId || ""))) continue;
+        const list = byAlias.get(record.alias) || [];
+        list.push(record);
+        byAlias.set(record.alias, list);
+      }
 
-    let restored = 0;
-    let skipped = 0;
-    const restoredAliases = new Set();
+      const kept = records.filter((record) => !this.isExpired(record, now));
+      let restored = 0;
+      let skipped = 0;
+      const restoredAliases = new Set();
 
-    for (const [alias, recordsByAlias] of byAlias.entries()) {
-      const loaded = await this.tableStore.loadTable(alias);
-      const currentRows = loaded.rows.map((row) => ({ ...row }));
-      const existingKeys = new Set(currentRows.map((row) => this.tableStore.rowIdentityKey(alias, row)));
-      let changed = false;
+      for (const [alias, recordsByAlias] of byAlias.entries()) {
+        const loaded = await this.tableStore.loadTable(alias);
+        const currentRows = loaded.rows.map((row) => ({ ...row }));
+        const existingKeys = new Set(currentRows.map((row) => this.tableStore.rowIdentityKey(alias, row)));
+        let changed = false;
 
-      for (const record of recordsByAlias) {
-        if (record.restoredAt) {
-          skipped += 1;
-          continue;
-        }
-        if (this.isExpired(record, now)) {
-          skipped += 1;
-          continue;
-        }
+        for (const record of recordsByAlias) {
+          if (record.restoredAt) {
+            skipped += 1;
+            continue;
+          }
 
-        const rowKey = this.tableStore.rowIdentityKey(alias, record.row || {});
-        if (existingKeys.has(rowKey)) {
+          const rowKey = this.tableStore.rowIdentityKey(alias, record.row || {});
+          if (existingKeys.has(rowKey)) {
+            record.restoredAt = restoreTimestamp;
+            record.restoredBy = sanitizeText(actor?.username || "anonymous", 80);
+            record.restoreResult = "already_exists";
+            skipped += 1;
+            continue;
+          }
+
+          currentRows.push({ ...(record.row || {}) });
+          existingKeys.add(rowKey);
           record.restoredAt = restoreTimestamp;
           record.restoredBy = sanitizeText(actor?.username || "anonymous", 80);
-          record.restoreResult = "already_exists";
-          skipped += 1;
-          continue;
+          record.restoreResult = "restored";
+          restored += 1;
+          changed = true;
         }
 
-        currentRows.push({ ...(record.row || {}) });
-        existingKeys.add(rowKey);
-        record.restoredAt = restoreTimestamp;
-        record.restoredBy = sanitizeText(actor?.username || "anonymous", 80);
-        record.restoreResult = "restored";
-        restored += 1;
-        changed = true;
+        if (changed) {
+          await this.tableStore.saveTable(alias, currentRows);
+          restoredAliases.add(alias);
+        }
       }
 
-      if (changed) {
-        await this.tableStore.saveTable(alias, currentRows);
-        restoredAliases.add(alias);
-      }
-    }
+      await this.writeAll(kept);
 
-    await this.writeAll(records);
-
-    return {
-      requested: ids.size,
-      restored,
-      skipped,
-      restoredAliases: [...restoredAliases]
-    };
+      return {
+        requested: ids.size,
+        restored,
+        skipped,
+        restoredAliases: [...restoredAliases]
+      };
+    });
   }
 }
 

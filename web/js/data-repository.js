@@ -61,12 +61,20 @@ class DataRepository {
       headers.set("X-Requested-With", "XMLHttpRequest");
     }
 
-    const response = await fetch(url, {
-      cache: "no-store",
-      credentials: "same-origin",
-      ...options,
-      headers
-    });
+    let response;
+    try {
+      response = await fetch(url, {
+        cache: "no-store",
+        credentials: "same-origin",
+        ...options,
+        headers
+      });
+    } catch {
+      const error = new Error("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ (network error)");
+      error.networkError = true;
+      throw error;
+    }
+
     let payload = null;
     try {
       payload = await response.json();
@@ -224,11 +232,22 @@ class DataRepository {
         text: String(item?.text || "").slice(0, 800)
       }));
 
-    const payload = await this.requestJson(`${this.apiBase}/ai/chat`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: text, history: safeHistory })
-    });
+    const request = () =>
+      this.requestJson(`${this.apiBase}/ai/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text, history: safeHistory })
+      });
+
+    let payload;
+    try {
+      payload = await request();
+    } catch (error) {
+      // Retry once for transient network issues from browser/proxy.
+      if (!error?.networkError) throw error;
+      await new Promise((resolve) => setTimeout(resolve, 350));
+      payload = await request();
+    }
 
     return payload;
   }
