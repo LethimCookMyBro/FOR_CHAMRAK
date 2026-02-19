@@ -270,7 +270,11 @@ class LtcAppRenderMethodCarrier {
   }
 
   async renderSupplies() {
-    const inventoryRows = await this.domain.computeInventoryRows();
+    const [inventoryRows, outRows, dependentRows] = await Promise.all([
+      this.domain.computeInventoryRows(),
+      this.repo.getTable("t13_outproduct"),
+      this.repo.getTable("t04_dataj")
+    ]);
 
     if (!inventoryRows.some((row) => row.rowId === this.state.selected.supplies)) {
       this.state.selected.supplies = null;
@@ -312,6 +316,77 @@ class LtcAppRenderMethodCarrier {
 
     this.paintSelection(this.el.suppliesBody, this.state.selected.supplies);
     this.syncSelectAllCheckbox(this.el.suppliesBody, "supplies", this.el.suppliesSelectAll);
+
+    const dependentNameByCode = {};
+    for (const row of dependentRows) {
+      const citizenId = String(row["เลขประชาชน"] || "").trim();
+      if (!citizenId) continue;
+      dependentNameByCode[citizenId] = this.helpers.fullNameFromDependent(row) || "-";
+    }
+
+    const productByCode = {};
+    for (const row of inventoryRows) {
+      const code = String(row.productID || "").trim();
+      if (!code) continue;
+      productByCode[code] = row.product || {};
+    }
+
+    const issues = [...outRows]
+      .map((row) => {
+        const productID = String(row.productID || "").trim();
+        const product = productByCode[productID] || {};
+        const recipientCode = String(row["รหัสltc"] || "").trim();
+        const recipientName = String(row.recipientName || dependentNameByCode[recipientCode] || "-").trim();
+        return {
+          outdate: row.outdate || null,
+          productID,
+          productName: String(row.productName || product.productName || "-"),
+          brand: String(row.brand || product.brand || "-"),
+          machineCode: String(row.machineCode || product.machineCode || "-"),
+          quantity: Number(row.quantity) || 0,
+          unit: String(product.unit || "ชิ้น"),
+          recipientCode: recipientCode || "-",
+          recipientName: recipientName || "-",
+          round: String(row.round || "-"),
+          reference: String(row.reference || row.outtype || "-"),
+          note: String(row.note || "-"),
+          outno: Number(row.outno) || 0
+        };
+      })
+      .sort((a, b) => {
+        const dateDiff = new Date(b.outdate || 0).getTime() - new Date(a.outdate || 0).getTime();
+        if (dateDiff !== 0) return dateDiff;
+        return b.outno - a.outno;
+      });
+
+    const totalIssueQty = issues.reduce((sum, row) => sum + (Number(row.quantity) || 0), 0);
+    if (this.el.suppliesIssueSummary) {
+      this.el.suppliesIssueSummary.textContent = `ประวัติเบิกจ่ายล่าสุด ${Format.number(issues.length)} รายการ | รวมจ่าย ${Format.number(totalIssueQty)} หน่วย`;
+    }
+
+    if (this.el.suppliesIssueBody) {
+      this.el.suppliesIssueBody.innerHTML = issues.length
+        ? issues
+            .slice(0, 80)
+            .map(
+              (row) => `
+                <tr>
+                  <td>${Format.escapeHtml(Format.formatDateCompact(row.outdate))}</td>
+                  <td><span class="unit-badge">${Format.escapeHtml(row.productID || "-")}</span></td>
+                  <td>${Format.escapeHtml(row.productName || "-")}</td>
+                  <td>${Format.escapeHtml(row.brand || "-")}</td>
+                  <td>${Format.escapeHtml(row.machineCode || "-")}</td>
+                  <td>${Format.number(row.quantity)} ${Format.escapeHtml(row.unit)}</td>
+                  <td>${Format.escapeHtml(`${row.recipientName} (${row.recipientCode})`)}</td>
+                  <td>${Format.escapeHtml(row.round || "-")}</td>
+                  <td>${Format.escapeHtml(row.reference || "-")}</td>
+                  <td>${Format.escapeHtml(row.note || "-")}</td>
+                </tr>
+              `
+            )
+            .join("")
+        : `<tr><td colspan="10" class="empty-row">ยังไม่พบประวัติเบิกจ่าย</td></tr>`;
+    }
   }
 
   async renderFinance() {

@@ -188,6 +188,124 @@ class AiAssistantService {
     };
   }
 
+  fullNameFromDependentRow(row) {
+    const prefix = String(row?.["นาม"] || "").trim();
+    const firstName = String(row?.["ชื่อ"] || "").trim();
+    const lastName = String(row?.["สกุล"] || "").trim();
+    const fullName = `${prefix}${firstName} ${lastName}`.replace(/\s+/g, " ").trim();
+    return fullName || "-";
+  }
+
+  formatDateCompact(value) {
+    const text = String(value || "").trim();
+    if (!text) return "-";
+    const ts = new Date(text).getTime();
+    if (Number.isNaN(ts)) return text.slice(0, 10);
+    const date = new Date(ts);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = String(date.getFullYear());
+    return `${day}/${month}/${year}`;
+  }
+
+  buildDispenseHistory(products, outRows, dependents) {
+    const productById = {};
+    for (const row of products) {
+      const productID = String(row.productID || "").trim();
+      if (!productID) continue;
+      productById[productID] = row;
+    }
+
+    const recipientByCode = {};
+    for (const row of dependents) {
+      const citizenId = String(row?.["เลขประชาชน"] || "").trim();
+      if (!citizenId) continue;
+      recipientByCode[citizenId] = this.fullNameFromDependentRow(row);
+    }
+
+    const rows = [];
+    const productAgg = {};
+    const recipientAgg = {};
+    let totalQuantity = 0;
+
+    for (const row of outRows) {
+      const quantity = this.safeNumber(row.quantity);
+      const productID = String(row.productID || "").trim();
+      const product = productById[productID] || {};
+      const recipientCode = String(row["รหัสltc"] || row.ltcCode || "").trim();
+      const recipientName = String(row.recipientName || recipientByCode[recipientCode] || "-").trim() || "-";
+      const productName = String(row.productName || product.productName || "-");
+      const unit = String(product.unit || row.unit || "ชิ้น");
+      const brand = String(row.brand || product.brand || "-");
+      const machineCode = String(row.machineCode || product.machineCode || "-");
+
+      rows.push({
+        outdate: row.outdate || null,
+        outno: this.safeNumber(row.outno),
+        outtype: String(row.outtype || "-"),
+        productID,
+        productName,
+        brand,
+        machineCode,
+        quantity,
+        unit,
+        recipientCode: recipientCode || "-",
+        recipientName,
+        round: String(row.round || "-"),
+        note: String(row.note || ""),
+        reference: String(row.reference || "")
+      });
+
+      totalQuantity += quantity;
+
+      const productKey = `${productID}|${productName}`;
+      const productItem = productAgg[productKey] || {
+        productID,
+        productName,
+        quantity: 0,
+        count: 0,
+        unit
+      };
+      productItem.quantity += quantity;
+      productItem.count += 1;
+      productAgg[productKey] = productItem;
+
+      const recipientKey = `${recipientCode}|${recipientName}`;
+      const recipientItem = recipientAgg[recipientKey] || {
+        recipientCode: recipientCode || "-",
+        recipientName,
+        quantity: 0,
+        count: 0
+      };
+      recipientItem.quantity += quantity;
+      recipientItem.count += 1;
+      recipientAgg[recipientKey] = recipientItem;
+    }
+
+    rows.sort((a, b) => {
+      const dateDiff = new Date(b.outdate || 0).getTime() - new Date(a.outdate || 0).getTime();
+      if (dateDiff !== 0) return dateDiff;
+      return this.safeNumber(b.outno) - this.safeNumber(a.outno);
+    });
+
+    const topProducts = Object.values(productAgg)
+      .sort((a, b) => this.safeNumber(b.quantity) - this.safeNumber(a.quantity) || this.safeNumber(b.count) - this.safeNumber(a.count))
+      .slice(0, 8);
+
+    const topRecipients = Object.values(recipientAgg)
+      .sort((a, b) => this.safeNumber(b.quantity) - this.safeNumber(a.quantity) || this.safeNumber(b.count) - this.safeNumber(a.count))
+      .slice(0, 8);
+
+    return {
+      rows,
+      totalRows: rows.length,
+      totalQuantity,
+      recentRows: rows.slice(0, 12),
+      topProducts,
+      topRecipients
+    };
+  }
+
   computeStockAlerts(products, inRows, outRows) {
     const inMap = {};
     const outMap = {};
@@ -336,6 +454,9 @@ class AiAssistantService {
       `- CG ${ctx.cgRows.length} คน | CM ${ctx.cmRows.length} คน | หน่วยงาน ${ctx.unitRows.length} หน่วย`,
       `- การเงิน รายรับ ${ctx.finance.totalIncome.toLocaleString("th-TH")} บาท | รายจ่าย ${ctx.finance.totalExpense.toLocaleString("th-TH")} บาท | คงเหลือ ${ctx.finance.net.toLocaleString("th-TH")} บาท`,
       `- ${monthText}`,
+      `- เบิกจ่ายสะสม ${ctx.dispenseHistory.totalRows.toLocaleString("th-TH")} รายการ (${ctx.dispenseHistory.totalQuantity.toLocaleString(
+        "th-TH"
+      )} หน่วย)`,
       `- วัสดุที่ต้องติดตาม: ${stockText}`,
       topUnit
         ? `- หน่วยที่มีผู้รับบริการสูงสุด: ${topUnit.unitName} (${topUnit.unitCode}) ${topUnit.dependentCount} ราย`
@@ -411,6 +532,55 @@ class AiAssistantService {
       .join("\n");
 
     return ["คลังวัสดุที่ต้องติดตาม", `- พบ ${ctx.stockAlerts.length} รายการ`, list].join("\n");
+  }
+
+  buildDispenseAnswer(ctx, promptLower = "") {
+    const history = ctx.dispenseHistory;
+    if (!history?.totalRows) {
+      return [
+        "ประวัติเบิกจ่าย",
+        "- ยังไม่พบรายการเบิกจ่ายในข้อมูลล่าสุด",
+        "- เมื่อบันทึกเบิกจ่ายแล้ว คุณจะดูได้ว่าเครื่องไหนจ่ายให้ใคร พร้อมวันที่และจำนวน"
+      ].join("\n");
+    }
+
+    const lines = [
+      "ประวัติเบิกจ่าย",
+      `- ทั้งหมด ${history.totalRows.toLocaleString("th-TH")} รายการ | จำนวนจ่ายรวม ${history.totalQuantity.toLocaleString("th-TH")} หน่วย`
+    ];
+
+    if (history.recentRows.length) {
+      const latestRows = history.recentRows
+        .slice(0, 8)
+        .map(
+          (row) =>
+            `- ${this.formatDateCompact(row.outdate)} | ${row.productName} (${row.productID || "-"}) | ${row.quantity.toLocaleString(
+              "th-TH"
+            )} ${row.unit} | ผู้รับ ${row.recipientName} (${row.recipientCode})`
+        )
+        .join("\n");
+      lines.push("- รายการล่าสุด", latestRows);
+    }
+
+    const wantsRecipient = includesAny(promptLower, ["ใคร", "ผู้รับ", "คนไหน"]);
+    if (wantsRecipient && history.topRecipients.length) {
+      const topRecipient = history.topRecipients
+        .slice(0, 5)
+        .map((row) => `- ${row.recipientName} (${row.recipientCode}) รับไป ${row.quantity.toLocaleString("th-TH")} หน่วย (${row.count} รายการ)`)
+        .join("\n");
+      lines.push("- ผู้รับเบิกสูงสุด", topRecipient);
+    }
+
+    const wantsProduct = includesAny(promptLower, ["เครื่อง", "วัสดุ", "อะไร"]);
+    if (wantsProduct && history.topProducts.length) {
+      const topProducts = history.topProducts
+        .slice(0, 5)
+        .map((row) => `- ${row.productName} (${row.productID || "-"}) จ่ายรวม ${row.quantity.toLocaleString("th-TH")} ${row.unit}`)
+        .join("\n");
+      lines.push("- เครื่อง/วัสดุที่เบิกมากสุด", topProducts);
+    }
+
+    return lines.join("\n");
   }
 
   buildWorkforceAnswer(ctx) {
@@ -576,7 +746,10 @@ class AiAssistantService {
 
     if (includesAny(promptLower, ["ผู้รับบริการ", "ผู้ป่วย", "ภาวะพึ่งพิง", "tai", "adl"])) intents.add("dependents");
     if (includesAny(promptLower, ["รายรับ", "รายจ่าย", "การเงิน", "งบ", "budget", "คงเหลือ"])) intents.add("finance");
-    if (includesAny(promptLower, ["คลัง", "วัสดุ", "สต็อก", "stock", "เบิก", "รับเข้า", "ใกล้หมด", "หมดคลัง"])) intents.add("stock");
+    if (includesAny(promptLower, ["คลัง", "วัสดุ", "สต็อก", "stock", "ใกล้หมด", "หมดคลัง", "คงคลัง", "คงเหลือวัสดุ"])) intents.add("stock");
+    if (includesAny(promptLower, ["เบิกจ่าย", "ผู้รับเบิก", "ประวัติเบิก", "จ่ายให้ใคร", "เบิกอะไร", "เครื่องอะไรไปแล้ว", "ใครรับ"])) {
+      intents.add("dispense");
+    }
     if (includesAny(promptLower, ["cg", "cm", "กำลังคน", "บุคลากร", "ทีมดูแล"])) intents.add("workforce");
     if (includesAny(promptLower, ["หน่วย", "unit", "รพ.", "โรงพยาบาล", "รพสต"])) intents.add("unit");
 
@@ -601,6 +774,8 @@ class AiAssistantService {
     if (!this.geminiClient || !this.geminiClient.isEnabled()) return false;
     // Keep deterministic local response for crisis/safety prompts.
     if (this.isCrisisPrompt(promptLower)) return false;
+    // Keep transactional answers deterministic to avoid drifting from database facts.
+    if (intents.has("dispense")) return false;
 
     return true;
   }
@@ -624,7 +799,14 @@ class AiAssistantService {
     if (intents.has("finance") || (wantsOverview && includesAny(promptLower, ["การเงิน", "งบ", "รายรับ", "รายจ่าย"]))) {
       sections.push(this.buildFinanceAnswer(ctx));
     }
-    if (intents.has("stock") || (wantsOverview && includesAny(promptLower, ["คลัง", "สต็อก", "วัสดุ"]))) {
+    if (intents.has("dispense")) {
+      sections.push(this.buildDispenseAnswer(ctx, promptLower));
+    }
+
+    const asksStockAlert = includesAny(promptLower, ["ใกล้หมด", "หมดคลัง", "คงคลัง", "เติมสต็อก"]);
+    const includeStockSection =
+      asksStockAlert || (intents.has("stock") && !intents.has("dispense")) || (wantsOverview && includesAny(promptLower, ["คลัง", "สต็อก", "วัสดุ"]));
+    if (includeStockSection) {
       sections.push(this.buildStockAnswer(ctx));
     }
     if (intents.has("workforce") || intents.has("unit") || (wantsOverview && includesAny(promptLower, ["cg", "cm", "หน่วย"]))) {
@@ -677,6 +859,14 @@ class AiAssistantService {
       .map((row) => `- ${this.formatMonthLabel(row.month)} รายรับ ${row.income.toLocaleString("th-TH")} | รายจ่าย ${row.expense.toLocaleString("th-TH")} | สุทธิ ${row.net.toLocaleString("th-TH")}`)
       .join("\n");
 
+    const dispenseLines = input.ctx.dispenseHistory.recentRows
+      .slice(0, 10)
+      .map(
+        (row) =>
+          `- ${this.formatDateCompact(row.outdate)} | ${row.productName} (${row.productID || "-"}) | ${row.quantity.toLocaleString("th-TH")} ${row.unit} | ผู้รับ ${row.recipientName} (${row.recipientCode})`
+      )
+      .join("\n");
+
     const historyLines = (Array.isArray(input.history) ? input.history : [])
       .slice(-8)
       .map((item) => {
@@ -696,7 +886,9 @@ class AiAssistantService {
       `FACT total_income=${input.ctx.finance.totalIncome}`,
       `FACT total_expense=${input.ctx.finance.totalExpense}`,
       `FACT net=${input.ctx.finance.net}`,
-      `FACT stock_alerts=${input.ctx.stockAlerts.length}`
+      `FACT stock_alerts=${input.ctx.stockAlerts.length}`,
+      `FACT total_dispense_rows=${input.ctx.dispenseHistory.totalRows}`,
+      `FACT total_dispense_qty=${input.ctx.dispenseHistory.totalQuantity}`
     ].join("\n");
 
     return [
@@ -724,6 +916,9 @@ class AiAssistantService {
       "",
       "CONTEXT-WORKFORCE-BY-UNIT:",
       workloadLines || "- ไม่พบข้อมูล",
+      "",
+      "CONTEXT-DISPENSE-LATEST:",
+      dispenseLines || "- ไม่พบรายการ",
       "",
       `คำตอบพื้นฐานจากระบบ (fallback):\n${input.localAnswer}`,
       "",
@@ -885,6 +1080,25 @@ class AiAssistantService {
     };
   }
 
+  buildDispenseChart(ctx) {
+    const rows = ctx.dispenseHistory.topProducts.slice(0, 8);
+    if (!rows.length) return null;
+
+    return {
+      title: "รายการเบิกจ่ายสูงสุด",
+      type: "bar",
+      unit: "หน่วย",
+      labels: rows.map((row) => `${row.productName} (${row.productID || "-"})`),
+      datasets: [
+        {
+          label: "จำนวนเบิกจ่าย",
+          color: "#2563eb",
+          data: rows.map((row) => this.safeNumber(row.quantity))
+        }
+      ]
+    };
+  }
+
   normalizeChart(chart) {
     if (!chart || !Array.isArray(chart.labels) || !Array.isArray(chart.datasets)) return null;
     const labels = chart.labels.map((item) => sanitizeText(item, 80)).filter(Boolean);
@@ -928,6 +1142,9 @@ class AiAssistantService {
 
     if (intents.has("stock")) {
       charts.push(this.buildStockAlertsChart(ctx));
+    }
+    if (intents.has("dispense")) {
+      charts.push(this.buildDispenseChart(ctx));
     }
 
     if (intents.has("dependents")) {
@@ -992,6 +1209,28 @@ class AiAssistantService {
     return [header, ...rows].join("\n");
   }
 
+  buildDispenseCsv(ctx) {
+    const header = "date,product_id,product_name,brand,machine_code,quantity,unit,recipient_code,recipient_name,round,reference,note";
+    const rows = ctx.dispenseHistory.rows.slice(0, 300).map((row) => {
+      const safe = (value) => String(value || "").replaceAll(",", " ");
+      return [
+        safe(this.formatDateCompact(row.outdate)),
+        safe(row.productID),
+        safe(row.productName),
+        safe(row.brand),
+        safe(row.machineCode),
+        this.safeNumber(row.quantity),
+        safe(row.unit),
+        safe(row.recipientCode),
+        safe(row.recipientName),
+        safe(row.round),
+        safe(row.reference),
+        safe(row.note)
+      ].join(",");
+    });
+    return [header, ...rows].join("\n");
+  }
+
   buildWorkforceCsv(ctx) {
     const header = "unit_code,unit_name,dependents,cm,cg,dependents_per_cm";
     const rows = ctx.workforce.rows.slice(0, 100).map((row) => {
@@ -1043,6 +1282,9 @@ class AiAssistantService {
       `- รายรับรวม: ${ctx.finance.totalIncome.toLocaleString("th-TH")} บาท`,
       `- รายจ่ายรวม: ${ctx.finance.totalExpense.toLocaleString("th-TH")} บาท`,
       `- คงเหลือสุทธิ: ${ctx.finance.net.toLocaleString("th-TH")} บาท`,
+      `- เบิกจ่ายรวม: ${ctx.dispenseHistory.totalRows.toLocaleString("th-TH")} รายการ (${ctx.dispenseHistory.totalQuantity.toLocaleString(
+        "th-TH"
+      )} หน่วย)`,
       latestMonth
         ? `- เดือนล่าสุด (${this.formatMonthLabel(latestMonth.month)}) สุทธิ: ${latestMonth.net.toLocaleString("th-TH")} บาท`
         : "- เดือนล่าสุด: ไม่มีข้อมูล"
@@ -1064,7 +1306,12 @@ class AiAssistantService {
       financeTimeline: ctx.financeTimeline,
       care: ctx.careStats,
       workforceTop: ctx.workforce.rows.slice(0, 10),
-      stockAlerts: ctx.stockAlerts.slice(0, 30)
+      stockAlerts: ctx.stockAlerts.slice(0, 30),
+      dispenseHistory: {
+        totalRows: ctx.dispenseHistory.totalRows,
+        totalQuantity: ctx.dispenseHistory.totalQuantity,
+        recentRows: ctx.dispenseHistory.recentRows.slice(0, 20)
+      }
     };
     return JSON.stringify(payload, null, 2);
   }
@@ -1078,7 +1325,12 @@ class AiAssistantService {
     const timeKey = new Date().toISOString().slice(0, 10);
     const wantsCsv = includesAny(promptLower, ["csv"]);
     const hasDomainIntent =
-      intents.has("finance") || intents.has("stock") || intents.has("workforce") || intents.has("unit") || intents.has("dependents");
+      intents.has("finance") ||
+      intents.has("stock") ||
+      intents.has("workforce") ||
+      intents.has("unit") ||
+      intents.has("dependents") ||
+      intents.has("dispense");
 
     if (intents.has("finance") || includesAny(promptLower, ["รายรับ", "รายจ่าย", "งบ", "การเงิน"])) {
       artifacts.push(this.makeArtifact(`finance-summary-${timeKey}.csv`, "text/csv;charset=utf-8", this.buildFinanceCsv(ctx)));
@@ -1086,6 +1338,10 @@ class AiAssistantService {
 
     if (intents.has("stock") || includesAny(promptLower, ["วัสดุ", "สต็อก", "คลัง", "ใกล้หมด"])) {
       artifacts.push(this.makeArtifact(`stock-alerts-${timeKey}.csv`, "text/csv;charset=utf-8", this.buildStockCsv(ctx)));
+    }
+
+    if (intents.has("dispense") || includesAny(promptLower, ["เบิกจ่าย", "ผู้รับเบิก", "จ่ายให้ใคร", "ประวัติเบิก"])) {
+      artifacts.push(this.makeArtifact(`dispense-history-${timeKey}.csv`, "text/csv;charset=utf-8", this.buildDispenseCsv(ctx)));
     }
 
     if (intents.has("workforce") || intents.has("unit") || includesAny(promptLower, ["หน่วย", "cg", "cm", "กำลังคน"])) {
@@ -1130,6 +1386,7 @@ class AiAssistantService {
     if (!intents.has("dependents")) suggestions.push("สรุปผู้รับบริการและกลุ่มพึ่งพิงสูง");
     if (!intents.has("finance")) suggestions.push("วิเคราะห์รายรับรายจ่ายและเงินคงเหลือ");
     if (!intents.has("stock")) suggestions.push("ตรวจรายการวัสดุใกล้หมด/หมดคลัง");
+    if (!intents.has("dispense")) suggestions.push("เบิกจ่ายเครื่องอะไรให้ใครบ้างล่าสุด");
     if (!intents.has("workforce") && !intents.has("unit")) suggestions.push("ภาระงานต่อหน่วยและสัดส่วน CM/CG");
 
     if (ctx.stockAlerts.length > 0) {
@@ -1167,6 +1424,7 @@ class AiAssistantService {
     const financeTimeline = this.buildFinanceTimeline(financeRows);
     const careStats = this.buildCareStats(dependents);
     const stockAlerts = this.computeStockAlerts(productRows, inRows, outRows);
+    const dispenseHistory = this.buildDispenseHistory(productRows, outRows, dependents);
     const workforce = this.buildWorkforceByUnit(unitRows, cmRows, cgRows, dependents);
 
     return {
@@ -1179,11 +1437,17 @@ class AiAssistantService {
       financeTimeline,
       careStats,
       stockAlerts,
+      dispenseHistory,
       workforce
     };
   }
 
-  async getContextSnapshot() {
+  async getContextSnapshot(options = {}) {
+    const forceFresh = options?.forceFresh === true;
+    if (forceFresh) {
+      return this.loadContextSnapshot();
+    }
+
     if (this.contextCacheMs <= 0) {
       return this.loadContextSnapshot();
     }
@@ -1218,8 +1482,9 @@ class AiAssistantService {
       throw error;
     }
 
-    const ctx = await this.getContextSnapshot();
     const lower = prompt.toLowerCase();
+    const forceFresh = includesAny(lower, ["ล่าสุด", "เมื่อกี้", "เพิ่ง", "เรียลไทม์", "เบิกจ่าย", "ผู้รับเบิก"]);
+    const ctx = await this.getContextSnapshot({ forceFresh });
     const intents = this.detectIntents(lower);
     const localAnswer = this.buildLocalAnswer(lower, ctx, intents);
 
@@ -1241,6 +1506,7 @@ class AiAssistantService {
         cm: ctx.cmRows.length,
         units: ctx.unitRows.length,
         stockAlerts: ctx.stockAlerts.length,
+        dispenseRows: ctx.dispenseHistory.totalRows,
         financeNet: ctx.finance.net
       }
     };

@@ -90,6 +90,8 @@ class LtcApp {
       supplyInBtn: document.getElementById("supplyInBtn"),
       supplyOutBtn: document.getElementById("supplyOutBtn"),
       suppliesSelectAll: document.getElementById("suppliesSelectAll"),
+      suppliesIssueSummary: document.getElementById("suppliesIssueSummary"),
+      suppliesIssueBody: document.getElementById("suppliesIssueBody"),
 
       financeIncomeCard: document.getElementById("financeIncomeCard"),
       financeExpenseCard: document.getElementById("financeExpenseCard"),
