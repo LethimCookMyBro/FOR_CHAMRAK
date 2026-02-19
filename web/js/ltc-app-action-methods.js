@@ -461,6 +461,8 @@ class LtcAppActionMethodCarrier {
         id: this.repo.getNextNumeric(rows, "id"),
         productID: form.productID,
         productName: form.productName,
+        brand: Format.cleanWhitespace(form.brand) || null,
+        machineCode: Format.cleanWhitespace(form.machineCode) || null,
         price: Number(form.price),
         unit: form.unit,
         reorderPoint: Number(form.reorderPoint)
@@ -495,6 +497,8 @@ class LtcAppActionMethodCarrier {
         ...rows[index],
         productID: form.productID,
         productName: form.productName,
+        brand: Format.cleanWhitespace(form.brand) || null,
+        machineCode: Format.cleanWhitespace(form.machineCode) || null,
         price: Number(form.price),
         unit: form.unit,
         reorderPoint: Number(form.reorderPoint)
@@ -633,14 +637,17 @@ class LtcAppActionMethodCarrier {
       const form = await this.dialogs.openSupplyMovementDialog("in", selected);
       if (!form) return;
 
+      const typeCode = Format.cleanWhitespace(form.typeCode) || "11";
       const rows = await this.repo.cloneTable("t09_intproduct");
       const newRow = {
         __rowid: this.repo.createRowId("t09_intproduct"),
         inno: this.repo.getNextNumeric(rows, "inno"),
         indate: form.date,
-        intype: form.typeCode,
+        intype: typeCode,
         productID: selected.productID,
-        quantity: Number(form.quantity)
+        quantity: Number(form.quantity),
+        reference: form.reference || null,
+        note: form.note || null
       };
 
       rows.push(newRow);
@@ -664,17 +671,35 @@ class LtcAppActionMethodCarrier {
         throw new Error(`จำนวนเบิกจ่ายเกินคงเหลือ (คงเหลือ ${selected.balance})`);
       }
 
+      const ltcCode = Format.cleanWhitespace(form.ltcCode);
+      const dependents = await this.repo.getTable("t04_dataj");
+      const recipient = dependents.find((row) => String(row["เลขประชาชน"] || "").trim() === ltcCode);
+      if (dependents.length && !recipient) {
+        throw new Error("ไม่พบผู้รับเบิกจากเลขประชาชนที่ระบุ");
+      }
+
+      const outType = Format.cleanWhitespace(form.typeCode) || "11";
+      const round = String(Math.max(1, Number(form.round) || 1));
+      const recipientName = recipient ? this.helpers.fullNameFromDependent(recipient) : null;
+      const brand = Format.cleanWhitespace(form.brand || selected.product?.brand || "") || null;
+      const machineCode = Format.cleanWhitespace(form.machineCode || selected.product?.machineCode || "") || null;
+
       const rows = await this.repo.cloneTable("t13_outproduct");
       const newRow = {
         __rowid: this.repo.createRowId("t13_outproduct"),
         outno: this.repo.getNextNumeric(rows, "outno"),
         outdate: form.date,
-        outtype: form.typeCode,
+        outtype: outType,
         productID: selected.productID,
         quantity,
-        "รหัสltc": form.ltcCode,
+        "รหัสltc": ltcCode || null,
+        recipientName,
+        brand,
+        machineCode,
         Returndate: null,
-        round: form.round
+        round,
+        reference: form.reference || null,
+        note: form.note || null
       };
 
       rows.push(newRow);

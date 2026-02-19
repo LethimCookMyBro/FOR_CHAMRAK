@@ -289,6 +289,14 @@ class EntityDialogService {
       fields: [
         { name: "productID", label: "รหัสวัสดุ", type: "text", required: true, value: row?.productID || "" },
         { name: "productName", label: "ชื่อวัสดุ", type: "text", required: true, value: row?.productName || "" },
+        { name: "brand", label: "ยี่ห้อ", type: "text", value: row?.brand || "" },
+        {
+          name: "machineCode",
+          label: "รหัสเครื่อง/Serial",
+          type: "text",
+          value: row?.machineCode || "",
+          help: "ระบุสำหรับอุปกรณ์ที่ต้องติดตามรายเครื่อง"
+        },
         { name: "unit", label: "หน่วยนับ", type: "text", required: true, value: row?.unit || "ชิ้น" },
         {
           name: "price",
@@ -315,41 +323,132 @@ class EntityDialogService {
 
   async openSupplyMovementDialog(mode, productRow) {
     const isIn = mode === "in";
-    return this.openEntityDialog({
-      title: isIn ? "รับเข้าวัสดุ (+)" : "เบิกจ่ายวัสดุ (-)",
-      hint: `${productRow.productName || "-"} (${productRow.productID || "-"})`,
-      fields: [
+    const [typeRows, dependentRows] = await Promise.all([
+      this.repo.getTable(isIn ? "t11_intype" : "t15_outtype").catch(() => []),
+      isIn ? Promise.resolve([]) : this.repo.getTable("t04_dataj").catch(() => [])
+    ]);
+
+    const typeOptions = (Array.isArray(typeRows) ? typeRows : [])
+      .map((row) => {
+        const value = Format.toText(row?.intypeID ?? row?.outtypeID ?? row?.intype ?? row?.outtype ?? "");
+        if (!value) return null;
+        const name = Format.toText(row?.intypename ?? row?.outtypename ?? row?.inlist ?? row?.outlist ?? "");
+        return {
+          value,
+          label: name ? `${value} - ${name}` : value
+        };
+      })
+      .filter(Boolean);
+
+    const dependentOptions = (Array.isArray(dependentRows) ? dependentRows : [])
+      .map((row) => {
+        const citizenId = Format.toText(row?.["เลขประชาชน"]);
+        if (!citizenId) return null;
+        const fullName = this.helpers.fullNameFromDependent(row) || "-";
+        const tai = Format.toText(row?.TAI || "-");
+        return {
+          value: citizenId,
+          label: `${citizenId} - ${fullName} (${tai})`
+        };
+      })
+      .filter(Boolean)
+      .sort((a, b) => a.label.localeCompare(b.label, "th"));
+
+    const fields = [
+      {
+        name: "typeCode",
+        label: isIn ? "ประเภทรายการรับเข้า" : "ประเภทการเบิก",
+        type: typeOptions.length ? "select" : "text",
+        required: true,
+        value: typeOptions[0]?.value || "11",
+        options: typeOptions,
+        placeholder: typeOptions.length ? "" : "เช่น 11"
+      },
+      {
+        name: "date",
+        label: "วันที่",
+        type: "date",
+        required: true,
+        value: Format.todayDateInput()
+      },
+      {
+        name: "quantity",
+        label: "จำนวน",
+        type: "number",
+        required: true,
+        value: 1,
+        min: 1,
+        validate: (value) => (Validate.positive(value) ? null : "จำนวนต้องมากกว่า 0")
+      }
+    ];
+
+    if (!isIn) {
+      fields.push(
+        dependentOptions.length
+          ? {
+              name: "ltcCode",
+              label: "ผู้รับเบิก (เลขประชาชน)",
+              type: "select",
+              required: false,
+              options: dependentOptions,
+              value: "",
+              validate: (value) => (Format.toText(value) ? null : "กรุณาเลือกผู้รับเบิก")
+            }
+          : {
+              name: "ltcCode",
+              label: "ผู้รับเบิก (เลขประชาชน)",
+              type: "text",
+              required: true,
+              value: "",
+              placeholder: "เลขประชาชน 13 หลัก"
+            },
         {
-          name: "date",
-          label: "วันที่",
-          type: "date",
-          required: true,
-          value: Format.todayDateInput()
-        },
-        {
-          name: "quantity",
-          label: "จำนวน",
+          name: "round",
+          label: "รอบ",
           type: "number",
           required: true,
           value: 1,
           min: 1,
-          validate: (value) => (Validate.positive(value) ? null : "จำนวนต้องมากกว่า 0")
+          step: 1,
+          validate: (value) => (Validate.positive(value) ? null : "รอบต้องมากกว่า 0")
         },
         {
-          name: "reference",
-          label: "เลขอ้างอิง",
+          name: "brand",
+          label: "ยี่ห้อที่จ่าย",
           type: "text",
-          required: true,
-          value: ""
+          value: productRow.brand || ""
         },
         {
-          name: "note",
-          label: "หมายเหตุ",
-          type: "textarea",
-          wide: true,
-          value: ""
+          name: "machineCode",
+          label: "รหัสเครื่องที่จ่าย",
+          type: "text",
+          value: productRow.machineCode || "",
+          help: "ระบุกรณีเป็นอุปกรณ์รายเครื่อง"
         }
-      ]
+      );
+    }
+
+    fields.push(
+      {
+        name: "reference",
+        label: "เลขอ้างอิง",
+        type: "text",
+        required: true,
+        value: ""
+      },
+      {
+        name: "note",
+        label: "หมายเหตุ",
+        type: "textarea",
+        wide: true,
+        value: ""
+      }
+    );
+
+    return this.openEntityDialog({
+      title: isIn ? "รับเข้าวัสดุ (+)" : "เบิกจ่ายวัสดุ (-)",
+      hint: `${productRow.productName || "-"} (${productRow.productID || "-"})`,
+      fields
     });
   }
 

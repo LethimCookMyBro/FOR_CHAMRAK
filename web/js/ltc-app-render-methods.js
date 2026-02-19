@@ -295,6 +295,8 @@ class LtcAppRenderMethodCarrier {
                 <td class="check-col"><input class="row-check" type="checkbox" ${checked} aria-label="เลือกแถว"></td>
                 <td><span class="unit-badge">${Format.escapeHtml(row.productID || "-")}</span></td>
                 <td>${Format.escapeHtml(row.productName)}</td>
+                <td>${Format.escapeHtml(row.brand || "-")}</td>
+                <td>${Format.escapeHtml(row.machineCode || "-")}</td>
                 <td>${Format.escapeHtml(row.unit)}</td>
                 <td>${Format.number(row.inQty)}</td>
                 <td>${Format.number(row.outQty)}</td>
@@ -306,7 +308,7 @@ class LtcAppRenderMethodCarrier {
             `;
           })
           .join("")
-      : `<tr><td colspan="10" class="empty-row">ไม่พบข้อมูลวัสดุ</td></tr>`;
+      : `<tr><td colspan="12" class="empty-row">ไม่พบข้อมูลวัสดุ</td></tr>`;
 
     this.paintSelection(this.el.suppliesBody, this.state.selected.supplies);
     this.syncSelectAllCheckbox(this.el.suppliesBody, "supplies", this.el.suppliesSelectAll);

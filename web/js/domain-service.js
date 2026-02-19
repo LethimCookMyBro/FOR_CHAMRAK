@@ -162,6 +162,8 @@ class DomainService {
         product,
         productID,
         productName: String(product.productName || "-"),
+        brand: String(product.brand || ""),
+        machineCode: String(product.machineCode || ""),
         unit: String(product.unit || ""),
         price: Number(product.price) || 0,
         inQty,
