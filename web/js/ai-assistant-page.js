@@ -95,6 +95,7 @@ class AiAssistantPage {
         return {
           label: String(set?.label || `Series ${index + 1}`),
           color: String(set?.color || ""),
+          pointColors: Array.isArray(set?.pointColors) ? set.pointColors.map((item) => String(item || "")).slice(0, labels.length) : [],
           data: data.slice(0, labels.length)
         };
       })
@@ -134,6 +135,15 @@ class AiAssistantPage {
     card.appendChild(title);
 
     const maxValue = Math.max(1, ...chart.datasets.flatMap((set) => set.data.map((value) => Math.abs(Number(value) || 0))));
+    const hasData = chart.datasets.some((set) => set.data.some((value) => Math.abs(Number(value) || 0) > 0));
+
+    if (!hasData) {
+      const empty = document.createElement("div");
+      empty.className = "ai-chart-empty";
+      empty.textContent = "ยังไม่มีข้อมูลเพียงพอสำหรับสร้างกราฟ";
+      card.appendChild(empty);
+      return card;
+    }
 
     const plot = document.createElement("div");
     plot.className = "ai-chart-plot";
@@ -151,9 +161,16 @@ class AiAssistantPage {
         bar.className = "ai-chart-bar";
         const size = Math.max(4, Math.round((Math.abs(value) / maxValue) * 100));
         bar.style.height = `${size}%`;
-        if (dataset.color) bar.style.background = dataset.color;
+        const pointColor = String(dataset.pointColors?.[i] || dataset.color || "").trim();
+        if (pointColor) bar.style.background = pointColor;
         bar.title = `${dataset.label}: ${Format.number(value)}${chart.unit ? ` ${chart.unit}` : ""}`;
         if (value < 0) bar.classList.add("is-negative");
+
+        const valueText = document.createElement("i");
+        valueText.className = "ai-chart-value";
+        valueText.textContent = Format.number(value);
+        bar.appendChild(valueText);
+
         bars.appendChild(bar);
       }
 
@@ -170,20 +187,40 @@ class AiAssistantPage {
 
     const legend = document.createElement("div");
     legend.className = "ai-chart-legend";
-    for (const dataset of chart.datasets) {
-      const item = document.createElement("span");
-      item.className = "ai-chart-legend-item";
+    const single = chart.datasets.length === 1 ? chart.datasets[0] : null;
+    const pointLegend = single && Array.isArray(single.pointColors) && single.pointColors.length === chart.labels.length;
+    if (pointLegend) {
+      for (let i = 0; i < chart.labels.length; i += 1) {
+        const item = document.createElement("span");
+        item.className = "ai-chart-legend-item";
 
-      const dot = document.createElement("i");
-      dot.className = "ai-chart-legend-dot";
-      if (dataset.color) dot.style.background = dataset.color;
+        const dot = document.createElement("i");
+        dot.className = "ai-chart-legend-dot";
+        dot.style.background = String(single.pointColors[i] || single.color || "#2f7fc2");
 
-      const text = document.createElement("b");
-      text.textContent = dataset.label;
+        const text = document.createElement("b");
+        text.textContent = String(chart.labels[i] || `ค่า ${i + 1}`);
 
-      item.appendChild(dot);
-      item.appendChild(text);
-      legend.appendChild(item);
+        item.appendChild(dot);
+        item.appendChild(text);
+        legend.appendChild(item);
+      }
+    } else {
+      for (const dataset of chart.datasets) {
+        const item = document.createElement("span");
+        item.className = "ai-chart-legend-item";
+
+        const dot = document.createElement("i");
+        dot.className = "ai-chart-legend-dot";
+        if (dataset.color) dot.style.background = dataset.color;
+
+        const text = document.createElement("b");
+        text.textContent = dataset.label;
+
+        item.appendChild(dot);
+        item.appendChild(text);
+        legend.appendChild(item);
+      }
     }
 
     card.appendChild(legend);

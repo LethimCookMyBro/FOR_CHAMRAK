@@ -1145,6 +1145,9 @@ class AiAssistantService {
   }
 
   buildFinanceChart(ctx) {
+    if (!ctx.financeRows.length) return null;
+
+    const netColor = this.safeNumber(ctx.finance.net) >= 0 ? "#16a34a" : "#f97316";
     return {
       title: "รายรับ-รายจ่ายภาพรวม",
       type: "bar",
@@ -1154,6 +1157,7 @@ class AiAssistantService {
         {
           label: "งบประมาณ",
           color: "#1f8b4d",
+          pointColors: ["#0ea5e9", "#ef4444", netColor],
           data: [ctx.finance.totalIncome, ctx.finance.totalExpense, ctx.finance.net]
         }
       ]
@@ -1288,9 +1292,13 @@ class AiAssistantService {
       .map((set) => {
         const data = Array.isArray(set?.data) ? set.data.map((item) => this.safeNumber(item)) : [];
         if (!data.length) return null;
+        const pointColors = Array.isArray(set?.pointColors)
+          ? set.pointColors.map((item) => sanitizeText(item || "", 30)).filter(Boolean).slice(0, labels.length)
+          : [];
         return {
           label: sanitizeText(set?.label || "-", 80) || "-",
           color: sanitizeText(set?.color || "#2f7fc2", 30) || "#2f7fc2",
+          pointColors,
           data: data.slice(0, labels.length)
         };
       })
@@ -1363,16 +1371,36 @@ class AiAssistantService {
   }
 
   buildFinanceCsv(ctx) {
-    const lines = [
-      "metric,value",
-      `total_income,${this.safeNumber(ctx.finance.totalIncome)}`,
-      `total_expense,${this.safeNumber(ctx.finance.totalExpense)}`,
-      `net,${this.safeNumber(ctx.finance.net)}`,
-      `dependents,${ctx.dependents.length}`,
-      `cg,${ctx.cgRows.length}`,
-      `cm,${ctx.cmRows.length}`,
-      `units,${ctx.unitRows.length}`
-    ];
+    const lines = ["section,period,metric,value,note"];
+    const add = (section, period, metric, value, note = "") => {
+      lines.push([section, period, metric, this.safeNumber(value), String(note || "").replaceAll(",", " ")].join(","));
+    };
+
+    add("summary", "all", "total_income", ctx.finance.totalIncome);
+    add("summary", "all", "total_expense", ctx.finance.totalExpense);
+    add("summary", "all", "net", ctx.finance.net);
+    add("summary", "all", "dependents", ctx.dependents.length, "จำนวนผู้รับบริการ");
+    add("summary", "all", "cg", ctx.cgRows.length, "จำนวน CG");
+    add("summary", "all", "cm", ctx.cmRows.length, "จำนวน CM");
+    add("summary", "all", "units", ctx.unitRows.length, "จำนวนหน่วยงาน");
+
+    for (let i = 0; i < 4; i += 1) {
+      add("income_category", "all", `income_type_${i + 1}`, this.safeNumber(ctx.finance.income[i]));
+    }
+    for (let i = 0; i < 4; i += 1) {
+      add("expense_category", "all", `expense_type_${i + 1}`, this.safeNumber(ctx.finance.expense[i]));
+    }
+
+    if (ctx.financeTimeline.months.length) {
+      for (const row of ctx.financeTimeline.months) {
+        add("monthly", row.month, "income", this.safeNumber(row.income), this.formatMonthLabel(row.month));
+        add("monthly", row.month, "expense", this.safeNumber(row.expense), this.formatMonthLabel(row.month));
+        add("monthly", row.month, "net", this.safeNumber(row.net), this.formatMonthLabel(row.month));
+      }
+    } else {
+      add("monthly", "none", "no_finance_data", 0, "ยังไม่มีข้อมูลรายเดือน");
+    }
+
     return lines.join("\n");
   }
 
@@ -1469,6 +1497,31 @@ class AiAssistantService {
         ? `- เดือนล่าสุด (${this.formatMonthLabel(latestMonth.month)}) สุทธิ: ${latestMonth.net.toLocaleString("th-TH")} บาท`
         : "- เดือนล่าสุด: ไม่มีข้อมูล"
     ];
+
+    lines.push("", "## Finance Breakdown", "", "| รายการ | จำนวน |", "|---|---:|");
+    lines.push(`| รายรับรวม | ${ctx.finance.totalIncome.toLocaleString("th-TH")} บาท |`);
+    lines.push(`| รายจ่ายรวม | ${ctx.finance.totalExpense.toLocaleString("th-TH")} บาท |`);
+    lines.push(`| คงเหลือสุทธิ | ${ctx.finance.net.toLocaleString("th-TH")} บาท |`);
+    for (let i = 0; i < 4; i += 1) {
+      lines.push(`| รายรับประเภท ${i + 1} | ${this.safeNumber(ctx.finance.income[i]).toLocaleString("th-TH")} บาท |`);
+    }
+    for (let i = 0; i < 4; i += 1) {
+      lines.push(`| รายจ่ายประเภท ${i + 1} | ${this.safeNumber(ctx.finance.expense[i]).toLocaleString("th-TH")} บาท |`);
+    }
+
+    lines.push("", "## Finance Trend (6 เดือนล่าสุด)", "", "| เดือน | รายรับ | รายจ่าย | สุทธิ |", "|---|---:|---:|---:|");
+    if (ctx.financeTimeline.months.length) {
+      for (const row of ctx.financeTimeline.months) {
+        lines.push(
+          `| ${this.formatMonthLabel(row.month)} | ${this.safeNumber(row.income).toLocaleString("th-TH")} | ${this.safeNumber(
+            row.expense
+          ).toLocaleString("th-TH")} | ${this.safeNumber(row.net).toLocaleString("th-TH")} |`
+        );
+      }
+    } else {
+      lines.push("| - | 0 | 0 | 0 |");
+    }
+
     return lines.join("\n");
   }
 
