@@ -1,7 +1,7 @@
 "use strict";
 
 const STATE_CHANGING_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
-const { matchesPrefix, routePath } = require("../http-path");
+const { matchesPrefix } = require("../http-path");
 
 function isStateChangingMethod(method) {
   return STATE_CHANGING_METHODS.has(String(method || "").toUpperCase());
@@ -43,15 +43,12 @@ function deny(req, res, config, status, message, reason) {
 
 function applyRequestGuards(app, config) {
   const apiPrefix = String(config.API_PREFIX || "/api");
-  const authPrefix = String(config.AUTH_PREFIX || "/auth");
-  const loginPath = routePath(authPrefix, "/login");
-  const logoutPath = routePath(authPrefix, "/logout");
 
   app.use((req, res, next) => {
     if (!isStateChangingMethod(req.method)) return next();
 
     const path = String(req.path || "");
-    const isApiLike = matchesPrefix(path, apiPrefix) || matchesPrefix(path, authPrefix);
+    const isApiLike = matchesPrefix(path, apiPrefix);
     if (!isApiLike) return next();
 
     const secFetchSite = String(req.headers["sec-fetch-site"] || "").toLowerCase();
@@ -72,7 +69,7 @@ function applyRequestGuards(app, config) {
       }
     }
 
-    const requiresAjaxHeader = matchesPrefix(path, apiPrefix) || path === loginPath || path === logoutPath;
+    const requiresAjaxHeader = matchesPrefix(path, apiPrefix);
     if (requiresAjaxHeader && config.REQUIRE_AJAX_HEADER !== false) {
       const requestedWith = String(req.headers["x-requested-with"] || "").toLowerCase();
       if (requestedWith !== "xmlhttprequest") {
@@ -80,7 +77,7 @@ function applyRequestGuards(app, config) {
       }
     }
 
-    const expectsJson = matchesPrefix(path, apiPrefix) || path === loginPath || path === logoutPath;
+    const expectsJson = matchesPrefix(path, apiPrefix);
     if (expectsJson) {
       const contentType = String(req.headers["content-type"] || "").toLowerCase();
       if (!contentType.includes("application/json")) {
@@ -104,16 +101,16 @@ function applySecurityHeaders(app, config) {
     res.setHeader("Cross-Origin-Resource-Policy", "same-origin");
     res.setHeader(
       "Content-Security-Policy",
-      "default-src 'self'; script-src 'self'; connect-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; frame-src 'none'; manifest-src 'self'"
+      "default-src 'self'; script-src 'self'; connect-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; frame-src 'none'; manifest-src 'self'"
     );
-    if (config.IS_PRODUCTION) {
+    if (config.ENABLE_HSTS) {
       res.setHeader("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload");
     }
     next();
   });
 
   app.use((req, res, next) => {
-    if (matchesPrefix(req.path, config.API_PREFIX || "/api") || matchesPrefix(req.path, config.AUTH_PREFIX || "/auth")) {
+    if (matchesPrefix(req.path, config.API_PREFIX || "/api") || matchesPrefix(req.path, "/auth")) {
       res.setHeader("Cache-Control", "no-store");
     }
     next();

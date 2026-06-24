@@ -1,4 +1,4 @@
-import { INTERNAL_KEYS } from "./config.js";
+﻿import { INTERNAL_KEYS } from "./config.js";
 
 class DataRepository {
   constructor(apiBase, dataRoot, storagePrefix) {
@@ -8,92 +8,14 @@ class DataRepository {
     this.workingCache = new Map();
     this.tableVersions = new Map();
     this.mode = "unknown";
-    this.runtimeApiBaseCache = "";
-    this.runtimeApiBaseCacheAt = 0;
-  }
-
-  redirectToLogin() {
-    if (typeof window === "undefined") return;
-    const currentPath = String(window.location.pathname || "");
-    if (currentPath === "/login.html") return;
-    window.location.replace("/login.html");
   }
 
   sanitizeAlias(alias) {
     const text = String(alias || "").trim();
     if (!/^[A-Za-z0-9_]+$/.test(text)) {
-      throw new Error("alias ไม่ถูกต้อง");
+      throw new Error("alias เน€เธยเน€เธเธเน€เธยเน€เธโ€“เน€เธเธเน€เธยเน€เธโ€ขเน€เธยเน€เธเธเน€เธย");
     }
     return text;
-  }
-
-  normalizeBasePath(value, fallback = "") {
-    const raw = String(value || "").trim();
-    const withSlash = raw ? (raw.startsWith("/") ? raw : `/${raw}`) : fallback;
-    const normalized = withSlash.length > 1 ? withSlash.replace(/\/+$/, "") : withSlash;
-    if (!normalized) return "";
-    if (!/^\/[A-Za-z0-9/_-]*$/.test(normalized)) return fallback || "";
-    return normalized;
-  }
-
-  parseRuntimeApiBase(scriptText) {
-    const script = String(scriptText || "");
-    const match = script.match(/__LTC_RUNTIME_CONFIG__\s*=\s*(\{[\s\S]*?\})\s*;/);
-    if (!match) return "";
-
-    try {
-      const parsed = JSON.parse(match[1]);
-      return this.normalizeBasePath(parsed?.apiBase, "");
-    } catch {
-      return "";
-    }
-  }
-
-  async getRuntimeApiBase() {
-    if (typeof window === "undefined") return "";
-
-    const fromWindow = this.normalizeBasePath(window.__LTC_RUNTIME_CONFIG__?.apiBase, "");
-    if (fromWindow) return fromWindow;
-
-    const now = Date.now();
-    if (this.runtimeApiBaseCache && now - this.runtimeApiBaseCacheAt < 60 * 1000) {
-      return this.runtimeApiBaseCache;
-    }
-
-    try {
-      const response = await fetch("/public/runtime-config.js", {
-        cache: "no-store",
-        credentials: "same-origin",
-        headers: { "X-Requested-With": "XMLHttpRequest" }
-      });
-      if (!response.ok) return this.runtimeApiBaseCache;
-      const script = await response.text();
-      const parsed = this.parseRuntimeApiBase(script);
-      if (parsed) {
-        this.runtimeApiBaseCache = parsed;
-        this.runtimeApiBaseCacheAt = now;
-      }
-      return parsed || this.runtimeApiBaseCache;
-    } catch {
-      return this.runtimeApiBaseCache;
-    }
-  }
-
-  buildAiApiCandidates(runtimeApiBase) {
-    const candidates = [
-      this.normalizeBasePath(this.apiBase, ""),
-      this.normalizeBasePath(runtimeApiBase, ""),
-      "/api"
-    ];
-    return [...new Set(candidates.filter(Boolean))];
-  }
-
-  requestAiChat(apiBase, text, safeHistory) {
-    return this.requestJson(`${apiBase}/ai/chat`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: text, history: safeHistory })
-    });
   }
 
   buildRequestError(response, payload) {
@@ -112,15 +34,8 @@ class DataRepository {
       error.requestId = String(requestIdFromHeader);
     }
 
-    if (response.status === 401) {
-      error.authRequired = true;
-    }
-
     if (response.status === 409 && error.code === "VERSION_CONFLICT") {
       error.versionConflict = true;
-    }
-    if (response.status === 503 && String(error.code || "").startsWith("AI_QUEUE_")) {
-      error.aiBusy = true;
     }
 
     return error;
@@ -141,7 +56,7 @@ class DataRepository {
         headers
       });
     } catch {
-      const error = new Error("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ (network error)");
+      const error = new Error("เน€เธยเน€เธเธเน€เธยเน€เธเธเน€เธเธ’เน€เธเธเน€เธเธ’เน€เธเธเน€เธโ€“เน€เธโฌเน€เธยเน€เธเธ—เน€เธยเน€เธเธเน€เธเธเน€เธโ€ขเน€เธยเน€เธเธเน€เธโฌเน€เธยเน€เธเธ”เน€เธเธเน€เธยเน€เธยเน€เธโฌเน€เธเธเน€เธเธเน€เธเธเน€เธยเน€เธยเน€เธโ€เน€เธย (network error)");
       error.networkError = true;
       throw error;
     }
@@ -175,9 +90,6 @@ class DataRepository {
       this.workingCache.set(alias, attached);
       return attached;
     } catch (error) {
-      if (error?.authRequired) {
-        this.redirectToLogin();
-      }
       throw error;
     }
   }
@@ -200,11 +112,6 @@ class DataRepository {
       this.workingCache.set(alias, attached);
       return attached;
     } catch (error) {
-      if (error?.authRequired) {
-        this.redirectToLogin();
-        throw error;
-      }
-
       if (error?.versionConflict) {
         this.workingCache.delete(alias);
         if (error.currentVersion) this.tableVersions.set(alias, String(error.currentVersion));
@@ -218,7 +125,7 @@ class DataRepository {
     alias = this.sanitizeAlias(alias);
     const ids = Array.isArray(rowIds) ? rowIds.map((item) => String(item || "")).filter(Boolean) : [];
     if (!ids.length) {
-      throw new Error("rowIds ต้องมีอย่างน้อย 1 รายการ");
+      throw new Error("rowIds เน€เธโ€ขเน€เธยเน€เธเธเน€เธยเน€เธเธเน€เธเธ•เน€เธเธเน€เธเธเน€เธยเน€เธเธ’เน€เธยเน€เธยเน€เธยเน€เธเธเน€เธเธ 1 เน€เธเธเน€เธเธ’เน€เธเธเน€เธยเน€เธเธ’เน€เธเธ");
     }
 
     const ifVersion = String(this.tableVersions.get(alias) || "");
@@ -238,11 +145,6 @@ class DataRepository {
 
       return payload;
     } catch (error) {
-      if (error?.authRequired) {
-        this.redirectToLogin();
-        throw error;
-      }
-
       if (error?.versionConflict) {
         this.workingCache.delete(alias);
         if (error.currentVersion) this.tableVersions.set(alias, String(error.currentVersion));
@@ -278,65 +180,14 @@ class DataRepository {
         storage: payload
       };
     } catch (error) {
-      if (error?.authRequired) {
-        this.redirectToLogin();
-        throw error;
-      }
       return {
         mode: "local",
         storage: {
           source: "backend unavailable",
-          edits: "ไม่สามารถเชื่อมต่อ backend ได้"
+          edits: "เน€เธยเน€เธเธเน€เธยเน€เธเธเน€เธเธ’เน€เธเธเน€เธเธ’เน€เธเธเน€เธโ€“เน€เธโฌเน€เธยเน€เธเธ—เน€เธยเน€เธเธเน€เธเธเน€เธโ€ขเน€เธยเน€เธเธ backend เน€เธยเน€เธโ€เน€เธย"
         }
       };
     }
-  }
-
-  async askAi(message, history = []) {
-    const text = String(message || "").trim();
-    if (!text) throw new Error("กรุณากรอกข้อความ");
-
-    const safeHistory = (Array.isArray(history) ? history : [])
-      .slice(-10)
-      .map((item) => ({
-        role: String(item?.role || "").toLowerCase() === "assistant" ? "assistant" : "user",
-        text: String(item?.text || "").slice(0, 800)
-      }));
-
-    const requestWithRetry = async (apiBase) => {
-      try {
-        return await this.requestAiChat(apiBase, text, safeHistory);
-      } catch (error) {
-        if (!error?.networkError) throw error;
-        // Retry once for transient browser/proxy network issues.
-        await new Promise((resolve) => setTimeout(resolve, 350));
-        return this.requestAiChat(apiBase, text, safeHistory);
-      }
-    };
-
-    const runtimeApiBase = await this.getRuntimeApiBase();
-    const candidates = this.buildAiApiCandidates(runtimeApiBase);
-    let lastError = null;
-
-    for (let i = 0; i < candidates.length; i += 1) {
-      const apiBase = candidates[i];
-      try {
-        const payload = await requestWithRetry(apiBase);
-        this.apiBase = apiBase;
-        return payload;
-      } catch (error) {
-        if (error?.authRequired) {
-          this.redirectToLogin();
-          throw error;
-        }
-
-        lastError = error;
-        const shouldTryNext = (error?.status === 404 || error?.networkError) && i < candidates.length - 1;
-        if (!shouldTryNext) throw error;
-      }
-    }
-
-    throw lastError || new Error("ไม่สามารถเชื่อมต่อ AI endpoint ได้");
   }
 
   async runSecurityScan() {
@@ -376,11 +227,6 @@ class DataRepository {
       credentials: "same-origin",
       headers: { "X-Requested-With": "XMLHttpRequest" }
     });
-    if (response.status === 401) {
-      const error = new Error("ต้องเข้าสู่ระบบใหม่");
-      error.authRequired = true;
-      throw error;
-    }
     if (!response.ok) {
       throw new Error(`export logs failed ${response.status}`);
     }
@@ -398,7 +244,7 @@ class DataRepository {
 
   async restoreTrash(trashIds) {
     const ids = Array.isArray(trashIds) ? trashIds.map((item) => String(item || "")).filter(Boolean) : [];
-    if (!ids.length) throw new Error("กรุณาเลือกข้อมูลที่ต้องการกู้คืน");
+    if (!ids.length) throw new Error("เน€เธยเน€เธเธเน€เธเธเน€เธโ€เน€เธเธ’เน€เธโฌเน€เธเธ…เน€เธเธ—เน€เธเธเน€เธยเน€เธยเน€เธยเน€เธเธเน€เธเธเน€เธเธเน€เธเธ…เน€เธโ€”เน€เธเธ•เน€เธยเน€เธโ€ขเน€เธยเน€เธเธเน€เธยเน€เธยเน€เธเธ’เน€เธเธเน€เธยเน€เธเธเน€เธยเน€เธยเน€เธเธ—เน€เธย");
 
     const payload = await this.requestJson(`${this.apiBase}/trash/restore`, {
       method: "POST",

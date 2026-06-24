@@ -34,12 +34,13 @@ class LtcAppActionMethodCarrier {
         "รหัสcg": form.cgCode,
         "วันเริ่ม cp": form.careStart,
         "วันสิ้นสุด cp": form.careEnd,
+        photoDataUrl: form.photoDataUrl,
         G: this.domain.getTaiGroup(form.tai)
       };
 
       rows.push(newRow);
-      await this.repo.saveTable("t04_dataj", rows);
-      this.state.selected.dependents = newRow.__rowid;
+      const savedRows = await this.repo.saveTable("t04_dataj", rows);
+      this.selectSavedRow("dependents", savedRows, (row) => Number(row.ID) === Number(newRow.ID));
     });
   }
 
@@ -84,6 +85,7 @@ class LtcAppActionMethodCarrier {
         "รหัสcg": form.cgCode,
         "วันเริ่ม cp": form.careStart,
         "วันสิ้นสุด cp": form.careEnd,
+        photoDataUrl: form.photoDataUrl,
         G: this.domain.getTaiGroup(form.tai)
       };
 
@@ -147,12 +149,13 @@ class LtcAppActionMethodCarrier {
         "ตำบล": form.subdistrict,
         "อำเภอ": form.district,
         "จังหวัด": form.province,
-        "รหัสcm": form.cmCode
+        "รหัสcm": form.cmCode,
+        photoDataUrl: form.photoDataUrl
       };
 
       rows.push(newRow);
-      await this.repo.saveTable("t01_cg", rows);
-      this.state.selected.cg = newRow.__rowid;
+      const savedRows = await this.repo.saveTable("t01_cg", rows);
+      this.selectSavedRow("cg", savedRows, (row) => Number(row.ID) === Number(newRow.ID));
     });
   }
 
@@ -187,7 +190,8 @@ class LtcAppActionMethodCarrier {
         "ตำบล": form.subdistrict,
         "อำเภอ": form.district,
         "จังหวัด": form.province,
-        "รหัสcm": form.cmCode
+        "รหัสcm": form.cmCode,
+        photoDataUrl: form.photoDataUrl
       };
 
       await this.repo.saveTable("t01_cg", rows);
@@ -282,12 +286,13 @@ class LtcAppActionMethodCarrier {
         "หมู่": form.moo,
         "ตำบล": form.subdistrict,
         "อำเภอ": form.district,
-        "จังหวัด": form.province
+        "จังหวัด": form.province,
+        photoDataUrl: form.photoDataUrl
       };
 
       rows.push(newRow);
-      await this.repo.saveTable("t02_cm", rows);
-      this.state.selected.cm = newRow.__rowid;
+      const savedRows = await this.repo.saveTable("t02_cm", rows);
+      this.selectSavedRow("cm", savedRows, (row) => Number(row.ID) === Number(newRow.ID));
     });
   }
 
@@ -322,7 +327,8 @@ class LtcAppActionMethodCarrier {
         "หมู่": form.moo,
         "ตำบล": form.subdistrict,
         "อำเภอ": form.district,
-        "จังหวัด": form.province
+        "จังหวัด": form.province,
+        photoDataUrl: form.photoDataUrl
       };
 
       await this.repo.saveTable("t02_cm", rows);
@@ -465,12 +471,13 @@ class LtcAppActionMethodCarrier {
         machineCode: Format.cleanWhitespace(form.machineCode) || null,
         price: Number(form.price),
         unit: form.unit,
-        reorderPoint: Number(form.reorderPoint)
+        reorderPoint: Number(form.reorderPoint),
+        imageDataUrl: form.imageDataUrl
       };
 
       rows.push(newRow);
-      await this.repo.saveTable("t16_product", rows);
-      this.state.selected.supplies = newRow.__rowid;
+      const savedRows = await this.repo.saveTable("t16_product", rows);
+      this.selectSavedRow("supplies", savedRows, (row) => Number(row.id) === Number(newRow.id));
     });
   }
 
@@ -501,7 +508,8 @@ class LtcAppActionMethodCarrier {
         machineCode: Format.cleanWhitespace(form.machineCode) || null,
         price: Number(form.price),
         unit: form.unit,
-        reorderPoint: Number(form.reorderPoint)
+        reorderPoint: Number(form.reorderPoint),
+        imageDataUrl: form.imageDataUrl
       };
 
       await this.repo.saveTable("t16_product", rows);
@@ -703,8 +711,8 @@ class LtcAppActionMethodCarrier {
       };
 
       rows.push(newRow);
-      await this.repo.saveTable("t13_outproduct", rows);
-      this.state.selected.supplyIssues = newRow.__rowid;
+      const savedRows = await this.repo.saveTable("t13_outproduct", rows);
+      this.selectSavedRow("supplyIssues", savedRows, (row) => Number(row.outno) === Number(newRow.outno));
     });
   }
 
@@ -843,8 +851,8 @@ class LtcAppActionMethodCarrier {
       newRow.__rowid = this.repo.createRowId("t23_tbl_income_expense");
 
       rows.push(newRow);
-      await this.repo.saveTable("t23_tbl_income_expense", rows);
-      this.state.selected.finance = newRow.__rowid;
+      const savedRows = await this.repo.saveTable("t23_tbl_income_expense", rows);
+      this.selectSavedRow("finance", savedRows, (row) => Number(row.ID) === Number(newRow.ID));
     });
   }
 
@@ -935,8 +943,8 @@ class LtcAppActionMethodCarrier {
       };
 
       rows.push(newRow);
-      await this.repo.saveTable("t26_unit", rows);
-      this.state.selected.units = newRow.__rowid;
+      const savedRows = await this.repo.saveTable("t26_unit", rows);
+      this.selectSavedRow("units", savedRows, (row) => Number(row.ID) === Number(newRow.ID));
     });
   }
 
@@ -1145,6 +1153,19 @@ class LtcAppActionMethodCarrier {
     if (this.state.selected.cg && cgIdSet.has(this.state.selected.cg)) this.state.selected.cg = null;
     if (this.state.selected.cm && cmIdSet.has(this.state.selected.cm)) this.state.selected.cm = null;
     if (this.state.selected.units && unitIdSet.has(this.state.selected.units)) this.state.selected.units = null;
+  }
+
+  selectSavedRow(selectionKey, savedRows, matcher) {
+    const rows = Array.isArray(savedRows) ? savedRows : [];
+    const savedRow = rows.find((row) => {
+      try {
+        return Boolean(matcher(row));
+      } catch {
+        return false;
+      }
+    });
+    this.state.selected[selectionKey] = savedRow?.__rowid || null;
+    return savedRow || null;
   }
 
   async runProtected(actionLabel, handler) {

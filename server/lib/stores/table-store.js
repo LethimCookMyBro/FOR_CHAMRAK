@@ -6,6 +6,8 @@ const { canonicalize, sha1 } = require("../helpers");
 
 const INTERNAL_KEYS = new Set(["__rowid"]);
 const FORBIDDEN_OBJECT_KEYS = new Set(["__proto__", "prototype", "constructor"]);
+const IMAGE_DATA_URL_KEYS = new Set(["photoDataUrl", "imageDataUrl"]);
+const MAX_IMAGE_DATA_URL_BYTES = 750 * 1024;
 
 class TableStore {
   constructor(sourceDir, overrideDir, options = {}) {
@@ -102,7 +104,33 @@ class TableStore {
   }
 
   cleanRow(row) {
-    return this.stripInternalKeysDeep(row || {});
+    const clean = this.stripInternalKeysDeep(row || {});
+    this.assertImageFieldsSafe(clean);
+    return clean;
+  }
+
+  assertImageFieldsSafe(value) {
+    if (Array.isArray(value)) {
+      for (const item of value) this.assertImageFieldsSafe(item);
+      return;
+    }
+    if (!value || typeof value !== "object") return;
+
+    for (const [key, nested] of Object.entries(value)) {
+      if (IMAGE_DATA_URL_KEYS.has(key)) {
+        const text = String(nested || "").trim();
+        if (!text) continue;
+        if (!/^data:image\/(?:png|jpe?g|webp);base64,[A-Za-z0-9+/=]+$/i.test(text)) {
+          throw this.buildValidationError(`${key} must be an image data URL`);
+        }
+        const payloadBytes = Buffer.byteLength(text, "utf8");
+        if (payloadBytes > MAX_IMAGE_DATA_URL_BYTES) {
+          throw this.buildValidationError(`${key} image is too large (${payloadBytes}/${MAX_IMAGE_DATA_URL_BYTES} bytes)`);
+        }
+        continue;
+      }
+      this.assertImageFieldsSafe(nested);
+    }
   }
 
   assertRowsWithinLimits(alias, rows) {

@@ -4,8 +4,7 @@ const { matchesPrefix } = require("../http-path");
 
 function registerErrorRoutes(app, deps = {}) {
   const apiPrefix = String(deps.apiPrefix || "/api");
-  const authPrefix = String(deps.authPrefix || "/auth");
-  const apiLikePrefixes = [...new Set([apiPrefix, authPrefix, "/api", "/auth"])];
+  const apiLikePrefixes = [...new Set([apiPrefix, "/api", "/auth"])];
 
   app.use((req, res) => {
     if (apiLikePrefixes.some((prefix) => matchesPrefix(req.path, prefix))) {
@@ -14,7 +13,7 @@ function registerErrorRoutes(app, deps = {}) {
         requestId: req.requestId || null
       });
     }
-    return res.redirect("/login.html");
+    return res.redirect("/");
   });
 
   app.use((error, req, res, _next) => {

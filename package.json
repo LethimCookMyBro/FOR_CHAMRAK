@@ -1,16 +1,52 @@
 {
   "name": "ltc-chamrak",
+  "productName": "LTC Chamrak",
   "version": "1.0.0",
   "private": true,
-  "description": "LTC dashboard with frontend + backend JSON API",
+  "description": "LTC Chamrak desktop app with internal Express backend and local JSON storage",
+  "main": "desktop/main.js",
   "scripts": {
     "dev": "nodemon server/index.js",
-    "start": "node server/index.js"
+    "start": "node server/index.js",
+    "test": "node --test",
+    "electron:dev": "electron .",
+    "electron:build": "electron-builder --win"
   },
   "dependencies": {
     "express": "^4.21.2"
   },
   "devDependencies": {
+    "electron": "42.5.0",
+    "electron-builder": "26.15.3",
     "nodemon": "^3.1.10"
+  },
+  "build": {
+    "appId": "com.ltc.chamrak",
+    "productName": "LTC Chamrak",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "desktop/**/*",
+      "server/**/*",
+      "web/**/*",
+      "chamrak_export/**/*",
+      "index.html",
+      "package.json",
+      "!docs/**",
+      "!graphify-out/**",
+      "!runtime_data/**",
+      "!.git/**",
+      "!.gitignore",
+      "!.env",
+      "!**/*.log"
+    ],
+    "asar": true,
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    }
   }
 }

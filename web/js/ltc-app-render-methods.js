@@ -19,6 +19,12 @@ class LtcAppRenderMethodCarrier {
     await this.activityPage.refreshAll();
   }
 
+  renderImageThumb(dataUrl, label = "รูป") {
+    const value = String(dataUrl || "").trim();
+    if (!value) return `<span class="photo-placeholder" aria-label="ไม่มีรูป">-</span>`;
+    return `<img class="record-photo" src="${Format.escapeHtml(value)}" alt="${Format.escapeHtml(label)}">`;
+  }
+
   async renderOverview() {
     const [dependents, cgRows, cmRows, unitRows, financeRows, inventoryRows] = await Promise.all([
       this.repo.getTable("t04_dataj"),
@@ -127,6 +133,7 @@ class LtcAppRenderMethodCarrier {
               <tr data-rowid="${Format.escapeHtml(row.__rowid)}" class="${selectedClass}">
                 <td class="check-col"><input class="row-check" type="checkbox" ${checked} aria-label="เลือกแถว"></td>
                 <td>${index + 1}</td>
+                <td class="image-cell">${this.renderImageThumb(row.photoDataUrl, fullName)}</td>
                 <td>${Format.escapeHtml(row["เลขประชาชน"] || "-")}</td>
                 <td>${Format.escapeHtml(fullName)}</td>
                 <td><span class="tag ${genderTag}">${Format.escapeHtml(gender)}</span></td>
@@ -140,7 +147,7 @@ class LtcAppRenderMethodCarrier {
             `;
           })
           .join("")
-      : `<tr><td colspan="11" class="empty-row">ไม่พบข้อมูลผู้รับบริการ</td></tr>`;
+      : `<tr><td colspan="12" class="empty-row">ไม่พบข้อมูลผู้รับบริการ</td></tr>`;
 
     this.paintSelection(this.el.dependentsBody, this.state.selected.dependents);
     this.syncSelectAllCheckbox(this.el.dependentsBody, "dependents", this.el.dependentsSelectAll);
@@ -168,6 +175,7 @@ class LtcAppRenderMethodCarrier {
               <tr data-rowid="${Format.escapeHtml(row.__rowid)}" class="${selectedClass}">
                 <td class="check-col"><input class="row-check" type="checkbox" ${checked} aria-label="เลือกแถว"></td>
                 <td>${index + 1}</td>
+                <td class="image-cell">${this.renderImageThumb(row.photoDataUrl, fullName)}</td>
                 <td><span class="unit-badge">${Format.escapeHtml(row["รหัสcg"] || "-")}</span></td>
                 <td>${Format.escapeHtml(fullName)}</td>
                 <td>${Format.escapeHtml(row["โทร"] || "-")}</td>
@@ -179,7 +187,7 @@ class LtcAppRenderMethodCarrier {
             `;
           })
           .join("")
-      : `<tr><td colspan="9" class="empty-row">ไม่พบข้อมูล CG</td></tr>`;
+      : `<tr><td colspan="10" class="empty-row">ไม่พบข้อมูล CG</td></tr>`;
 
     this.paintSelection(this.el.cgBody, this.state.selected.cg);
     this.syncSelectAllCheckbox(this.el.cgBody, "cg", this.el.cgSelectAll);
@@ -215,6 +223,7 @@ class LtcAppRenderMethodCarrier {
               <tr data-rowid="${Format.escapeHtml(row.__rowid)}" class="${selectedClass}">
                 <td class="check-col"><input class="row-check" type="checkbox" ${checked} aria-label="เลือกแถว"></td>
                 <td>${index + 1}</td>
+                <td class="image-cell">${this.renderImageThumb(row.photoDataUrl, fullName)}</td>
                 <td><span class="unit-badge">${Format.escapeHtml(cmCode || "-")}</span></td>
                 <td>${Format.escapeHtml(fullName)}</td>
                 <td>${Format.escapeHtml(row["รหัสหน่วย"] || "-")}</td>
@@ -225,7 +234,7 @@ class LtcAppRenderMethodCarrier {
             `;
           })
           .join("")
-      : `<tr><td colspan="8" class="empty-row">ไม่พบข้อมูล CM</td></tr>`;
+      : `<tr><td colspan="9" class="empty-row">ไม่พบข้อมูล CM</td></tr>`;
 
     this.paintSelection(this.el.cmBody, this.state.selected.cm);
     this.syncSelectAllCheckbox(this.el.cmBody, "cm", this.el.cmSelectAll);
@@ -297,6 +306,7 @@ class LtcAppRenderMethodCarrier {
             return `
               <tr data-rowid="${Format.escapeHtml(row.rowId)}" class="${selectedClass}">
                 <td class="check-col"><input class="row-check" type="checkbox" ${checked} aria-label="เลือกแถว"></td>
+                <td class="image-cell">${this.renderImageThumb(row.product?.imageDataUrl || row.imageDataUrl, row.productName)}</td>
                 <td><span class="unit-badge">${Format.escapeHtml(row.productID || "-")}</span></td>
                 <td>${Format.escapeHtml(row.productName)}</td>
                 <td>${Format.escapeHtml(row.brand || "-")}</td>
@@ -312,7 +322,7 @@ class LtcAppRenderMethodCarrier {
             `;
           })
           .join("")
-      : `<tr><td colspan="12" class="empty-row">ไม่พบข้อมูลวัสดุ</td></tr>`;
+      : `<tr><td colspan="13" class="empty-row">ไม่พบข้อมูลวัสดุ</td></tr>`;
 
     this.paintSelection(this.el.suppliesBody, this.state.selected.supplies);
     this.syncSelectAllCheckbox(this.el.suppliesBody, "supplies", this.el.suppliesSelectAll);

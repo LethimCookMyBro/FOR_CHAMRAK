@@ -1,135 +1,112 @@
-# LTC Chamrak Web App
+# LTC Chamrak
 
-ระบบ LTC สำหรับเทศบาลชำราก (Frontend + Backend) โดยใช้ข้อมูล JSON จาก `chamrak_export`
+LTC Chamrak is a desktop-first Electron app for the LTC Chamrak municipality workflow. It keeps the existing Express backend and vanilla JS frontend, but users open it as a Windows app window instead of opening Chrome, Edge, Firefox, or any external browser.
 
-## Features
+## Current Architecture
 
-- Dashboard + CRUD ครบทุกโมดูลหลัก
-- ลบหลายรายการด้วย checkbox (batch delete)
-- AI Assistant ในระบบ (หน้า `AI Assistant`) สำหรับสรุปข้อมูลจากฐานข้อมูลจริง
-- หน้า `บันทึกกิจกรรม/กู้คืน` สำหรับดู Audit Log, Export CSV, กู้คืนข้อมูลที่ลบ
-- Security 2 ชั้น
-  - Login session (cookie-based auth)
-  - PIN lock สำหรับการแก้ไขข้อมูลในหน้าแอป
-  - Login rate limit ป้องกัน brute-force
-- Soft-delete + Restore
-  - การลบข้อมูลผ่านหน้าแอปจะถูกย้ายไปถังขยะ (Trash)
-  - กู้คืนได้ภายใน 30 วัน จากหน้า Logs/Restore
-- ระบบเก็บข้อมูลแบบไม่ทับต้นฉบับ
-  - อ่านข้อมูลต้นทางจาก `chamrak_export/data/*.json`
-  - เขียนข้อมูลแก้ไขไปที่ `runtime_data/overrides/*.json`
+- `desktop/main.js`: Electron main process
+- `desktop/runtime-bootstrap.js`: prepares local desktop runtime paths
+- `server/`: internal Express backend
+- `web/`, `index.html`: frontend
+- `chamrak_export/data/*.json`: bundled read-only empty starter data
+- `runtime_data/`: web/dev-mode local runtime data
 
-## Project Structure
+There is no login system in the desktop app. The app is designed for local machine use, with safety coming from loopback-only hosting, Electron navigation blocking, request guards, JSON payload limits, alias validation, trash restore, and audit logging.
 
-- `index.html` หน้าแอปหลัก (ต้อง login ก่อน)
-- `login.html` หน้าเข้าสู่ระบบ
-- `server/index.js` backend entrypoint (bootstrap)
-- `server/app.js` backend API + auth + static protection
-- `web/app.js` bootstrap frontend
-- `web/js/config.js` constants
-- `web/js/utils.js` utility classes (`Format`, `Validate`, `NameUtils`)
-- `web/js/data-repository.js` data access layer
-- `web/js/security-manager.js` PIN manager
-- `web/js/domain-service.js` domain logic
-- `web/js/ltc-app.js` app controller
-- `web/js/app-helpers.js` helper class สำหรับ app
-- `web/js/entity-dialog-service.js` dialog/form service
-- `web/js/ai-assistant-page.js` controller หน้า AI
-- `web/js/activity-log-page.js` controller หน้า logs + restore
-- `web/js/security.js` security toolkit + local scan tests
-- `web/js/session.js` session guard
-- `web/styles.css` CSS entrypoint
-- `web/styles/*.css` CSS modules (`base`, `layout`, `components`, `dialog`, `responsive`)
-- `web/public/login.css` style หน้า login
-- `web/public/login.js` script หน้า login + remember login preference
+The AI Assistant has also been removed. There is no active AI page, no `/api/ai/chat`, and no Gemini dependency requirement.
 
-## Run
+The distributed app starts without prefilled people, finance, unit, or stock rows. Users add their own local records on each computer.
 
-1. ติดตั้ง dependency
+## Install Dependencies
 
-```bash
+```powershell
 npm install
 ```
 
-2. รันโหมดพัฒนา
-
-```bash
-npm run dev
-```
-
-คำสั่งนี้รัน backend (`server/index.js`) และเสิร์ฟ frontend ทั้งหมดจากพอร์ตเดียวกัน (`3000`)
-
-3. เปิดใช้งาน
-
-- App: `http://localhost:3000/`
-- Login: `http://localhost:3000/login.html`
-
-## Default Credentials
-
-- Username: `admin`
-- Password: `admin123456`
-
-ควรเปลี่ยนผ่าน Environment Variables:
-
-```bash
-LTC_ADMIN_USER=your_user
-LTC_ADMIN_PASSWORD=your_password
-LTC_TOKEN_SECRET=long-random-secret
-GEMINI_API_KEY=your-gemini-api-key
-GEMINI_MODEL=gemini-2.0-flash
-GEMINI_TIMEOUT_MS=12000
-AI_CONTEXT_CACHE_MS=2000
-AI_MAX_CONCURRENT=8
-AI_MAX_CONCURRENT_PER_CLIENT=2
-AI_MAX_QUEUE=100
-AI_QUEUE_TIMEOUT_MS=15000
-```
-
-ตัวอย่าง (Linux/macOS):
-
-```bash
-LTC_ADMIN_USER=admin LTC_ADMIN_PASSWORD=strong-pass LTC_TOKEN_SECRET='super-secret' GEMINI_API_KEY='your-key' AI_MAX_CONCURRENT=8 AI_MAX_QUEUE=100 npm run dev
-```
-
-ตัวอย่าง (PowerShell):
+## Run In Web/Dev Mode
 
 ```powershell
-$env:LTC_ADMIN_USER = "admin"
-$env:LTC_ADMIN_PASSWORD = "strong-pass"
-$env:LTC_TOKEN_SECRET = "super-secret"
-$env:GEMINI_API_KEY = "your-key"
 npm run dev
 ```
 
-หมายเหตุ:
-- อย่า hardcode API key ลงไฟล์โค้ด
-- ใช้ `.env` (ไฟล์นี้ถูก ignore แล้ว) หรือ environment variable ของระบบแทน
+Useful URLs:
+
+- App: `http://127.0.0.1:3000/`
+- Health: `http://127.0.0.1:3000/api/health`
+- Storage info: `http://127.0.0.1:3000/api/storage`
+
+## Run In Electron Dev Mode
+
+```powershell
+npm run electron:dev
+```
+
+What this does:
+
+- starts the Express backend internally from Electron
+- binds backend to loopback only
+- opens the UI in an Electron `BrowserWindow`
+- keeps runtime writes out of the packaged source tree
+- does not require internet access, cloud sync, or any shared database
+
+Development desktop migration behavior:
+
+- if local Electron user-data runtime is still empty
+- and project-root `runtime_data/` already contains local edits
+- the app performs a one-time copy into the Electron user-data runtime
+
+This copy is for development convenience only and does not overwrite existing user-data runtime content.
+
+## Build Windows Desktop App
+
+```powershell
+npm run electron:build
+```
+
+Expected output:
+
+- installer `.exe`
+- portable `.exe`
+
+Build artifacts are written to `dist/`. The portable `.exe` or installer can be placed in Google Drive for people to download and run locally. Each computer keeps its own data.
+
+## Data Behavior
+
+Bundled source data is read-only:
+
+- `chamrak_export/data/*.json`
+
+These bundled table files intentionally ship as empty arrays. They provide the table aliases and structure only, not sample or shared records.
+
+Mutable local data stays per machine and does not sync:
+
+- no cloud sync
+- no shared central database
+- no cross-machine runtime sharing
+
+Photo fields for dependents, CG, CM, and medical supplies are stored inside the same local JSON records as compact image data URLs. They are not uploaded anywhere and remain in that machine's runtime data.
+
+Desktop runtime paths:
+
+- `<userData>/runtime_data/overrides/*.json`
+- `<userData>/runtime_data/logs/activity_logs.jsonl`
+- `<userData>/runtime_data/trash/trash_items.json`
+
+Example: User A on Computer A and User B on Computer B have completely separate local runtime folders. They cannot see or edit each other's data unless someone manually copies files between machines.
 
 ## Security Notes
 
-- Backend ป้องกันเส้นทางสำคัญทั้งหมด (`/`, `/index.html`, `/web/*`, `/api/*`, `/chamrak_export/*`)
-- Session ใช้ HttpOnly cookie (SameSite=Lax)
-- ตัวเลือก "จดจำการเข้าสู่ระบบ" จะเก็บเฉพาะสถานะ remember + username (ไม่เก็บรหัสผ่านดิบ)
-- ถ้าต้องการจำรหัสผ่านจริง ให้ใช้ Password Manager ของเบราว์เซอร์
-- session cookie ใช้ HttpOnly + SameSite=Lax และเปิด `Secure` อัตโนมัติเมื่อ `NODE_ENV=production`
-- มี rate limit ที่ `/auth/login` (ตอบกลับ `429` เมื่อพยายามผิดถี่เกินกำหนด)
-- มี AI concurrency guard ที่ `/api/ai/chat` (จำกัดงานพร้อมกัน + คิวรอ + timeout เมื่อระบบหนาแน่น)
-- มี Security Scan endpoint (`POST /api/security/scan`) และ local security self-test ฝั่ง frontend
-- มี Audit logs (`/api/logs`) และ export CSV (`/api/logs/export`)
-- มี Trash restore (`/api/trash`, `/api/trash/restore`) และ purge ข้อมูลหมดอายุอัตโนมัติ
+- backend host is restricted to `127.0.0.1` / `localhost`
+- Electron blocks unexpected new windows
+- Electron blocks unexpected navigation away from the local app origin
+- API writes still use request guards and payload limits
+- local image fields accept PNG, JPEG, and WebP data URLs only, with a size limit
+- table aliases are validated before filesystem access
+- edits, deletes, restores, and security scans are audit logged
+- packaged desktop mode does not require Gemini keys, admin passwords, or token secrets
 
-## Data Flow
+## Known Limitations
 
-1. ผู้ใช้ login สำเร็จ => ได้ session cookie
-2. Frontend เรียก `/api/tables/:alias` เพื่ออ่านข้อมูล
-3. แก้ไขข้อมูลแล้วส่ง `PUT /api/tables/:alias`
-4. Backend บันทึกไปที่ `runtime_data/overrides/:alias.json`
-5. เมื่ออ่านรอบถัดไป backend จะใช้ override ก่อน source
-
-## Optimization/Refactor ที่ทำแล้ว
-
-- แยกโค้ด JS ออกเป็นโมดูล class-based ชัดเจน
-- แยก CSS เป็นหลายไฟล์ตามหน้าที่
-- เพิ่ม session guard ก่อนเริ่ม app
-- ลด coupling ระหว่าง UI และ data access
-- เพิ่ม handling สำหรับ auth-expired redirect
+- Windows packaging has priority; other platforms are not configured or verified yet.
+- Web/dev mode still exists for development and verification, even though the target user experience is desktop-first.
+- Generated `graphify-out/` artifacts may mention old login or AI nodes until refreshed.

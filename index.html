@@ -4,9 +4,6 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ระบบ LTC | เทศบาลชำราก</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Noto+Serif+Thai:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./web/styles.css">
 </head>
 <body>
@@ -21,10 +18,6 @@
         <span class="online-dot"></span>
         <span id="statusText">กำลังเริ่มต้น...</span>
       </div>
-      <div class="auth-actions">
-        <span id="authUserText" class="auth-user">ผู้ใช้: -</span>
-        <button id="logoutBtn" class="auth-logout" type="button">ออกจากระบบ</button>
-      </div>
     </div>
     <nav class="topnav">
       <button class="nav-btn active" data-page="overview" type="button">📊 ภาพรวม</button>
@@ -34,7 +27,6 @@
       <button class="nav-btn" data-page="supplies" type="button">💊 วัสดุทางการแพทย์</button>
       <button class="nav-btn" data-page="finance" type="button">💰 รายรับ-รายจ่าย</button>
       <button class="nav-btn" data-page="units" type="button">🏘️ หน่วยงาน</button>
-      <button class="nav-btn" data-page="ai" type="button">🤖 AI Assistant</button>
       <button class="nav-btn" data-page="logs" type="button">♻️ กู้คืนข้อมูล</button>
     </nav>
   </header>
@@ -123,6 +115,7 @@
             <tr>
               <th class="check-col"><input id="dependentsSelectAll" class="select-all-check" type="checkbox" aria-label="เลือกทั้งหมด"></th>
               <th>ลำดับ</th>
+              <th>รูป</th>
               <th>เลขประชาชน</th>
               <th>ชื่อ-สกุล</th>
               <th>เพศ</th>
@@ -159,6 +152,7 @@
             <tr>
               <th class="check-col"><input id="cgSelectAll" class="select-all-check" type="checkbox" aria-label="เลือกทั้งหมด"></th>
               <th>ลำดับ</th>
+              <th>รูป</th>
               <th>รหัส CG</th>
               <th>ชื่อ-สกุล</th>
               <th>โทร</th>
@@ -189,6 +183,7 @@
             <tr>
               <th class="check-col"><input id="cmSelectAll" class="select-all-check" type="checkbox" aria-label="เลือกทั้งหมด"></th>
               <th>ลำดับ</th>
+              <th>รูป</th>
               <th>รหัส CM</th>
               <th>ชื่อ-สกุล</th>
               <th>รหัสหน่วย</th>
@@ -239,6 +234,7 @@
           <thead>
             <tr>
               <th class="check-col"><input id="suppliesSelectAll" class="select-all-check" type="checkbox" aria-label="เลือกทั้งหมด"></th>
+              <th>รูป</th>
               <th>รหัสวัสดุ</th>
               <th>ชื่อวัสดุ</th>
               <th>ยี่ห้อ</th>
@@ -380,40 +376,6 @@
           </thead>
           <tbody id="unitBody"></tbody>
         </table>
-      </div>
-    </section>
-
-    <section id="page-ai" class="page">
-      <div class="section-head">
-        <h2>AI Assistant</h2>
-        <div class="section-tools">
-          <button id="aiClearBtn" class="btn btn-muted" type="button">ล้างบทสนทนา</button>
-        </div>
-      </div>
-
-      <div class="ai-grid">
-        <section class="card ai-chat-card">
-          <header class="card-head">🤖 ผู้ช่วยวิเคราะห์ข้อมูล LTC</header>
-          <div id="aiChatBody" class="ai-chat-body"></div>
-          <div id="aiTyping" class="ai-typing" hidden>กำลังวิเคราะห์ข้อมูล...</div>
-          <footer class="ai-input-wrap">
-            <textarea id="aiInput" class="ai-input" placeholder="พิมพ์คำถาม เช่น สรุปรายรับรายจ่ายล่าสุด หรือ วัสดุใกล้หมดมีอะไรบ้าง"></textarea>
-            <button id="aiSendBtn" class="btn btn-primary" type="button">ส่งคำถาม</button>
-          </footer>
-        </section>
-
-        <section class="card ai-side-card">
-          <header class="card-head">⚡ คำถามด่วน</header>
-          <div class="card-body ai-quick-list">
-            <button class="ai-quick-btn" type="button" data-prompt="สรุปผู้รับบริการล่าสุด">สรุปผู้รับบริการล่าสุด</button>
-            <button class="ai-quick-btn" type="button" data-prompt="วิเคราะห์รายรับรายจ่ายล่าสุด">วิเคราะห์รายรับรายจ่าย</button>
-            <button class="ai-quick-btn" type="button" data-prompt="วัสดุใกล้หมดมีรายการไหนบ้าง">ตรวจวัสดุใกล้หมด</button>
-            <button class="ai-quick-btn" type="button" data-prompt="จำนวน CG CM และหน่วยงานตอนนี้">กำลังคนและหน่วยงาน</button>
-            <button class="ai-quick-btn" type="button" data-prompt="ช่วยทำกราฟรายรับรายจ่ายล่าสุด">สร้างกราฟการเงิน</button>
-            <button class="ai-quick-btn" type="button" data-prompt="ช่วยสร้างไฟล์รายงานสรุปการเงินแบบ CSV และ Markdown ให้ดาวน์โหลด">สร้างไฟล์รายงาน</button>
-          </div>
-          <div id="aiSuggestionWrap" class="ai-suggestion-wrap"></div>
-        </section>
       </div>
     </section>
 

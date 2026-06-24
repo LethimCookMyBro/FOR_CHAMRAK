@@ -25,7 +25,7 @@
 
 .row-form h3 {
   margin: 0;
-  font: 700 1.5rem/1.2 "Noto Serif Thai", serif;
+  font: 700 1.5rem/1.2 var(--font-serif);
 }
 
 .row-dialog-hint {
@@ -68,12 +68,56 @@
   border-radius: 10px;
   padding: 0.58rem 0.7rem;
   background: #fff;
-  font: 16px "Sarabun", sans-serif;
+  font: 16px var(--font-sans);
 }
 
 .row-field textarea {
   min-height: 80px;
   resize: vertical;
+}
+
+.image-picker {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 12px;
+  align-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 12px;
+  background: #f8fafd;
+}
+
+.image-picker-preview,
+.image-picker-placeholder {
+  width: 96px;
+  height: 96px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.image-picker-preview {
+  object-fit: cover;
+}
+
+.image-picker-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-soft);
+  font-size: 14px;
+  text-align: center;
+}
+
+.image-picker-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.image-picker-actions input[type="file"] {
+  max-width: 260px;
 }
 
 .row-field small {

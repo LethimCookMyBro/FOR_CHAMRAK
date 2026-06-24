@@ -1,11 +1,10 @@
-import { API_BASE, AUTH_BASE, DATA_ROOT, STORAGE_PREFIX } from "./config.js";
+import { API_BASE, DATA_ROOT, STORAGE_PREFIX } from "./config.js";
 import { Format } from "./utils.js";
 import { DataRepository } from "./data-repository.js";
 import { DomainService } from "./domain-service.js";
 import { AppHelpers } from "./app-helpers.js";
 import { EntityDialogService } from "./entity-dialog-service.js";
 import { SecurityToolkit } from "./security.js";
-import { AiAssistantPage } from "./ai-assistant-page.js";
 import { ActivityLogPage } from "./activity-log-page.js";
 import { ltcAppRenderMethods } from "./ltc-app-render-methods.js";
 import { ltcAppActionMethods } from "./ltc-app-action-methods.js";
@@ -45,8 +44,6 @@ class LtcApp {
 
     this.el = {
       statusText: document.getElementById("statusText"),
-      authUserText: document.getElementById("authUserText"),
-      logoutBtn: document.getElementById("logoutBtn"),
       navButtons: [...document.querySelectorAll(".nav-btn")],
       pages: [...document.querySelectorAll(".page")],
 
@@ -121,14 +118,6 @@ class LtcApp {
       unitDeleteBatchBtn: document.getElementById("unitDeleteBatchBtn"),
       unitsSelectAll: document.getElementById("unitsSelectAll"),
 
-      aiChatBody: document.getElementById("aiChatBody"),
-      aiInput: document.getElementById("aiInput"),
-      aiSendBtn: document.getElementById("aiSendBtn"),
-      aiClearBtn: document.getElementById("aiClearBtn"),
-      aiTyping: document.getElementById("aiTyping"),
-      aiSuggestionWrap: document.getElementById("aiSuggestionWrap"),
-      aiQuickButtons: [...document.querySelectorAll(".ai-quick-btn")],
-
       trashSummary: document.getElementById("trashSummary"),
       trashBody: document.getElementById("trashBody"),
       trashRestoreBtn: document.getElementById("trashRestoreBtn"),
@@ -146,11 +135,6 @@ class LtcApp {
 
     this.dialogs = new EntityDialogService(this.el, this.repo, this.domain, this.helpers);
     this.securityToolkit = new SecurityToolkit(this.repo);
-    this.aiPage = new AiAssistantPage({
-      repo: this.repo,
-      security: this.securityToolkit,
-      elements: this.el
-    });
     this.activityPage = new ActivityLogPage({
       repo: this.repo,
       elements: this.el,
@@ -162,9 +146,7 @@ class LtcApp {
     try {
       this.bindEvents();
       this.setPage(this.state.page);
-      this.aiPage.init();
       this.activityPage.init();
-      await this.loadCurrentUser();
       this.setStatus("กำลังโหลดข้อมูล...");
       await this.renderAll();
       await this.refreshStorageStatus();
@@ -180,8 +162,6 @@ class LtcApp {
     for (const button of this.el.navButtons) {
       button.addEventListener("click", () => this.setPage(button.dataset.page));
     }
-
-    this.el.logoutBtn?.addEventListener("click", () => this.handleLogout().catch(this.handleError));
 
     this.el.dependentsSearch.addEventListener("input", (event) => {
       this.state.queries.dependents = Format.toText(event.target.value).toLowerCase();
@@ -345,39 +325,6 @@ class LtcApp {
     this.el.statusText.textContent = text;
   }
 
-  async loadCurrentUser() {
-    try {
-      const response = await fetch(`${AUTH_BASE}/me`, { cache: "no-store" });
-      if (response.status === 401) {
-        window.location.replace("/login.html");
-        return;
-      }
-      if (!response.ok) return;
-      const payload = await response.json();
-      const username = payload?.user?.username || "-";
-      if (this.el.authUserText) {
-        this.el.authUserText.textContent = `ผู้ใช้: ${username}`;
-      }
-    } catch {
-      if (this.el.authUserText) {
-        this.el.authUserText.textContent = "ผู้ใช้: -";
-      }
-    }
-  }
-
-  async handleLogout() {
-    if (!confirm("ต้องการออกจากระบบใช่หรือไม่?")) return;
-    await fetch(`${AUTH_BASE}/logout`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Requested-With": "XMLHttpRequest"
-      },
-      body: JSON.stringify({})
-    }).catch(() => {});
-    window.location.replace("/login.html");
-  }
-
   async refreshStorageStatus() {
     const storageInfo = await this.repo.getStorageInfo();
     const storageState = storageInfo.mode === "backend" ? "Backend" : "Local";
@@ -396,13 +343,9 @@ class LtcApp {
     if (page === "logs") {
       this.renderActivity().catch(this.handleError);
     }
-    if (page === "ai") {
-      this.el.aiInput?.focus();
-    }
   }
   handleError = (error) => {
     console.error(error);
-    if (error?.authRequired) return;
     if (error?.versionConflict) {
       this.repo.clearTableCache();
       this.renderAll().catch(() => {});

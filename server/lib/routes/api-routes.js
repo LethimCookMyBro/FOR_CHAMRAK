@@ -7,14 +7,10 @@ function registerApiRoutes(app, deps) {
   const {
     config,
     apiPrefix = "/api",
-    requireApiAuth,
     tableStore,
     activityLogs,
     trashStore,
-    geminiClient,
-    aiCoordinator,
     ipSpamBlocker,
-    aiAssistant,
     securityAudit,
     getActor,
     writeAudit
@@ -52,26 +48,22 @@ function registerApiRoutes(app, deps) {
 
   const prefix = String(apiPrefix || "/api").replace(/\/+$/, "") || "/api";
 
-  app.use(prefix, requireApiAuth);
-
   app.get(routePath(prefix, "/storage"), async (_req, res) => {
     const trash = await trashStore.list({ includeRestored: false });
-    const aiMetrics = aiCoordinator.metrics();
     const ipBlockMetrics = ipSpamBlocker?.metrics?.() || null;
     res.json({
       mode: "backend",
+      runtimeMode: config.RUNTIME_MODE,
       sourceDataDir: config.SOURCE_DATA_DIR,
+      runtimeDir: config.RUNTIME_DIR,
       overrideDir: config.OVERRIDE_DIR,
       activityLogFile: config.ACTIVITY_LOG_FILE,
       trashFile: config.TRASH_FILE,
+      configDir: config.CONFIG_DIR,
       trashRetentionDays: config.TRASH_RETENTION_DAYS,
       trashCount: trash.count,
-      aiMode: geminiClient.isEnabled() ? "hybrid-gemini" : "local-rule-based",
-      geminiModel: geminiClient.isEnabled() ? config.GEMINI_MODEL : null,
-      aiContextCacheMs: config.AI_CONTEXT_CACHE_MS,
-      aiConcurrency: aiMetrics,
       ipBlock: ipBlockMetrics,
-      description: "แก้ไขจะถูกเก็บใน runtime_data/overrides/*.json โดยไม่ทับไฟล์ต้นฉบับ"
+      description: "แก้ไขจะถูกเก็บใน local runtime data โดยไม่ทับไฟล์ต้นฉบับที่ bundled มากับโปรแกรม"
     });
   });
 
@@ -90,42 +82,6 @@ function registerApiRoutes(app, deps) {
     });
 
     res.json({ ok: true, ...result });
-  });
-
-  app.post(routePath(prefix, "/ai/chat"), async (req, res, next) => {
-    try {
-      if (!req.body || typeof req.body !== "object" || Array.isArray(req.body)) {
-        return res.status(400).json({ error: "รูปแบบคำขอไม่ถูกต้อง" });
-      }
-      const prompt = sanitizeText(req.body?.message || "", config.AI_MAX_PROMPT_CHARS);
-      const actor = getActor(req);
-      const clientKey = `${actor.username}|${actor.ip}`;
-      const history = (Array.isArray(req.body?.history) ? req.body.history : [])
-        .slice(-12)
-        .map((item) => ({
-          role: String(item?.role || "").toLowerCase() === "assistant" ? "assistant" : "user",
-          text: sanitizeText(item?.text || "", 800)
-        }));
-
-      const execution = await aiCoordinator.run(clientKey, () => aiAssistant.chat(prompt, history));
-      const reply = execution.value;
-      const aiMetrics = aiCoordinator.metrics();
-      res.setHeader("X-AI-Queue", `${aiMetrics.active}/${aiMetrics.queued}`);
-
-      await writeAudit({
-        type: "ai",
-        action: "AI_CHAT",
-        resource: routePath(prefix, "/ai/chat"),
-        user: actor.username,
-        ip: actor.ip,
-        detail: `${requestTag(req)}, source=${reply?.source || "unknown"}, waitMs=${execution.waitedMs}, queue=${aiMetrics.queued}, charts=${Array.isArray(reply?.charts) ? reply.charts.length : 0}, files=${Array.isArray(reply?.artifacts) ? reply.artifacts.length : 0}, prompt=${prompt.slice(0, 120)}`,
-        status: "ok"
-      });
-
-      return res.json({ ok: true, ...reply });
-    } catch (error) {
-      return next(error);
-    }
   });
 
   app.get(routePath(prefix, "/logs/export"), async (req, res, next) => {

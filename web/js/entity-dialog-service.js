@@ -34,13 +34,15 @@ class EntityDialogService {
       cmCode: row?.["รหัสcm"] || "",
       cgCode: row?.["รหัสcg"] || "",
       careStart: row?.["วันเริ่ม cp"] || null,
-      careEnd: row?.["วันสิ้นสุด cp"] || null
+      careEnd: row?.["วันสิ้นสุด cp"] || null,
+      photoDataUrl: row?.photoDataUrl || ""
     };
 
     return this.openEntityDialog({
       title: mode === "add" ? "เพิ่มผู้รับบริการ LTC" : "แก้ไขผู้รับบริการ LTC",
       hint: "กรอกข้อมูลสำคัญที่ใช้จริงในหน้างาน ข้อมูลจะเชื่อมกับภาพรวมทันที",
       fields: [
+        { name: "photoDataUrl", label: "รูปผู้รับบริการ", type: "image", value: initial.photoDataUrl, wide: true },
         {
           name: "citizenId",
           label: "เลขบัตรประชาชน",
@@ -146,6 +148,7 @@ class EntityDialogService {
       title: mode === "add" ? "เพิ่ม Care Giver (CG)" : "แก้ไข Care Giver (CG)",
       hint: "คำนำหน้าผู้หญิงจะแสดงเป็น 'นางสาว' เสมอ",
       fields: [
+        { name: "photoDataUrl", label: "รูป CG", type: "image", value: row?.photoDataUrl || "", wide: true },
         {
           name: "cgCode",
           label: "รหัส CG",
@@ -199,6 +202,7 @@ class EntityDialogService {
       title: mode === "add" ? "เพิ่ม Care Manager (CM)" : "แก้ไข Care Manager (CM)",
       hint: "แก้ไขรหัส CM ได้ โดยระบบจะอัปเดตรหัสที่เชื่อมอยู่ให้อัตโนมัติ",
       fields: [
+        { name: "photoDataUrl", label: "รูป CM", type: "image", value: row?.photoDataUrl || "", wide: true },
         {
           name: "cmCode",
           label: "รหัส CM",
@@ -287,6 +291,7 @@ class EntityDialogService {
       title: mode === "add" ? "เพิ่มวัสดุทางการแพทย์" : "แก้ไขวัสดุทางการแพทย์",
       hint: "ข้อมูลจะถูกใช้คำนวณคงคลังและมูลค่าโดยอัตโนมัติ",
       fields: [
+        { name: "imageDataUrl", label: "รูปวัสดุ", type: "image", value: row?.imageDataUrl || "", wide: true },
         { name: "productID", label: "รหัสวัสดุ", type: "text", required: true, value: row?.productID || "" },
         { name: "productName", label: "ชื่อวัสดุ", type: "text", required: true, value: row?.productName || "" },
         { name: "brand", label: "ยี่ห้อ", type: "text", value: row?.brand || "" },
@@ -563,6 +568,108 @@ class EntityDialogService {
     });
   }
 
+  readImageFileAsDataUrl(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result || ""));
+      reader.onerror = () => reject(new Error("อ่านไฟล์รูปไม่สำเร็จ"));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async compressImageFile(file) {
+    if (!file || !String(file.type || "").startsWith("image/")) {
+      throw new Error("กรุณาเลือกไฟล์รูปภาพเท่านั้น");
+    }
+
+    const originalDataUrl = await this.readImageFileAsDataUrl(file);
+    const image = new Image();
+    await new Promise((resolve, reject) => {
+      image.onload = resolve;
+      image.onerror = () => reject(new Error("ไฟล์รูปภาพไม่ถูกต้อง"));
+      image.src = originalDataUrl;
+    });
+
+    const maxSize = 640;
+    const ratio = Math.min(1, maxSize / Math.max(image.naturalWidth || 1, image.naturalHeight || 1));
+    const width = Math.max(1, Math.round((image.naturalWidth || 1) * ratio));
+    const height = Math.max(1, Math.round((image.naturalHeight || 1) * ratio));
+
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const context = canvas.getContext("2d");
+    context.drawImage(image, 0, 0, width, height);
+    return canvas.toDataURL("image/jpeg", 0.78);
+  }
+
+  createImageControl(field) {
+    const hidden = document.createElement("input");
+    hidden.type = "hidden";
+    hidden.name = field.name;
+    hidden.value = field.value == null ? "" : String(field.value);
+
+    const picker = document.createElement("div");
+    picker.className = "image-picker";
+
+    const preview = document.createElement("img");
+    preview.className = "image-picker-preview";
+    preview.alt = field.label || "รูป";
+
+    const placeholder = document.createElement("div");
+    placeholder.className = "image-picker-placeholder";
+    placeholder.textContent = "ยังไม่มีรูป";
+
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/*";
+
+    const removeButton = document.createElement("button");
+    removeButton.type = "button";
+    removeButton.className = "btn btn-soft";
+    removeButton.textContent = "ลบรูป";
+
+    const paint = () => {
+      const value = hidden.value;
+      preview.hidden = !value;
+      placeholder.hidden = Boolean(value);
+      removeButton.disabled = !value;
+      if (value) preview.src = value;
+      else preview.removeAttribute("src");
+    };
+
+    fileInput.addEventListener("change", async () => {
+      const file = fileInput.files?.[0];
+      if (!file) return;
+      try {
+        hidden.value = await this.compressImageFile(file);
+        paint();
+      } catch (error) {
+        alert(error.message || "ไม่สามารถใช้รูปนี้ได้");
+      } finally {
+        fileInput.value = "";
+      }
+    });
+
+    removeButton.addEventListener("click", () => {
+      hidden.value = "";
+      paint();
+    });
+
+    const actions = document.createElement("div");
+    actions.className = "image-picker-actions";
+    actions.appendChild(fileInput);
+    actions.appendChild(removeButton);
+
+    picker.appendChild(preview);
+    picker.appendChild(placeholder);
+    picker.appendChild(actions);
+    picker.appendChild(hidden);
+    paint();
+
+    return { control: hidden, element: picker };
+  }
+
   async openEntityDialog(config) {
     const { title, hint, fields } = config;
 
@@ -583,6 +690,7 @@ class EntityDialogService {
       wrap.appendChild(label);
 
       let control;
+      let controlElement = null;
       if (field.type === "select") {
         control = document.createElement("select");
 
@@ -609,6 +717,10 @@ class EntityDialogService {
       } else if (field.type === "textarea") {
         control = document.createElement("textarea");
         control.value = field.value == null ? "" : String(field.value);
+      } else if (field.type === "image") {
+        const imageControl = this.createImageControl(field);
+        control = imageControl.control;
+        controlElement = imageControl.element;
       } else {
         control = document.createElement("input");
         control.type =
@@ -638,7 +750,7 @@ class EntityDialogService {
 
       control.name = field.name;
       controls[field.name] = control;
-      wrap.appendChild(control);
+      wrap.appendChild(controlElement || control);
 
       if (field.help) {
         const help = document.createElement("small");

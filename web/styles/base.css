@@ -13,6 +13,8 @@
   --color-success: #2d8a4e;
   --color-warn: #c47a00;
   --color-danger: #c0392b;
+  --font-sans: "Leelawadee UI", "Segoe UI", Tahoma, sans-serif;
+  --font-serif: "Leelawadee UI", "Segoe UI", Tahoma, serif;
 }
 
 * {
@@ -22,7 +24,7 @@
 }
 
 body {
-  font-family: "Sarabun", sans-serif;
+  font-family: var(--font-sans);
   color: var(--color-text);
   background: var(--color-bg);
   font-size: 17px;
