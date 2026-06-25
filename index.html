@@ -14,6 +14,11 @@
         <h1>ศูนย์พัฒนาคุณภาพชีวิตผู้สูงอายุ ผู้พิการ และผู้ที่มีภาวะพึ่งพิง</h1>
         <p>เทศบาลชำราก | ระบบดูแลระยะยาว (Long Term Care - LTC)</p>
       </div>
+      <div class="update-control" data-tooltip="กดเพื่ออัปเดต">
+        <button id="updateCheckBtn" class="update-icon-button" type="button" aria-label="กดเพื่ออัปเดต" title="กดเพื่ออัปเดต" hidden>
+          <span class="download-glyph" aria-hidden="true">↓</span>
+        </button>
+      </div>
     </div>
     <nav class="topnav">
       <button class="nav-btn active" data-page="overview" type="button">📊 ภาพรวม</button>
@@ -418,6 +423,27 @@
       <menu class="row-dialog-actions">
         <button class="btn btn-muted" value="cancel" type="button" id="entityCancelBtn">ยกเลิก</button>
         <button class="btn btn-primary" value="default" type="submit" id="entitySubmitBtn">บันทึก</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <dialog id="updateDialog" class="update-dialog">
+    <form class="update-panel" method="dialog">
+      <button id="updateCloseBtn" class="update-close-button" type="button" aria-label="ปิด">×</button>
+      <h3 id="updateDialogTitle">อัปเดตโปรแกรม</h3>
+      <p id="updateStatusText" class="update-status-text">พร้อมตรวจสอบอัปเดต</p>
+      <p id="updateVersionText" class="update-version-text"></p>
+      <div class="update-progress-track" aria-hidden="true">
+        <span id="updateProgressBar" class="update-progress-bar"></span>
+      </div>
+      <p id="updateProgressText" class="update-progress-text"></p>
+      <div class="update-release-box">
+        <strong>รายละเอียดที่อัปเดต</strong>
+        <ul id="updateNotes"></ul>
+      </div>
+      <menu class="update-dialog-actions">
+        <button id="updateInstallBtn" class="btn btn-primary" type="button" hidden>ติดตั้งตอนนี้</button>
+        <button class="btn btn-muted" value="cancel" type="submit">ปิด</button>
       </menu>
     </form>
   </dialog>

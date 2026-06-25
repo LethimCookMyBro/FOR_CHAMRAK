@@ -14,6 +14,10 @@
     flex-wrap: wrap;
   }
 
+  .update-control {
+    margin-left: 0;
+  }
+
   .system-name h1 {
     font-size: 20px;
   }

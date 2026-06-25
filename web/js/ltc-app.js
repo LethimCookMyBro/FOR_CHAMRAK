@@ -6,6 +6,7 @@ import { AppHelpers } from "./app-helpers.js";
 import { EntityDialogService } from "./entity-dialog-service.js";
 import { SecurityToolkit } from "./security.js";
 import { ActivityLogPage } from "./activity-log-page.js";
+import { UpdateController } from "./update-ui.js";
 import { ltcAppRenderMethods } from "./ltc-app-render-methods.js";
 import { ltcAppActionMethods } from "./ltc-app-action-methods.js";
 
@@ -129,11 +130,23 @@ class LtcApp {
       entityDialogHint: document.getElementById("entityDialogHint"),
       entityFormFields: document.getElementById("entityFormFields"),
       entityCancelBtn: document.getElementById("entityCancelBtn"),
-      entitySubmitBtn: document.getElementById("entitySubmitBtn")
+      entitySubmitBtn: document.getElementById("entitySubmitBtn"),
+
+      updateButton: document.getElementById("updateCheckBtn"),
+      updateDialog: document.getElementById("updateDialog"),
+      updateDialogTitle: document.getElementById("updateDialogTitle"),
+      updateStatusText: document.getElementById("updateStatusText"),
+      updateVersionText: document.getElementById("updateVersionText"),
+      updateProgressBar: document.getElementById("updateProgressBar"),
+      updateProgressText: document.getElementById("updateProgressText"),
+      updateNotes: document.getElementById("updateNotes"),
+      updateInstallBtn: document.getElementById("updateInstallBtn"),
+      updateCloseBtn: document.getElementById("updateCloseBtn")
     };
 
     this.dialogs = new EntityDialogService(this.el, this.repo, this.domain, this.helpers);
     this.securityToolkit = new SecurityToolkit(this.repo);
+    this.updateController = new UpdateController(this.el);
     this.activityPage = new ActivityLogPage({
       repo: this.repo,
       elements: this.el,
@@ -146,6 +159,7 @@ class LtcApp {
       this.bindEvents();
       this.setPage(this.state.page);
       this.activityPage.init();
+      this.updateController.init();
       await this.renderAll();
     } catch (error) {
       console.error(error);

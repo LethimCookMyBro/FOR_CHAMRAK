@@ -13,6 +13,7 @@
     "electron:build": "electron-builder --win"
   },
   "dependencies": {
+    "electron-updater": "^6.8.9",
     "express": "^4.21.2"
   },
   "devDependencies": {
@@ -47,6 +48,12 @@
         "nsis",
         "portable"
       ]
+    },
+    "nsis": {
+      "artifactName": "LTC-Chamrak-Setup-${version}.${ext}"
+    },
+    "portable": {
+      "artifactName": "LTC-Chamrak-Portable-${version}.${ext}"
     }
   }
 }

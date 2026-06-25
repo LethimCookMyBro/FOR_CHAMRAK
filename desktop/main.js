@@ -4,10 +4,12 @@ const path = require("node:path");
 const { app, BrowserWindow } = require("electron");
 const { startServer } = require("../server/app");
 const { ensureDesktopRuntime } = require("./runtime-bootstrap");
+const { DesktopUpdateService } = require("./update-service");
 
 let mainWindow = null;
 let serverContextPromise = null;
 let serverClosePromise = null;
+const updateService = new DesktopUpdateService();
 
 function resolveAppRoot() {
   return path.resolve(app.getAppPath());
@@ -102,6 +104,7 @@ async function createMainWindow() {
       contextIsolation: true,
       devTools: !app.isPackaged,
       nodeIntegration: false,
+      preload: path.join(__dirname, "preload.js"),
       sandbox: true
     }
   });
@@ -149,6 +152,7 @@ app.on("activate", () => {
 
 app.whenReady()
   .then(async () => {
+    updateService.setup(() => mainWindow);
     mainWindow = await createMainWindow();
   })
   .catch((error) => {
