@@ -36,6 +36,7 @@ export class UpdateController {
 
     this.hide();
     this.el.updateButton.addEventListener("click", () => this.handleUpdateClick());
+    this.el.updateDownloadBtn?.addEventListener("click", () => this.downloadAvailableUpdate());
     this.el.updateInstallBtn?.addEventListener("click", () => this.installUpdate());
     this.el.updateCloseBtn?.addEventListener("click", () => this.el.updateDialog?.close());
 
@@ -64,21 +65,32 @@ export class UpdateController {
     if (this.state?.busy) return;
 
     try {
-      if (this.state?.available && !this.state.downloaded) {
-        const downloaded = await this.api.downloadUpdate();
-        this.render(downloaded);
-        return;
-      }
+      if (this.state?.available || this.state?.downloaded) return;
 
       const checked = await this.api.checkForUpdates();
       this.render(checked);
-      if (checked?.available && !checked?.downloaded) {
-        const downloaded = await this.api.downloadUpdate();
-        this.render(downloaded);
-      }
     } catch (error) {
       this.render({
         error: error?.message || "ตรวจสอบอัปเดตไม่สำเร็จ",
+        status: "error"
+      });
+    }
+  }
+
+  async downloadAvailableUpdate() {
+    if (this.state?.busy || this.state?.downloaded) return;
+
+    try {
+      const state = this.state?.available ? this.state : await this.api.checkForUpdates();
+      this.render(state);
+      if (!state?.available || state?.downloaded) return;
+
+      const downloaded = await this.api.downloadUpdate();
+      this.render(downloaded);
+    } catch (error) {
+      this.render({
+        ...this.state,
+        error: error?.message || "ดาวน์โหลดอัปเดตไม่สำเร็จ",
         status: "error"
       });
     }
@@ -148,6 +160,9 @@ export class UpdateController {
     }
     if (this.el.updateProgressText) {
       this.el.updateProgressText.textContent = status === "downloading" ? `${progress}%` : "";
+    }
+    if (this.el.updateDownloadBtn) {
+      this.el.updateDownloadBtn.hidden = !(this.state.available && !this.state.downloaded && !this.state.busy);
     }
     if (this.el.updateInstallBtn) {
       this.el.updateInstallBtn.hidden = !this.state.downloaded;

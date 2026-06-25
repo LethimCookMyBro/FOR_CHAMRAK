@@ -140,6 +140,7 @@ class LtcApp {
       updateProgressBar: document.getElementById("updateProgressBar"),
       updateProgressText: document.getElementById("updateProgressText"),
       updateNotes: document.getElementById("updateNotes"),
+      updateDownloadBtn: document.getElementById("updateDownloadBtn"),
       updateInstallBtn: document.getElementById("updateInstallBtn"),
       updateCloseBtn: document.getElementById("updateCloseBtn")
     };

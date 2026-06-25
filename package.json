@@ -1,7 +1,7 @@
 {
   "name": "ltc-chamrak",
   "productName": "LTC Chamrak",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "description": "LTC Chamrak desktop app with internal Express backend and local JSON storage",
   "main": "desktop/main.js",
