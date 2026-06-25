@@ -43,7 +43,6 @@ class LtcApp {
     };
 
     this.el = {
-      statusText: document.getElementById("statusText"),
       navButtons: [...document.querySelectorAll(".nav-btn")],
       pages: [...document.querySelectorAll(".page")],
 
@@ -147,12 +146,9 @@ class LtcApp {
       this.bindEvents();
       this.setPage(this.state.page);
       this.activityPage.init();
-      this.setStatus("กำลังโหลดข้อมูล...");
       await this.renderAll();
-      await this.refreshStorageStatus();
     } catch (error) {
       console.error(error);
-      this.setStatus("โหลดข้อมูลไม่สำเร็จ");
       const requestNote = error?.requestId ? `\nรหัสติดตาม: ${error.requestId}` : "";
       alert(`เกิดข้อผิดพลาด: ${error.message}${requestNote}`);
     }
@@ -319,16 +315,6 @@ class LtcApp {
   checkedCount(key) {
     const set = this.getCheckedSet(key);
     return set ? set.size : 0;
-  }
-
-  setStatus(text) {
-    this.el.statusText.textContent = text;
-  }
-
-  async refreshStorageStatus() {
-    const storageInfo = await this.repo.getStorageInfo();
-    const storageState = storageInfo.mode === "backend" ? "Backend" : "Local";
-    this.setStatus(`ระบบออนไลน์ | แก้ไขได้ | เก็บข้อมูล: ${storageState}`);
   }
 
   setPage(page) {

@@ -1169,14 +1169,10 @@ class LtcAppActionMethodCarrier {
   }
 
   async runProtected(actionLabel, handler) {
-    const action = Format.cleanWhitespace(String(actionLabel || "").trim()) || "บันทึกข้อมูล";
-    this.setStatus(`กำลัง${action}...`);
     try {
       await handler();
       await this.renderAll();
-      await this.refreshStorageStatus();
     } catch (error) {
-      this.setStatus(`${action}ไม่สำเร็จ`);
       throw error;
     }
   }
@@ -1188,7 +1184,6 @@ class LtcAppActionMethodCarrier {
       this.repo.clearTableCache(alias);
     }
     await this.renderAll();
-    await this.refreshStorageStatus();
   }
 
   async getSelectedRow(alias, stateKey) {
