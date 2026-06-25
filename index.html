@@ -7,413 +7,535 @@
   <link rel="stylesheet" href="./web/styles.css">
 </head>
 <body>
-  <header class="topbar">
-    <div class="topbar-main">
-      <div class="logo">🏥</div>
-      <div class="system-name">
-        <h1>ศูนย์พัฒนาคุณภาพชีวิตผู้สูงอายุ ผู้พิการ และผู้ที่มีภาวะพึ่งพิง</h1>
-        <p>เทศบาลชำราก | ระบบดูแลระยะยาว (Long Term Care - LTC)</p>
+  <div class="app-shell">
+    <aside class="sidebar" id="appSidebar">
+      <div class="sidebar-brand">
+        <span class="brand-mark" aria-hidden="true">
+          <svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/></svg>
+        </span>
+        <span class="brand-text">
+          <strong>ระบบ LTC</strong>
+          <small>เทศบาลชำราก</small>
+        </span>
       </div>
-      <div class="update-control" data-tooltip="กดเพื่ออัปเดต">
-        <button id="updateCheckBtn" class="update-icon-button" type="button" aria-label="กดเพื่ออัปเดต" title="กดเพื่ออัปเดต" hidden>
-          <span class="download-glyph" aria-hidden="true">↓</span>
+
+      <nav class="sidebar-nav" aria-label="เมนูหลัก">
+        <p class="nav-group-label">ภาพรวม</p>
+        <button class="nav-btn active" data-page="overview" type="button">
+          <span class="nav-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg></span>
+          <span class="nav-label">ภาพรวม</span>
         </button>
-      </div>
-    </div>
-    <nav class="topnav">
-      <button class="nav-btn active" data-page="overview" type="button">📊 ภาพรวม</button>
-      <button class="nav-btn" data-page="dependents" type="button">🧓 ผู้ที่มีภาวะพึ่งพิง</button>
-      <button class="nav-btn" data-page="cg" type="button">👐 Care Giver (CG)</button>
-      <button class="nav-btn" data-page="cm" type="button">👩‍⚕️ Care Manager (CM)</button>
-      <button class="nav-btn" data-page="supplies" type="button">💊 วัสดุทางการแพทย์</button>
-      <button class="nav-btn" data-page="finance" type="button">💰 รายรับ-รายจ่าย</button>
-      <button class="nav-btn" data-page="units" type="button">🏘️ หน่วยงาน</button>
-      <button class="nav-btn" data-page="logs" type="button">♻️ กู้คืนข้อมูล</button>
-    </nav>
-  </header>
 
-  <main class="main-wrap">
-    <section id="page-overview" class="page show">
-      <div class="stats-grid">
-        <article class="stat-card">
-          <p>ผู้ที่มีภาวะพึ่งพิง</p>
-          <strong id="statDependents">0</strong>
-          <span>รายในระบบ LTC</span>
-        </article>
-        <article class="stat-card blue">
-          <p>Care Giver (CG)</p>
-          <strong id="statCg">0</strong>
-          <span>ผู้ช่วยเหลือดูแล</span>
-        </article>
-        <article class="stat-card green">
-          <p>Care Manager (CM)</p>
-          <strong id="statCm">0</strong>
-          <span>ผู้จัดการการดูแล</span>
-        </article>
-        <article class="stat-card red">
-          <p>กลุ่มพึ่งพิงสูง (I3/B3/C2/C3)</p>
-          <strong id="statHigh">0</strong>
-          <span>ต้องการดูแลใกล้ชิด</span>
-        </article>
-        <article class="stat-card purple">
-          <p>หน่วยงานในพื้นที่</p>
-          <strong id="statUnits">0</strong>
-          <span>เขตรับผิดชอบ</span>
-        </article>
-      </div>
+        <p class="nav-group-label">ข้อมูลบุคคล</p>
+        <button class="nav-btn" data-page="dependents" type="button">
+          <span class="nav-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+          <span class="nav-label">ผู้ที่มีภาวะพึ่งพิง</span>
+        </button>
+        <button class="nav-btn" data-page="cg" type="button">
+          <span class="nav-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg></span>
+          <span class="nav-label">Care Giver (CG)</span>
+        </button>
+        <button class="nav-btn" data-page="cm" type="button">
+          <span class="nav-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg></span>
+          <span class="nav-label">Care Manager (CM)</span>
+        </button>
 
-      <div class="two-col">
-        <section class="card">
-          <header class="card-head">📋 สรุประดับการดูแล</header>
-          <div class="card-body" id="overviewCareRows"></div>
-        </section>
-        <section class="card">
-          <header class="card-head">💰 สรุปรายรับ-รายจ่าย</header>
-          <div class="card-body">
-            <div class="info-row"><span>รายรับรวม</span><strong id="overviewIncomeTotal">0 ฿</strong></div>
-            <div class="info-row"><span>รายจ่ายรวม</span><strong id="overviewExpenseTotal">0 ฿</strong></div>
-            <div class="info-row strong"><span>คงเหลือสุทธิ</span><strong id="overviewNetTotal">0 ฿</strong></div>
+        <p class="nav-group-label">คลังและการเงิน</p>
+        <button class="nav-btn" data-page="supplies" type="button">
+          <span class="nav-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></span>
+          <span class="nav-label">วัสดุทางการแพทย์</span>
+        </button>
+        <button class="nav-btn" data-page="finance" type="button">
+          <span class="nav-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg></span>
+          <span class="nav-label">รายรับ-รายจ่าย</span>
+        </button>
+        <button class="nav-btn" data-page="units" type="button">
+          <span class="nav-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/></svg></span>
+          <span class="nav-label">หน่วยงาน</span>
+        </button>
+
+        <p class="nav-group-label">ระบบ</p>
+        <button class="nav-btn" data-page="logs" type="button">
+          <span class="nav-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg></span>
+          <span class="nav-label">กู้คืนข้อมูล</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span>ทำงานแบบออฟไลน์ในเครื่อง</span>
+      </div>
+    </aside>
+
+    <div class="app-main">
+      <header class="topbar">
+        <div class="topbar-title">
+          <h1>ศูนย์พัฒนาคุณภาพชีวิตผู้สูงอายุ ผู้พิการ และผู้ที่มีภาวะพึ่งพิง</h1>
+          <p>เทศบาลชำราก · ระบบดูแลระยะยาว (Long Term Care)</p>
+        </div>
+        <div class="topbar-actions">
+          <div class="update-control" id="updateControl" data-tooltip="กดเพื่ออัปเดต" hidden>
+            <button id="updateCheckBtn" class="update-icon-button" type="button" aria-label="กดเพื่ออัปเดต" title="กดเพื่ออัปเดต" hidden>
+              <span class="download-glyph" aria-hidden="true">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+              </span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main class="main-wrap">
+        <section id="page-overview" class="page show">
+          <div class="page-head">
+            <div class="page-head-text">
+              <h2>ภาพรวมระบบ</h2>
+              <p>สรุปข้อมูลสำคัญของงานดูแลระยะยาวในพื้นที่</p>
+            </div>
+          </div>
+
+          <div class="stats-grid">
+            <article class="stat-card">
+              <span class="stat-icon" aria-hidden="true"><svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+              <div class="stat-body">
+                <p>ผู้ที่มีภาวะพึ่งพิง</p>
+                <strong id="statDependents">0</strong>
+                <span>รายในระบบ LTC</span>
+              </div>
+            </article>
+            <article class="stat-card blue">
+              <span class="stat-icon" aria-hidden="true"><svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg></span>
+              <div class="stat-body">
+                <p>Care Giver (CG)</p>
+                <strong id="statCg">0</strong>
+                <span>ผู้ช่วยเหลือดูแล</span>
+              </div>
+            </article>
+            <article class="stat-card green">
+              <span class="stat-icon" aria-hidden="true"><svg class="icon icon-lg" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg></span>
+              <div class="stat-body">
+                <p>Care Manager (CM)</p>
+                <strong id="statCm">0</strong>
+                <span>ผู้จัดการการดูแล</span>
+              </div>
+            </article>
+            <article class="stat-card red">
+              <span class="stat-icon" aria-hidden="true"><svg class="icon icon-lg" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span>
+              <div class="stat-body">
+                <p>กลุ่มพึ่งพิงสูง (I3/B3/C2/C3)</p>
+                <strong id="statHigh">0</strong>
+                <span>ต้องการดูแลใกล้ชิด</span>
+              </div>
+            </article>
+            <article class="stat-card purple">
+              <span class="stat-icon" aria-hidden="true"><svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/></svg></span>
+              <div class="stat-body">
+                <p>หน่วยงานในพื้นที่</p>
+                <strong id="statUnits">0</strong>
+                <span>เขตรับผิดชอบ</span>
+              </div>
+            </article>
+          </div>
+
+          <div class="two-col">
+            <section class="card">
+              <header class="card-head">
+                <span class="card-head-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg></span>
+                สรุประดับการดูแล
+              </header>
+              <div class="card-body" id="overviewCareRows"></div>
+            </section>
+            <section class="card">
+              <header class="card-head">
+                <span class="card-head-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg></span>
+                สรุปรายรับ-รายจ่าย
+              </header>
+              <div class="card-body">
+                <div class="info-row"><span>รายรับรวม</span><strong id="overviewIncomeTotal">0 ฿</strong></div>
+                <div class="info-row"><span>รายจ่ายรวม</span><strong id="overviewExpenseTotal">0 ฿</strong></div>
+                <div class="info-row strong"><span>คงเหลือสุทธิ</span><strong id="overviewNetTotal">0 ฿</strong></div>
+              </div>
+            </section>
+          </div>
+
+          <div class="section-head">
+            <h2>สรุปสต็อกวัสดุทางการแพทย์</h2>
+          </div>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>รายการวัสดุ</th>
+                  <th>คงเหลือ</th>
+                  <th>เกณฑ์สั่งซื้อ</th>
+                  <th>สถานะ</th>
+                  <th>ความเพียงพอ</th>
+                </tr>
+              </thead>
+              <tbody id="overviewStockBody"></tbody>
+            </table>
           </div>
         </section>
-      </div>
 
-      <div class="section-head">
-        <h2>💊 สรุปสต็อกวัสดุทางการแพทย์</h2>
-      </div>
-      <div class="table-card">
-        <table>
-          <thead>
-            <tr>
-              <th>รายการวัสดุ</th>
-              <th>คงเหลือ</th>
-              <th>เกณฑ์สั่งซื้อ</th>
-              <th>สถานะ</th>
-              <th>ความเพียงพอ</th>
-            </tr>
-          </thead>
-          <tbody id="overviewStockBody"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <section id="page-dependents" class="page">
-      <div class="section-head">
-        <h2>ทะเบียนผู้ที่มีภาวะพึ่งพิง (LTC)</h2>
-        <div class="section-tools">
-          <button id="dependentsAddBtn" class="btn btn-soft" type="button">เพิ่มผู้รับบริการ</button>
-          <button id="dependentsEditBtn" class="btn btn-soft" type="button">แก้ไขที่เลือก</button>
-          <button id="dependentsDeleteBtn" class="btn btn-danger" type="button">ลบที่เลือก</button>
-          <button id="dependentsDeleteBatchBtn" class="btn btn-danger" type="button">ลบที่ติ๊กหลายรายการ</button>
-        </div>
-      </div>
-      <div class="search-row">
-        <input id="dependentsSearch" class="search-input" type="search" placeholder="ค้นหา ชื่อ-สกุล, เลขประชาชน, ระดับการดูแล, รหัสหน่วย...">
-      </div>
-      <p class="table-note">เลือกแถวแล้วกดแก้ไข/ลบได้ทันที ข้อมูลจะเชื่อมกับหน้าภาพรวมอัตโนมัติ</p>
-      <div class="table-card table-scroll">
-        <table class="table-selectable">
-          <thead>
-            <tr>
-              <th class="check-col"><input id="dependentsSelectAll" class="select-all-check" type="checkbox" aria-label="เลือกทั้งหมด"></th>
-              <th>ลำดับ</th>
-              <th>รูป</th>
-              <th>เลขประชาชน</th>
-              <th>ชื่อ-สกุล</th>
-              <th>เพศ</th>
-              <th>TAI</th>
-              <th>ADL</th>
-              <th>ที่อยู่</th>
-              <th>ตำบล</th>
-              <th>อำเภอ</th>
-              <th>รหัสหน่วย</th>
-            </tr>
-          </thead>
-          <tbody id="dependentsBody"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <section id="page-cg" class="page">
-      <div class="section-head">
-        <h2>ทะเบียนผู้ช่วยเหลือดูแล (Care Giver - CG)</h2>
-        <div class="section-tools">
-          <button id="cgAddBtn" class="btn btn-soft" type="button">เพิ่ม CG</button>
-          <button id="cgEditBtn" class="btn btn-soft" type="button">แก้ไขที่เลือก</button>
-          <button id="cgDeleteBtn" class="btn btn-danger" type="button">ลบที่เลือก</button>
-          <button id="cgDeleteBatchBtn" class="btn btn-danger" type="button">ลบที่ติ๊กหลายรายการ</button>
-        </div>
-      </div>
-      <div class="search-row">
-        <input id="cgSearch" class="search-input" type="search" placeholder="ค้นหา ชื่อ, รหัส CG, รหัส CM, โทร...">
-      </div>
-      <p class="table-note">ระบบแสดงคำนำหน้า "นางสาว" แทน "น.ส." และบันทึกแบบเต็มเมื่อแก้ไข/เพิ่ม</p>
-      <div class="table-card table-scroll">
-        <table class="table-selectable">
-          <thead>
-            <tr>
-              <th class="check-col"><input id="cgSelectAll" class="select-all-check" type="checkbox" aria-label="เลือกทั้งหมด"></th>
-              <th>ลำดับ</th>
-              <th>รูป</th>
-              <th>รหัส CG</th>
-              <th>ชื่อ-สกุล</th>
-              <th>โทร</th>
-              <th>ที่อยู่</th>
-              <th>ตำบล</th>
-              <th>อำเภอ</th>
-              <th>รหัส CM</th>
-            </tr>
-          </thead>
-          <tbody id="cgBody"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <section id="page-cm" class="page">
-      <div class="section-head">
-        <h2>ทะเบียนผู้จัดการดูแล (Care Manager - CM)</h2>
-        <div class="section-tools">
-          <button id="cmAddBtn" class="btn btn-soft" type="button">เพิ่ม CM</button>
-          <button id="cmEditBtn" class="btn btn-soft" type="button">แก้ไขที่เลือก</button>
-          <button id="cmDeleteBtn" class="btn btn-danger" type="button">ลบที่เลือก</button>
-          <button id="cmDeleteBatchBtn" class="btn btn-danger" type="button">ลบที่ติ๊กหลายรายการ</button>
-        </div>
-      </div>
-      <div class="table-card table-scroll">
-        <table class="table-selectable">
-          <thead>
-            <tr>
-              <th class="check-col"><input id="cmSelectAll" class="select-all-check" type="checkbox" aria-label="เลือกทั้งหมด"></th>
-              <th>ลำดับ</th>
-              <th>รูป</th>
-              <th>รหัส CM</th>
-              <th>ชื่อ-สกุล</th>
-              <th>รหัสหน่วย</th>
-              <th>โทร</th>
-              <th>CG ที่ดูแล</th>
-              <th>LTC ที่ดูแล</th>
-            </tr>
-          </thead>
-          <tbody id="cmBody"></tbody>
-        </table>
-      </div>
-
-      <div class="section-head">
-        <h2>อัตราการดูแลและค่าตอบแทน CM</h2>
-      </div>
-      <div class="table-card">
-        <table>
-          <thead>
-            <tr>
-              <th>กลุ่ม</th>
-              <th>ผู้รับบริการ</th>
-              <th>ครั้งดูแล/ปี</th>
-              <th>ค่าตอบแทน CM/ครั้ง</th>
-              <th>รวมต่อปี</th>
-              <th>จัดการ</th>
-            </tr>
-          </thead>
-          <tbody id="cmRateBody"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <section id="page-supplies" class="page">
-      <div class="section-head">
-        <h2>คลังวัสดุทางการแพทย์</h2>
-        <div class="section-tools">
-          <button id="supplyAddProductBtn" class="btn btn-soft" type="button">เพิ่มวัสดุ</button>
-          <button id="supplyEditProductBtn" class="btn btn-soft" type="button">แก้ไขวัสดุ</button>
-          <button id="supplyDeleteProductBtn" class="btn btn-danger" type="button">ลบวัสดุ</button>
-          <button id="supplyDeleteBatchBtn" class="btn btn-danger" type="button">ลบที่ติ๊กหลายรายการ</button>
-          <button id="supplyInBtn" class="btn btn-primary" type="button">รับเข้า (+)</button>
-          <button id="supplyOutBtn" class="btn btn-danger" type="button">เบิกจ่าย (-)</button>
-        </div>
-      </div>
-
-      <div class="table-card table-scroll">
-        <table class="table-selectable">
-          <thead>
-            <tr>
-              <th class="check-col"><input id="suppliesSelectAll" class="select-all-check" type="checkbox" aria-label="เลือกทั้งหมด"></th>
-              <th>รูป</th>
-              <th>รหัสวัสดุ</th>
-              <th>ชื่อวัสดุ</th>
-              <th>ยี่ห้อ</th>
-              <th>รหัสเครื่อง</th>
-              <th>หน่วย</th>
-              <th>รับเข้า</th>
-              <th>เบิกจ่าย</th>
-              <th>คงเหลือ</th>
-              <th>เกณฑ์สั่งซื้อ</th>
-              <th>มูลค่าคงคลัง</th>
-              <th>สถานะ</th>
-            </tr>
-          </thead>
-          <tbody id="suppliesBody"></tbody>
-        </table>
-      </div>
-
-      <div class="section-head">
-        <p id="suppliesIssueSummary" class="table-note">ประวัติเบิกจ่ายล่าสุด</p>
-        <div class="section-tools">
-          <button id="supplyIssueEditBtn" class="btn btn-soft" type="button">แก้ไขที่เลือก</button>
-          <button id="supplyIssueDeleteBtn" class="btn btn-danger" type="button">ลบที่เลือก</button>
-          <button id="supplyIssueDeleteBatchBtn" class="btn btn-danger" type="button">ลบที่ติ๊กหลายรายการ</button>
-        </div>
-      </div>
-      <div class="search-row">
-        <input
-          id="suppliesIssueSearch"
-          class="search-input"
-          type="search"
-          placeholder="ค้นหาจากรหัสวัสดุ/ชื่อวัสดุ/ยี่ห้อ/รหัสเครื่อง/ผู้รับเบิก/เลขอ้างอิง"
-        >
-      </div>
-      <div class="table-card table-scroll slim-scroll">
-        <table class="table-selectable">
-          <thead>
-            <tr>
-              <th class="check-col"><input id="suppliesIssueSelectAll" class="select-all-check" type="checkbox" aria-label="เลือกทั้งหมด"></th>
-              <th>วันที่เบิก</th>
-              <th>รหัสวัสดุ</th>
-              <th>ชื่อวัสดุ</th>
-              <th>ยี่ห้อ</th>
-              <th>รหัสเครื่อง</th>
-              <th>จำนวน</th>
-              <th>ผู้รับเบิก</th>
-              <th>รอบ</th>
-              <th>อ้างอิง</th>
-              <th>หมายเหตุ</th>
-            </tr>
-          </thead>
-          <tbody id="suppliesIssueBody"></tbody>
-        </table>
-      </div>
-
-    </section>
-
-    <section id="page-finance" class="page">
-      <div class="section-head">
-        <h2>รายรับ-รายจ่าย ประจำปีงบประมาณ</h2>
-        <div class="section-tools">
-          <button id="financeAddBtn" class="btn btn-soft" type="button">เพิ่มรายการ</button>
-          <button id="financeEditBtn" class="btn btn-soft" type="button">แก้ไขที่เลือก</button>
-          <button id="financeDeleteBtn" class="btn btn-danger" type="button">ลบที่เลือก</button>
-          <button id="financeDeleteBatchBtn" class="btn btn-danger" type="button">ลบที่ติ๊กหลายรายการ</button>
-        </div>
-      </div>
-
-      <div class="money-grid">
-        <article class="money-card income">
-          <p>รายรับทั้งหมด</p>
-          <strong id="financeIncomeCard">0 ฿</strong>
-        </article>
-        <article class="money-card expense">
-          <p>รายจ่ายทั้งหมด</p>
-          <strong id="financeExpenseCard">0 ฿</strong>
-        </article>
-        <article class="money-card net">
-          <p>ยอดคงเหลือสุทธิ</p>
-          <strong id="financeNetCard">0 ฿</strong>
-        </article>
-      </div>
-
-      <div class="three-col">
-        <section class="card">
-          <header class="card-head">💚 รายรับ</header>
-          <div class="card-body" id="financeIncomeRows"></div>
+        <section id="page-dependents" class="page">
+          <div class="section-head">
+            <h2>ทะเบียนผู้ที่มีภาวะพึ่งพิง (LTC)</h2>
+            <div class="section-tools">
+              <button id="dependentsAddBtn" class="btn btn-primary" type="button">
+                <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                เพิ่มผู้รับบริการ
+              </button>
+              <button id="dependentsEditBtn" class="btn btn-soft" type="button">
+                <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                แก้ไขที่เลือก
+              </button>
+              <button id="dependentsDeleteBtn" class="btn btn-danger" type="button">
+                <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                ลบที่เลือก
+              </button>
+              <button id="dependentsDeleteBatchBtn" class="btn btn-danger" type="button">ลบที่ติ๊กหลายรายการ</button>
+            </div>
+          </div>
+          <div class="search-row">
+            <input id="dependentsSearch" class="search-input" type="search" placeholder="ค้นหา ชื่อ-สกุล, เลขประชาชน, ระดับการดูแล, รหัสหน่วย...">
+          </div>
+          <p class="table-note">เลือกแถวแล้วกดแก้ไข/ลบได้ทันที ข้อมูลจะเชื่อมกับหน้าภาพรวมอัตโนมัติ</p>
+          <div class="table-card table-scroll">
+            <table class="table-selectable">
+              <thead>
+                <tr>
+                  <th class="check-col"><input id="dependentsSelectAll" class="select-all-check" type="checkbox" aria-label="เลือกทั้งหมด"></th>
+                  <th>ลำดับ</th>
+                  <th>รูป</th>
+                  <th>เลขประชาชน</th>
+                  <th>ชื่อ-สกุล</th>
+                  <th>เพศ</th>
+                  <th>TAI</th>
+                  <th>ADL</th>
+                  <th>ที่อยู่</th>
+                  <th>ตำบล</th>
+                  <th>อำเภอ</th>
+                  <th>รหัสหน่วย</th>
+                </tr>
+              </thead>
+              <tbody id="dependentsBody"></tbody>
+            </table>
+          </div>
         </section>
-        <section class="card">
-          <header class="card-head">❤️ รายจ่าย</header>
-          <div class="card-body" id="financeExpenseRows"></div>
+
+        <section id="page-cg" class="page">
+          <div class="section-head">
+            <h2>ทะเบียนผู้ช่วยเหลือดูแล (Care Giver - CG)</h2>
+            <div class="section-tools">
+              <button id="cgAddBtn" class="btn btn-primary" type="button">
+                <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                เพิ่ม CG
+              </button>
+              <button id="cgEditBtn" class="btn btn-soft" type="button">แก้ไขที่เลือก</button>
+              <button id="cgDeleteBtn" class="btn btn-danger" type="button">ลบที่เลือก</button>
+              <button id="cgDeleteBatchBtn" class="btn btn-danger" type="button">ลบที่ติ๊กหลายรายการ</button>
+            </div>
+          </div>
+          <div class="search-row">
+            <input id="cgSearch" class="search-input" type="search" placeholder="ค้นหา ชื่อ, รหัส CG, รหัส CM, โทร...">
+          </div>
+          <p class="table-note">ระบบแสดงคำนำหน้า "นางสาว" แทน "น.ส." และบันทึกแบบเต็มเมื่อแก้ไข/เพิ่ม</p>
+          <div class="table-card table-scroll">
+            <table class="table-selectable">
+              <thead>
+                <tr>
+                  <th class="check-col"><input id="cgSelectAll" class="select-all-check" type="checkbox" aria-label="เลือกทั้งหมด"></th>
+                  <th>ลำดับ</th>
+                  <th>รูป</th>
+                  <th>รหัส CG</th>
+                  <th>ชื่อ-สกุล</th>
+                  <th>โทร</th>
+                  <th>ที่อยู่</th>
+                  <th>ตำบล</th>
+                  <th>อำเภอ</th>
+                  <th>รหัส CM</th>
+                </tr>
+              </thead>
+              <tbody id="cgBody"></tbody>
+            </table>
+          </div>
         </section>
-        <section class="card">
-          <header class="card-head">📈 วิเคราะห์</header>
-          <div class="card-body" id="financeAnalysisRows"></div>
+
+        <section id="page-cm" class="page">
+          <div class="section-head">
+            <h2>ทะเบียนผู้จัดการดูแล (Care Manager - CM)</h2>
+            <div class="section-tools">
+              <button id="cmAddBtn" class="btn btn-primary" type="button">
+                <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                เพิ่ม CM
+              </button>
+              <button id="cmEditBtn" class="btn btn-soft" type="button">แก้ไขที่เลือก</button>
+              <button id="cmDeleteBtn" class="btn btn-danger" type="button">ลบที่เลือก</button>
+              <button id="cmDeleteBatchBtn" class="btn btn-danger" type="button">ลบที่ติ๊กหลายรายการ</button>
+            </div>
+          </div>
+          <div class="table-card table-scroll">
+            <table class="table-selectable">
+              <thead>
+                <tr>
+                  <th class="check-col"><input id="cmSelectAll" class="select-all-check" type="checkbox" aria-label="เลือกทั้งหมด"></th>
+                  <th>ลำดับ</th>
+                  <th>รูป</th>
+                  <th>รหัส CM</th>
+                  <th>ชื่อ-สกุล</th>
+                  <th>รหัสหน่วย</th>
+                  <th>โทร</th>
+                  <th>CG ที่ดูแล</th>
+                  <th>LTC ที่ดูแล</th>
+                </tr>
+              </thead>
+              <tbody id="cmBody"></tbody>
+            </table>
+          </div>
+
+          <div class="section-head">
+            <h2>อัตราการดูแลและค่าตอบแทน CM</h2>
+          </div>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>กลุ่ม</th>
+                  <th>ผู้รับบริการ</th>
+                  <th>ครั้งดูแล/ปี</th>
+                  <th>ค่าตอบแทน CM/ครั้ง</th>
+                  <th>รวมต่อปี</th>
+                  <th>จัดการ</th>
+                </tr>
+              </thead>
+              <tbody id="cmRateBody"></tbody>
+            </table>
+          </div>
         </section>
-      </div>
 
-      <div class="table-card table-scroll">
-        <table class="table-selectable">
-          <thead>
-            <tr>
-              <th class="check-col"><input id="financeSelectAll" class="select-all-check" type="checkbox" aria-label="เลือกทั้งหมด"></th>
-              <th>วันที่</th>
-              <th>ปี</th>
-              <th>ประเภท</th>
-              <th>หมวด</th>
-              <th>จำนวนเงิน</th>
-              <th>หมายเหตุ</th>
-            </tr>
-          </thead>
-          <tbody id="financeBody"></tbody>
-        </table>
-      </div>
-    </section>
+        <section id="page-supplies" class="page">
+          <div class="section-head">
+            <h2>คลังวัสดุทางการแพทย์</h2>
+            <div class="section-tools">
+              <button id="supplyAddProductBtn" class="btn btn-primary" type="button">
+                <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                เพิ่มวัสดุ
+              </button>
+              <button id="supplyEditProductBtn" class="btn btn-soft" type="button">แก้ไขวัสดุ</button>
+              <button id="supplyDeleteProductBtn" class="btn btn-danger" type="button">ลบวัสดุ</button>
+              <button id="supplyDeleteBatchBtn" class="btn btn-danger" type="button">ลบที่ติ๊กหลายรายการ</button>
+              <button id="supplyInBtn" class="btn btn-success" type="button">
+                <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+                รับเข้า
+              </button>
+              <button id="supplyOutBtn" class="btn btn-danger" type="button">
+                <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M5 12h14"/></svg>
+                เบิกจ่าย
+              </button>
+            </div>
+          </div>
 
-    <section id="page-units" class="page">
-      <div class="section-head">
-        <h2>หน่วยงานและเขตรับผิดชอบ</h2>
-        <div class="section-tools">
-          <button id="unitAddBtn" class="btn btn-soft" type="button">เพิ่มหน่วยงาน</button>
-          <button id="unitEditBtn" class="btn btn-soft" type="button">แก้ไขที่เลือก</button>
-          <button id="unitDeleteBtn" class="btn btn-danger" type="button">ลบที่เลือก</button>
-          <button id="unitDeleteBatchBtn" class="btn btn-danger" type="button">ลบที่ติ๊กหลายรายการ</button>
-        </div>
-      </div>
-      <div class="table-card table-scroll">
-        <table class="table-selectable">
-          <thead>
-            <tr>
-              <th class="check-col"><input id="unitsSelectAll" class="select-all-check" type="checkbox" aria-label="เลือกทั้งหมด"></th>
-              <th>รหัสหน่วย</th>
-              <th>ชื่อหน่วยงาน</th>
-              <th>ตำบล</th>
-              <th>อำเภอ</th>
-              <th>จำนวน CM</th>
-              <th>จำนวน CG</th>
-              <th>จำนวนผู้รับบริการ LTC</th>
-            </tr>
-          </thead>
-          <tbody id="unitBody"></tbody>
-        </table>
-      </div>
-    </section>
+          <div class="table-card table-scroll">
+            <table class="table-selectable">
+              <thead>
+                <tr>
+                  <th class="check-col"><input id="suppliesSelectAll" class="select-all-check" type="checkbox" aria-label="เลือกทั้งหมด"></th>
+                  <th>รูป</th>
+                  <th>รหัสวัสดุ</th>
+                  <th>ชื่อวัสดุ</th>
+                  <th>ยี่ห้อ</th>
+                  <th>รหัสเครื่อง</th>
+                  <th>หน่วย</th>
+                  <th>รับเข้า</th>
+                  <th>เบิกจ่าย</th>
+                  <th>คงเหลือ</th>
+                  <th>เกณฑ์สั่งซื้อ</th>
+                  <th>มูลค่าคงคลัง</th>
+                  <th>สถานะ</th>
+                </tr>
+              </thead>
+              <tbody id="suppliesBody"></tbody>
+            </table>
+          </div>
 
-    <section id="page-logs" class="page">
-      <div class="section-head">
-        <h2>ข้อมูลที่ลบแล้ว (กู้คืนได้ภายใน 30 วัน)</h2>
-      </div>
-      <div class="section-head">
-        <div class="section-tools">
-          <button id="trashRestoreBtn" class="btn btn-primary" type="button" disabled>กู้คืนข้อมูลที่เลือก</button>
-          <button id="trashPurgeAllBtn" class="btn btn-danger" type="button">ลบข้อมูลทั้งหมด</button>
-          <button id="trashPurgeBtn" class="btn btn-danger" type="button">ล้างข้อมูลที่หมดอายุ</button>
-        </div>
-      </div>
-      <p id="trashSummary" class="table-note">รายการที่กู้คืนได้ 0 รายการ</p>
-      <div class="table-card table-scroll slim-scroll">
-        <table>
-          <thead>
-            <tr>
-              <th class="check-col">เลือก</th>
-              <th>ตาราง</th>
-              <th>ข้อมูล</th>
-              <th>วันที่ลบ</th>
-              <th>ผู้ลบ</th>
-              <th>เหลือเวลา</th>
-            </tr>
-          </thead>
-          <tbody id="trashBody"></tbody>
-        </table>
-      </div>
-    </section>
-  </main>
+          <div class="section-head">
+            <p id="suppliesIssueSummary" class="table-note">ประวัติเบิกจ่ายล่าสุด</p>
+            <div class="section-tools">
+              <button id="supplyIssueEditBtn" class="btn btn-soft" type="button">แก้ไขที่เลือก</button>
+              <button id="supplyIssueDeleteBtn" class="btn btn-danger" type="button">ลบที่เลือก</button>
+              <button id="supplyIssueDeleteBatchBtn" class="btn btn-danger" type="button">ลบที่ติ๊กหลายรายการ</button>
+            </div>
+          </div>
+          <div class="search-row">
+            <input
+              id="suppliesIssueSearch"
+              class="search-input"
+              type="search"
+              placeholder="ค้นหาจากรหัสวัสดุ/ชื่อวัสดุ/ยี่ห้อ/รหัสเครื่อง/ผู้รับเบิก/เลขอ้างอิง"
+            >
+          </div>
+          <div class="table-card table-scroll slim-scroll">
+            <table class="table-selectable">
+              <thead>
+                <tr>
+                  <th class="check-col"><input id="suppliesIssueSelectAll" class="select-all-check" type="checkbox" aria-label="เลือกทั้งหมด"></th>
+                  <th>วันที่เบิก</th>
+                  <th>รหัสวัสดุ</th>
+                  <th>ชื่อวัสดุ</th>
+                  <th>ยี่ห้อ</th>
+                  <th>รหัสเครื่อง</th>
+                  <th>จำนวน</th>
+                  <th>ผู้รับเบิก</th>
+                  <th>รอบ</th>
+                  <th>อ้างอิง</th>
+                  <th>หมายเหตุ</th>
+                </tr>
+              </thead>
+              <tbody id="suppliesIssueBody"></tbody>
+            </table>
+          </div>
 
-  <footer class="footer">
-    ระบบดูแลระยะยาว (LTC) | เทศบาลชำราก<br>
-    <small>ใช้ข้อมูลจริงจาก `chamrak_export` และบันทึกผ่าน Backend Security</small>
-  </footer>
+        </section>
+
+        <section id="page-finance" class="page">
+          <div class="section-head">
+            <h2>รายรับ-รายจ่าย ประจำปีงบประมาณ</h2>
+            <div class="section-tools">
+              <button id="financeAddBtn" class="btn btn-primary" type="button">
+                <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                เพิ่มรายการ
+              </button>
+              <button id="financeEditBtn" class="btn btn-soft" type="button">แก้ไขที่เลือก</button>
+              <button id="financeDeleteBtn" class="btn btn-danger" type="button">ลบที่เลือก</button>
+              <button id="financeDeleteBatchBtn" class="btn btn-danger" type="button">ลบที่ติ๊กหลายรายการ</button>
+            </div>
+          </div>
+
+          <div class="money-grid">
+            <article class="money-card income">
+              <p>รายรับทั้งหมด</p>
+              <strong id="financeIncomeCard">0 ฿</strong>
+            </article>
+            <article class="money-card expense">
+              <p>รายจ่ายทั้งหมด</p>
+              <strong id="financeExpenseCard">0 ฿</strong>
+            </article>
+            <article class="money-card net">
+              <p>ยอดคงเหลือสุทธิ</p>
+              <strong id="financeNetCard">0 ฿</strong>
+            </article>
+          </div>
+
+          <div class="three-col">
+            <section class="card">
+              <header class="card-head">
+                <span class="card-head-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></span>
+                รายรับ
+              </header>
+              <div class="card-body" id="financeIncomeRows"></div>
+            </section>
+            <section class="card">
+              <header class="card-head">
+                <span class="card-head-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/></svg></span>
+                รายจ่าย
+              </header>
+              <div class="card-body" id="financeExpenseRows"></div>
+            </section>
+            <section class="card">
+              <header class="card-head">
+                <span class="card-head-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></span>
+                วิเคราะห์
+              </header>
+              <div class="card-body" id="financeAnalysisRows"></div>
+            </section>
+          </div>
+
+          <div class="table-card table-scroll">
+            <table class="table-selectable">
+              <thead>
+                <tr>
+                  <th class="check-col"><input id="financeSelectAll" class="select-all-check" type="checkbox" aria-label="เลือกทั้งหมด"></th>
+                  <th>วันที่</th>
+                  <th>ปี</th>
+                  <th>ประเภท</th>
+                  <th>หมวด</th>
+                  <th>จำนวนเงิน</th>
+                  <th>หมายเหตุ</th>
+                </tr>
+              </thead>
+              <tbody id="financeBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="page-units" class="page">
+          <div class="section-head">
+            <h2>หน่วยงานและเขตรับผิดชอบ</h2>
+            <div class="section-tools">
+              <button id="unitAddBtn" class="btn btn-primary" type="button">
+                <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                เพิ่มหน่วยงาน
+              </button>
+              <button id="unitEditBtn" class="btn btn-soft" type="button">แก้ไขที่เลือก</button>
+              <button id="unitDeleteBtn" class="btn btn-danger" type="button">ลบที่เลือก</button>
+              <button id="unitDeleteBatchBtn" class="btn btn-danger" type="button">ลบที่ติ๊กหลายรายการ</button>
+            </div>
+          </div>
+          <div class="table-card table-scroll">
+            <table class="table-selectable">
+              <thead>
+                <tr>
+                  <th class="check-col"><input id="unitsSelectAll" class="select-all-check" type="checkbox" aria-label="เลือกทั้งหมด"></th>
+                  <th>รหัสหน่วย</th>
+                  <th>ชื่อหน่วยงาน</th>
+                  <th>ตำบล</th>
+                  <th>อำเภอ</th>
+                  <th>จำนวน CM</th>
+                  <th>จำนวน CG</th>
+                  <th>จำนวนผู้รับบริการ LTC</th>
+                </tr>
+              </thead>
+              <tbody id="unitBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="page-logs" class="page">
+          <div class="section-head">
+            <h2>ข้อมูลที่ลบแล้ว (กู้คืนได้ภายใน 30 วัน)</h2>
+            <div class="section-tools">
+              <button id="trashRestoreBtn" class="btn btn-success" type="button" disabled>
+                <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                กู้คืนข้อมูลที่เลือก
+              </button>
+              <button id="trashPurgeAllBtn" class="btn btn-danger" type="button">ลบข้อมูลทั้งหมด</button>
+              <button id="trashPurgeBtn" class="btn btn-danger" type="button">ล้างข้อมูลที่หมดอายุ</button>
+            </div>
+          </div>
+          <p id="trashSummary" class="table-note">รายการที่กู้คืนได้ 0 รายการ</p>
+          <div class="table-card table-scroll slim-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th class="check-col">เลือก</th>
+                  <th>ตาราง</th>
+                  <th>ข้อมูล</th>
+                  <th>วันที่ลบ</th>
+                  <th>ผู้ลบ</th>
+                  <th>เหลือเวลา</th>
+                </tr>
+              </thead>
+              <tbody id="trashBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        ระบบดูแลระยะยาว (LTC) · เทศบาลชำราก<br>
+        <small>ใช้ข้อมูลจริงจาก `chamrak_export` และบันทึกผ่าน Backend Security</small>
+      </footer>
+    </div>
+  </div>
 
   <dialog id="entityDialog" class="row-dialog">
     <form id="entityForm" class="row-form" method="dialog" novalidate>
@@ -448,6 +570,19 @@
       </menu>
     </form>
   </dialog>
+
+  <div id="imageLightbox" class="image-lightbox" role="dialog" aria-modal="true" aria-label="ดูรูปภาพ" hidden>
+    <figure class="image-lightbox-frame">
+      <div class="image-lightbox-toolbar">
+        <button id="imageLightboxClose" class="image-lightbox-close" type="button" aria-label="ปิด">×</button>
+      </div>
+      <div class="image-lightbox-stage">
+        <img id="imageLightboxImg" class="image-lightbox-img" alt="">
+        <p id="imageLightboxError" class="image-lightbox-error" hidden>ไม่สามารถแสดงรูปภาพนี้ได้</p>
+      </div>
+      <figcaption id="imageLightboxCaption" class="image-lightbox-caption"></figcaption>
+    </figure>
+  </div>
 
   <script src="/public/runtime-config.js"></script>
   <script type="module" src="./web/app.js"></script>

@@ -22,7 +22,8 @@ class LtcAppRenderMethodCarrier {
   renderImageThumb(dataUrl, label = "รูป") {
     const value = String(dataUrl || "").trim();
     if (!value) return `<span class="photo-placeholder" aria-label="ไม่มีรูป">-</span>`;
-    return `<img class="record-photo" src="${Format.escapeHtml(value)}" alt="${Format.escapeHtml(label)}">`;
+    const safeLabel = Format.escapeHtml(label);
+    return `<img class="record-photo image-thumbnail" src="${Format.escapeHtml(value)}" alt="${safeLabel}" data-caption="${safeLabel}" tabindex="0" role="button" title="คลิกเพื่อดูรูปขนาดใหญ่">`;
   }
 
   async renderOverview() {

@@ -629,6 +629,10 @@ class EntityDialogService {
     removeButton.className = "btn btn-soft";
     removeButton.textContent = "ลบรูป";
 
+    const note = document.createElement("p");
+    note.className = "image-picker-note";
+    note.textContent = "รองรับไฟล์ PNG, JPEG, WebP · ระบบจะย่อขนาดรูปอัตโนมัติ";
+
     const paint = () => {
       const value = hidden.value;
       preview.hidden = !value;
@@ -660,6 +664,7 @@ class EntityDialogService {
     actions.className = "image-picker-actions";
     actions.appendChild(fileInput);
     actions.appendChild(removeButton);
+    actions.appendChild(note);
 
     picker.appendChild(preview);
     picker.appendChild(placeholder);
@@ -787,12 +792,26 @@ class EntityDialogService {
           rawValues[field.name] = control.value;
         }
 
+        // Bring the offending field into view (the form scrolls as one container,
+        // so a failing field may be scrolled off-screen) then focus it, so the
+        // user always sees which field blocked saving.
+        const revealField = (name) => {
+          const control = controls[name];
+          if (!control) return;
+          try {
+            control.scrollIntoView({ block: "center", behavior: "auto" });
+          } catch {
+            // older engines: focus() below still scrolls it into view
+          }
+          control.focus({ preventScroll: true });
+        };
+
         for (const field of fields) {
           if (field.hidden) continue;
           const value = Format.toText(rawValues[field.name]);
           if (field.required && !value) {
             alert(`กรุณากรอก ${field.label}`);
-            controls[field.name].focus();
+            revealField(field.name);
             return;
           }
 
@@ -800,7 +819,7 @@ class EntityDialogService {
             const error = field.validate(rawValues[field.name], rawValues);
             if (error) {
               alert(error);
-              controls[field.name].focus();
+              revealField(field.name);
               return;
             }
           }

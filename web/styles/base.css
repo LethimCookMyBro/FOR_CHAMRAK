@@ -1,20 +1,137 @@
+/* =========================================================================
+   Design tokens
+   Single source of truth for color, spacing, radius, shadow, type and motion.
+   Legacy --color-* names are kept so existing selectors keep working while
+   the rest of the system migrates to the scaled tokens below.
+   ========================================================================= */
 :root {
-  --color-primary: #1a4a7a;
-  --color-primary-soft: #2c6fad;
-  --color-accent: #e8a020;
-  --color-accent-soft: #f5c842;
+  /* ---- Brand / primary (blue) ---- */
+  --brand-50: #eef5fb;
+  --brand-100: #d6e6f4;
+  --brand-200: #aecde8;
+  --brand-300: #79acd6;
+  --brand-400: #4488c1;
+  --brand-500: #1f6aa8;
+  --brand-600: #1c5d96;
+  --brand-700: #184c7b;
+  --brand-800: #143a5e;
+  --brand-900: #0f2d4a;
 
-  --color-bg: #f0f4f9;
+  /* ---- Accent (teal) — used for highlights, active states, focus ---- */
+  --accent-50: #e6f6f4;
+  --accent-100: #c2e9e4;
+  --accent-300: #5cc5b8;
+  --accent-500: #0e9488;
+  --accent-600: #0c7d73;
+  --accent-700: #0a655d;
+
+  /* ---- Neutrals (slate) ---- */
+  --slate-50: #f6f8fb;
+  --slate-100: #eef2f7;
+  --slate-200: #e2e8f0;
+  --slate-300: #cbd5e1;
+  --slate-400: #94a3b8;
+  --slate-500: #64748b;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1e293b;
+  --slate-900: #0f172a;
+
+  /* ---- Semantic ---- */
+  --green-50: #e9f7ef;
+  --green-100: #d4f1e0;
+  --green-500: #16a34a;
+  --green-600: #15803d;
+  --amber-50: #fdf4e3;
+  --amber-100: #fcebcc;
+  --amber-500: #d97706;
+  --amber-600: #b45309;
+  --red-50: #fdecea;
+  --red-100: #fbd9d4;
+  --red-500: #dc2626;
+  --red-600: #b91c1c;
+
+  /* ---- Surfaces / text ---- */
+  --color-bg: #f7f8fa;
+  --color-surface: #ffffff;
+  --color-surface-2: #f8fafc;
   --color-card: #ffffff;
-  --color-text: #1c2b3a;
-  --color-text-soft: #6b849a;
-  --color-border: #d0dde9;
+  --color-text: #0f172a;
+  --color-text-soft: #51617a;
+  --color-text-muted: #64748b;
+  --color-border: #e7ebf0;
+  --color-border-strong: #d5dce4;
 
-  --color-success: #2d8a4e;
-  --color-warn: #c47a00;
-  --color-danger: #c0392b;
-  --font-sans: "Leelawadee UI", "Segoe UI", Tahoma, sans-serif;
-  --font-serif: "Leelawadee UI", "Segoe UI", Tahoma, serif;
+  /* ---- Legacy aliases (kept for existing selectors) ---- */
+  --color-primary: var(--brand-700);
+  --color-primary-soft: var(--brand-500);
+  --color-accent: var(--accent-500);
+  --color-accent-soft: var(--accent-300);
+  --color-success: var(--green-600);
+  --color-warn: var(--amber-600);
+  --color-danger: var(--red-500);
+
+  /* ---- Sidebar surface (light / shadcn-style) ---- */
+  --sidebar-bg: #ffffff;
+  --sidebar-border: #e7ebf0;
+  --sidebar-text: #475569;
+  --sidebar-text-dim: #94a3b8;
+  --sidebar-active-bg: #f1f5f9;
+  --sidebar-active-text: var(--brand-700);
+  --sidebar-hover-bg: #f8fafc;
+
+  /* ---- Spacing scale (4px base) ---- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
+  --space-9: 48px;
+
+  /* ---- Radius ---- */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 999px;
+
+  /* ---- Shadows (soft, neutral) ---- */
+  --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 6px 18px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 14px 34px rgba(15, 23, 42, 0.12);
+  --shadow-xl: 0 26px 60px rgba(15, 23, 42, 0.20);
+
+  /* ---- Typography ---- */
+  --font-sans: "Leelawadee UI", "Sarabun", "Segoe UI", Tahoma, sans-serif;
+  --font-serif: "Leelawadee UI", "Sarabun", "Segoe UI", Tahoma, sans-serif;
+  --fs-xs: 12px;
+  --fs-sm: 13px;
+  --fs-base: 15px;
+  --fs-md: 16px;
+  --fs-lg: 18px;
+  --fs-xl: 22px;
+  --fs-2xl: 26px;
+  --fs-3xl: 34px;
+
+  /* ---- Layout metrics ---- */
+  --sidebar-width: 264px;
+  --topbar-height: 64px;
+
+  /* ---- Motion ---- */
+  --transition-fast: 120ms ease;
+  --transition: 180ms ease;
+  --transition-slow: 240ms ease;
+
+  /* ---- Z-index scale ---- */
+  --z-content: 1;
+  --z-topbar: 20;
+  --z-sidebar: 30;
+  --z-tooltip: 40;
+  --z-dialog: 50;
 }
 
 * {
@@ -23,10 +140,74 @@
   padding: 0;
 }
 
+html,
+body {
+  height: 100%;
+}
+
 body {
   font-family: var(--font-sans);
   color: var(--color-text);
   background: var(--color-bg);
-  font-size: 17px;
-  line-height: 1.65;
+  font-size: var(--fs-md);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Inline icon defaults: every SVG icon inherits text color and sizes to 1em-ish */
+.icon {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vertical-align: middle;
+}
+
+.icon-sm { width: 16px; height: 16px; }
+.icon-lg { width: 24px; height: 24px; }
+
+/* Accessible, consistent keyboard focus */
+:focus-visible {
+  outline: 2px solid var(--accent-500);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Custom scrollbars (kept subtle, light theme) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--slate-300) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--slate-300);
+  border-radius: var(--radius-full);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--slate-400);
+  background-clip: padding-box;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }

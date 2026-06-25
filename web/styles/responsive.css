@@ -1,3 +1,12 @@
+/* =========================================================================
+   Responsive behaviour
+   ========================================================================= */
+@media (max-width: 1280px) {
+  .main-wrap {
+    padding: var(--space-6);
+  }
+}
+
 @media (max-width: 1160px) {
   .three-col {
     grid-template-columns: 1fr;
@@ -9,21 +18,75 @@
     grid-template-columns: 1fr;
   }
 
-  .topbar-main {
-    padding: 12px 14px;
-    flex-wrap: wrap;
+  .topbar {
+    padding: var(--space-3) var(--space-5);
+  }
+}
+
+/* Collapse the sidebar into a horizontal top navigation on narrow windows */
+@media (max-width: 860px) {
+  .app-shell {
+    flex-direction: column;
   }
 
-  .update-control {
-    margin-left: 0;
+  .sidebar {
+    position: sticky;
+    top: 0;
+    flex: 0 0 auto;
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+    border-right: 0;
+    border-bottom: 1px solid var(--sidebar-border);
   }
 
-  .system-name h1 {
-    font-size: 20px;
+  .sidebar-brand {
+    flex: 0 0 auto;
+    border-bottom: 0;
+    border-right: 1px solid var(--sidebar-border);
+    padding: var(--space-3) var(--space-4);
   }
 
+  .sidebar-nav {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: var(--space-2) var(--space-3);
+    gap: var(--space-1);
+  }
+
+  .nav-group-label {
+    display: none;
+  }
+
+  .nav-btn {
+    width: auto;
+    flex: 0 0 auto;
+  }
+
+  .nav-btn.active::before {
+    left: var(--space-3);
+    right: var(--space-3);
+    top: auto;
+    bottom: -2px;
+    width: auto;
+    height: 3px;
+  }
+
+  .sidebar-footer {
+    display: none;
+  }
+}
+
+@media (max-width: 700px) {
   .main-wrap {
-    padding: 18px 16px;
+    padding: var(--space-4);
+  }
+
+  .topbar-title h1 {
+    font-size: var(--fs-md);
   }
 
   .section-head {
@@ -33,26 +96,24 @@
 
   .section-tools {
     width: 100%;
-  }
-}
-
-@media (max-width: 700px) {
-  .logo {
-    width: 42px;
-    height: 42px;
-    font-size: 20px;
-  }
-
-  .security-toggle {
-    width: 100%;
-    text-align: center;
+    justify-content: flex-start;
   }
 
   .stats-grid {
     grid-template-columns: 1fr;
   }
 
+  .row-form {
+    padding: var(--space-5) var(--space-4);
+  }
+
   .row-form-fields {
     grid-template-columns: 1fr;
+  }
+
+  .image-picker {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
   }
 }

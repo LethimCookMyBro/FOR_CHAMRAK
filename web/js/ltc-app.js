@@ -7,6 +7,7 @@ import { EntityDialogService } from "./entity-dialog-service.js";
 import { SecurityToolkit } from "./security.js";
 import { ActivityLogPage } from "./activity-log-page.js";
 import { UpdateController } from "./update-ui.js";
+import { ImageLightbox } from "./image-lightbox.js";
 import { ltcAppRenderMethods } from "./ltc-app-render-methods.js";
 import { ltcAppActionMethods } from "./ltc-app-action-methods.js";
 
@@ -132,6 +133,7 @@ class LtcApp {
       entityCancelBtn: document.getElementById("entityCancelBtn"),
       entitySubmitBtn: document.getElementById("entitySubmitBtn"),
 
+      updateControl: document.getElementById("updateControl"),
       updateButton: document.getElementById("updateCheckBtn"),
       updateDialog: document.getElementById("updateDialog"),
       updateDialogTitle: document.getElementById("updateDialogTitle"),
@@ -142,12 +144,25 @@ class LtcApp {
       updateNotes: document.getElementById("updateNotes"),
       updateDownloadBtn: document.getElementById("updateDownloadBtn"),
       updateInstallBtn: document.getElementById("updateInstallBtn"),
-      updateCloseBtn: document.getElementById("updateCloseBtn")
+      updateCloseBtn: document.getElementById("updateCloseBtn"),
+
+      imageLightbox: document.getElementById("imageLightbox"),
+      imageLightboxImg: document.getElementById("imageLightboxImg"),
+      imageLightboxCaption: document.getElementById("imageLightboxCaption"),
+      imageLightboxError: document.getElementById("imageLightboxError"),
+      imageLightboxClose: document.getElementById("imageLightboxClose")
     };
 
     this.dialogs = new EntityDialogService(this.el, this.repo, this.domain, this.helpers);
     this.securityToolkit = new SecurityToolkit(this.repo);
     this.updateController = new UpdateController(this.el);
+    this.imageLightbox = new ImageLightbox({
+      overlay: this.el.imageLightbox,
+      image: this.el.imageLightboxImg,
+      caption: this.el.imageLightboxCaption,
+      errorText: this.el.imageLightboxError,
+      closeButton: this.el.imageLightboxClose
+    });
     this.activityPage = new ActivityLogPage({
       repo: this.repo,
       elements: this.el,
@@ -161,6 +176,7 @@ class LtcApp {
       this.setPage(this.state.page);
       this.activityPage.init();
       this.updateController.init();
+      this.imageLightbox.init();
       await this.renderAll();
     } catch (error) {
       console.error(error);

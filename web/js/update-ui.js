@@ -10,6 +10,16 @@ const STATUS_TEXT = {
   unconfigured: "ยังไม่ได้ตั้งค่าแหล่งอัปเดต"
 };
 
+const TOOLTIP_AVAILABLE = "กดเพื่ออัปเดต";
+const TOOLTIP_DOWNLOADING = "กำลังดาวน์โหลดอัปเดต";
+const TOOLTIP_READY = "พร้อมติดตั้งอัปเดต";
+
+function tooltipForState(state, status) {
+  if (state?.downloaded) return TOOLTIP_READY;
+  if (status === "downloading") return TOOLTIP_DOWNLOADING;
+  return TOOLTIP_AVAILABLE;
+}
+
 function asPercent(value) {
   const number = Number(value || 0);
   if (!Number.isFinite(number)) return 0;
@@ -57,6 +67,10 @@ export class UpdateController {
   hide() {
     if (this.el.updateButton) {
       this.el.updateButton.hidden = true;
+    }
+    // Hide the whole control so its hover tooltip cannot show when there is no update.
+    if (this.el.updateControl) {
+      this.el.updateControl.hidden = true;
     }
   }
 
@@ -140,6 +154,21 @@ export class UpdateController {
 
     if (this.el.updateButton) {
       this.el.updateButton.hidden = !shouldShowButton;
+    }
+
+    // The tooltip-bearing wrapper must disappear entirely when there is no real
+    // update, otherwise its hover tooltip ("กดเพื่ออัปเดต") still shows. When an
+    // update exists, keep the tooltip text honest about the current state.
+    if (this.el.updateControl) {
+      this.el.updateControl.hidden = !shouldShowButton;
+      if (shouldShowButton) {
+        const tip = tooltipForState(this.state, status);
+        this.el.updateControl.setAttribute("data-tooltip", tip);
+        if (this.el.updateButton) {
+          this.el.updateButton.title = tip;
+          this.el.updateButton.setAttribute("aria-label", tip);
+        }
+      }
     }
 
     this.el.updateButton?.classList.toggle("is-busy", Boolean(this.state.busy));

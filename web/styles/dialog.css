@@ -1,51 +1,95 @@
-.row-dialog {
-  width: min(1080px, 94vw);
-  max-height: 90vh;
+/* =========================================================================
+   Modal system (shared)
+   Both the entity add/edit dialog and the desktop updater use native
+   <dialog> + showModal(). The global `* { margin: 0 }` reset wipes the UA
+   `margin:auto` that normally centres a :modal dialog, which pinned the
+   update modal to the top-left corner. We re-establish robust centring
+   explicitly here so every dialog is consistent and always centred.
+   ========================================================================= */
+dialog.row-dialog,
+dialog.update-dialog {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  margin: 0;
-  border: 0;
-  border-radius: 18px;
-  box-shadow: 0 34px 76px rgba(0, 0, 0, 0.32);
+  inset: 0;
+  margin: auto;                       /* centre both axes (auto + inset:0) */
+  max-height: calc(100vh - 48px);
   padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;                   /* inner panel handles its own scroll */
 }
 
-.row-dialog::backdrop {
-  background: rgba(11, 17, 22, 0.5);
+dialog.row-dialog::backdrop,
+dialog.update-dialog::backdrop {
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(2px);
 }
 
+/* Width is the only thing that differs between the two modals */
+.row-dialog {
+  width: min(1040px, calc(100vw - 32px));
+}
+
+.update-dialog {
+  width: min(520px, calc(100vw - 32px));
+}
+
+/* Open/close micro-animation (respects reduced-motion via base.css) */
+dialog[open] {
+  animation: modal-in 160ms ease;
+}
+
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ===================================================== Entity add/edit form */
 .row-form {
   margin: 0;
-  padding: 1.2rem;
-  max-height: 90vh;
+  /* No bottom padding: the sticky actions footer supplies the bottom spacing. */
+  padding: var(--space-6) var(--space-7) 0;
+  max-height: calc(100vh - 48px);
+  /* Single scroll container for the WHOLE form (header + fields + actions).
+     Previously .row-form-fields had its own nested max-height/overflow, which
+     trapped lower fields below an easy-to-miss inner scrollbar while the Save
+     button stayed pinned outside it. On scaled/small displays that hid required
+     fields, so saving failed validation on a field the user could not see. */
   overflow: auto;
 }
 
 .row-form h3 {
   margin: 0;
-  font: 700 1.5rem/1.2 var(--font-serif);
+  font: 700 var(--fs-2xl) / 1.25 var(--font-sans);
+  color: var(--color-text);
 }
 
 .row-dialog-hint {
-  margin: 0.55rem 0 0.9rem;
+  margin: var(--space-2) 0 var(--space-5);
   color: var(--color-text-soft);
-  font-size: 1rem;
+  font-size: var(--fs-base);
 }
 
 .row-form-fields {
-  max-height: 66vh;
-  overflow: auto;
+  /* No nested scroll here — .row-form is the single scroll container so every
+     field is reachable by scrolling the dialog normally. */
   display: grid;
-  gap: 0.85rem;
-  padding-right: 0.2rem;
+  gap: var(--space-4);
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
 .row-field {
   display: grid;
-  gap: 0.25rem;
+  gap: var(--space-2);
+  align-content: start;
 }
 
 .row-field.wide {
@@ -53,155 +97,221 @@
 }
 
 .row-field label {
-  font-size: 0.98rem;
+  font-size: var(--fs-base);
   font-weight: 600;
+  color: var(--color-text);
 }
 
 .req {
   color: var(--color-danger);
+  font-weight: 700;
 }
 
 .row-field input,
 .row-field textarea,
 .row-field select {
-  border: 1px solid var(--color-border);
-  border-radius: 10px;
-  padding: 0.58rem 0.7rem;
-  background: #fff;
-  font: 16px var(--font-sans);
+  width: 100%;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: var(--fs-md) var(--font-sans);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.row-field input::placeholder,
+.row-field textarea::placeholder {
+  color: var(--color-text-muted);
+}
+
+.row-field input:focus,
+.row-field textarea:focus,
+.row-field select:focus {
+  border-color: var(--accent-500);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(14, 148, 136, 0.14);
+}
+
+.row-field input:invalid:not(:placeholder-shown) {
+  border-color: var(--red-500);
+}
+
+.row-field select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 38px;
 }
 
 .row-field textarea {
-  min-height: 80px;
+  min-height: 84px;
   resize: vertical;
 }
 
+/* ----------------------------------------------------------- Image picker */
 .image-picker {
   display: grid;
-  grid-template-columns: 96px 1fr;
-  gap: 12px;
+  grid-template-columns: 104px 1fr;
+  gap: var(--space-4);
   align-items: center;
   border: 1px solid var(--color-border);
-  border-radius: 12px;
-  padding: 12px;
-  background: #f8fafd;
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  background: var(--color-surface-2);
 }
 
 .image-picker-preview,
 .image-picker-placeholder {
-  width: 96px;
-  height: 96px;
+  width: 104px;
+  height: 104px;
   border: 1px solid var(--color-border);
-  border-radius: 10px;
-  background: #fff;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
 }
 
 .image-picker-preview {
   object-fit: cover;
+  box-shadow: var(--shadow-xs);
 }
 
 .image-picker-placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-text-soft);
-  font-size: 14px;
+  border-style: dashed;
+  color: var(--color-text-muted);
+  font-size: var(--fs-sm);
   text-align: center;
 }
 
 .image-picker-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--space-2);
   align-items: center;
 }
 
 .image-picker-actions input[type="file"] {
   max-width: 260px;
+  font-size: var(--fs-sm);
+  color: var(--color-text-soft);
+}
+
+.image-picker-actions input[type="file"]::file-selector-button {
+  margin-right: var(--space-3);
+  padding: 8px var(--space-3);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--brand-700);
+  font: 600 var(--fs-sm) var(--font-sans);
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition);
+}
+
+.image-picker-actions input[type="file"]::file-selector-button:hover {
+  background: var(--brand-50);
+  border-color: var(--brand-300);
+}
+
+.image-picker-note {
+  flex-basis: 100%;
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--fs-xs);
 }
 
 .row-field small {
-  color: var(--color-text-soft);
-  font-size: 12px;
+  color: var(--color-text-muted);
+  font-size: var(--fs-xs);
 }
 
-.row-dialog-actions {
-  margin: 0.85rem 0 0;
-  padding: 0;
+/* Shared modal footer: top border, right-aligned actions */
+.row-dialog-actions,
+.update-dialog-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 0.5rem;
+  gap: var(--space-2);
+  margin: var(--space-5) 0 0;
+  padding: var(--space-4) 0 0;
+  border-top: 1px solid var(--color-border);
 }
 
-.update-dialog {
-  width: min(520px, 92vw);
-  border: 0;
-  border-radius: 14px;
-  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.34);
-  padding: 0;
+/* The entity dialog scrolls as one container, so pin its actions to the bottom.
+   This keeps Save/Cancel always visible (never hidden below scrolled fields)
+   and makes it obvious there is more form to scroll through. */
+.row-dialog-actions {
+  position: sticky;
+  bottom: 0;
+  margin-top: var(--space-5);
+  padding: var(--space-4) 0;
+  background: var(--color-surface);
 }
 
-.update-dialog::backdrop {
-  background: rgba(11, 17, 22, 0.48);
-}
-
+/* ============================================================== Updater */
 .update-panel {
   position: relative;
   display: grid;
-  gap: 12px;
+  gap: var(--space-3);
   margin: 0;
-  padding: 22px;
+  padding: var(--space-6);
+  max-height: calc(100vh - 48px);
+  overflow: auto;
 }
 
 .update-panel h3 {
   margin: 0;
-  padding-right: 36px;
-  font: 700 1.35rem/1.2 var(--font-serif);
+  padding-right: 40px;
+  font: 700 var(--fs-xl) / 1.25 var(--font-sans);
 }
 
 .update-close-button {
   position: absolute;
-  right: 14px;
-  top: 14px;
+  right: var(--space-4);
+  top: var(--space-4);
   display: grid;
   place-items: center;
   width: 32px;
   height: 32px;
   border: 1px solid var(--color-border);
-  border-radius: 50%;
-  background: #fff;
-  color: var(--color-text);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text-soft);
   cursor: pointer;
   font: 700 22px/1 var(--font-sans);
+  transition: border-color var(--transition), color var(--transition), background var(--transition);
 }
 
 .update-close-button:hover,
 .update-close-button:focus-visible {
-  border-color: var(--color-primary-soft);
-  color: var(--color-primary);
+  border-color: var(--accent-500);
+  color: var(--accent-700);
+  background: var(--accent-50);
   outline: none;
 }
 
 .update-status-text {
   margin: 0;
   color: var(--color-text);
-  font-size: 1rem;
+  font-size: var(--fs-md);
 }
 
 .update-version-text,
 .update-progress-text {
-  min-height: 20px;
+  min-height: 18px;
   margin: 0;
   color: var(--color-text-soft);
-  font-size: 0.9rem;
+  font-size: var(--fs-sm);
 }
 
 .update-progress-track {
   width: 100%;
   height: 8px;
   overflow: hidden;
-  border-radius: 999px;
-  background: #e8eef5;
+  border-radius: var(--radius-full);
+  background: var(--slate-200);
 }
 
 .update-progress-bar {
@@ -209,38 +319,158 @@
   width: 0;
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, var(--color-primary-soft), var(--color-accent));
+  background: linear-gradient(90deg, var(--brand-500), var(--accent-500));
   transition: width 180ms ease;
 }
 
 .update-release-box {
   border: 1px solid var(--color-border);
-  border-radius: 10px;
-  background: #f8fafd;
-  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-2);
+  padding: var(--space-3) var(--space-4);
 }
 
 .update-release-box strong {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: var(--space-2);
+  font-size: var(--fs-base);
 }
 
 .update-release-box ul {
   display: grid;
-  gap: 6px;
+  gap: var(--space-2);
   margin: 0;
-  padding-left: 20px;
+  padding-left: var(--space-5);
 }
 
 .update-release-box li {
   color: var(--color-text-soft);
-  font-size: 0.95rem;
+  font-size: var(--fs-base);
 }
 
-.update-dialog-actions {
+/* ======================================================= Image lightbox */
+.image-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 60;                         /* above dialogs / tooltips */
+  display: flex;
+  align-items: center;                 /* centre vertically */
+  justify-content: center;             /* centre horizontally */
+  padding: var(--space-6);
+  background: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(3px);
+  animation: lightbox-in 160ms ease;
+}
+
+.image-lightbox[hidden] {
+  display: none;
+}
+
+/* Prevent the page behind the overlay from scrolling */
+body.lightbox-open {
+  overflow: hidden;
+}
+
+.image-lightbox-frame {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-width: 90vw;
+  max-height: 85vh;
+  margin: 0;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-xl);
+  animation: lightbox-pop 180ms ease;
+}
+
+.image-lightbox-toolbar {
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
-  margin: 4px 0 0;
-  padding: 0;
+}
+
+.image-lightbox-close {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text-soft);
+  cursor: pointer;
+  font: 700 22px/1 var(--font-sans);
+  transition: border-color var(--transition), color var(--transition), background var(--transition);
+}
+
+.image-lightbox-close:hover,
+.image-lightbox-close:focus-visible {
+  border-color: var(--accent-500);
+  color: var(--accent-700);
+  background: var(--accent-50);
+  outline: none;
+}
+
+.image-lightbox-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.image-lightbox-img {
+  display: block;
+  max-width: calc(90vw - 2 * var(--space-4));
+  max-height: calc(85vh - 110px);      /* room for toolbar + caption */
+  object-fit: contain;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-2);
+}
+
+.image-lightbox-img[hidden] {
+  display: none;
+}
+
+.image-lightbox-error {
+  padding: var(--space-7) var(--space-6);
+  color: var(--color-text-soft);
+  font-size: var(--fs-base);
+  text-align: center;
+}
+
+.image-lightbox-error[hidden] {
+  display: none;
+}
+
+.image-lightbox-caption {
+  margin: 0;
+  color: var(--color-text-soft);
+  font-size: var(--fs-base);
+  text-align: center;
+  word-break: break-word;
+}
+
+.image-lightbox-caption:empty {
+  display: none;
+}
+
+@keyframes lightbox-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes lightbox-pop {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
