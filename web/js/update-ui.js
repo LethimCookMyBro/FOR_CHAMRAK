@@ -34,14 +34,19 @@ export class UpdateController {
       return;
     }
 
-    this.el.updateButton.hidden = false;
+    this.hide();
     this.el.updateButton.addEventListener("click", () => this.handleUpdateClick());
     this.el.updateInstallBtn?.addEventListener("click", () => this.installUpdate());
     this.el.updateCloseBtn?.addEventListener("click", () => this.el.updateDialog?.close());
 
     this.api.onEvent((state) => this.render(state));
     this.api.getState()
-      .then((state) => this.render(state))
+      .then((state) => {
+        this.render(state);
+        if (state?.enabled && !state.available && !state.downloaded) {
+          void this.checkSilently();
+        }
+      })
       .catch((error) => this.render({
         error: error?.message || "โหลดสถานะอัปเดตไม่สำเร็จ",
         status: "error"
@@ -59,12 +64,30 @@ export class UpdateController {
     if (this.state?.busy) return;
 
     try {
+      if (this.state?.available && !this.state.downloaded) {
+        const downloaded = await this.api.downloadUpdate();
+        this.render(downloaded);
+        return;
+      }
+
       const checked = await this.api.checkForUpdates();
       this.render(checked);
       if (checked?.available && !checked?.downloaded) {
         const downloaded = await this.api.downloadUpdate();
         this.render(downloaded);
       }
+    } catch (error) {
+      this.render({
+        error: error?.message || "ตรวจสอบอัปเดตไม่สำเร็จ",
+        status: "error"
+      });
+    }
+  }
+
+  async checkSilently() {
+    try {
+      const checked = await this.api.checkForUpdates();
+      this.render(checked);
     } catch (error) {
       this.render({
         error: error?.message || "ตรวจสอบอัปเดตไม่สำเร็จ",
@@ -101,6 +124,11 @@ export class UpdateController {
     const progress = asPercent(this.state.progress);
     const notes = normalizeNotes(this.state.notes);
     const text = this.state.error || STATUS_TEXT[status] || STATUS_TEXT.idle;
+    const shouldShowButton = Boolean(this.state.available || this.state.downloaded || status === "downloading");
+
+    if (this.el.updateButton) {
+      this.el.updateButton.hidden = !shouldShowButton;
+    }
 
     this.el.updateButton?.classList.toggle("is-busy", Boolean(this.state.busy));
     this.el.updateButton?.classList.toggle("has-update", Boolean(this.state.available));
