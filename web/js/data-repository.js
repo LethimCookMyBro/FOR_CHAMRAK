@@ -13,7 +13,7 @@ class DataRepository {
   sanitizeAlias(alias) {
     const text = String(alias || "").trim();
     if (!/^[A-Za-z0-9_]+$/.test(text)) {
-      throw new Error("alias เน€เธยเน€เธเธเน€เธยเน€เธโ€“เน€เธเธเน€เธยเน€เธโ€ขเน€เธยเน€เธเธเน€เธย");
+      throw new Error("alias ไม่ถูกต้อง ใช้ได้เฉพาะตัวอักษรภาษาอังกฤษ ตัวเลข และขีดล่าง");
     }
     return text;
   }
@@ -56,7 +56,7 @@ class DataRepository {
         headers
       });
     } catch {
-      const error = new Error("เน€เธยเน€เธเธเน€เธยเน€เธเธเน€เธเธ’เน€เธเธเน€เธเธ’เน€เธเธเน€เธโ€“เน€เธโฌเน€เธยเน€เธเธ—เน€เธยเน€เธเธเน€เธเธเน€เธโ€ขเน€เธยเน€เธเธเน€เธโฌเน€เธยเน€เธเธ”เน€เธเธเน€เธยเน€เธยเน€เธโฌเน€เธเธเน€เธเธเน€เธเธเน€เธยเน€เธยเน€เธโ€เน€เธย (network error)");
+      const error = new Error("เชื่อมต่อระบบบันทึกข้อมูลไม่ได้ (network error)");
       error.networkError = true;
       throw error;
     }
@@ -125,7 +125,7 @@ class DataRepository {
     alias = this.sanitizeAlias(alias);
     const ids = Array.isArray(rowIds) ? rowIds.map((item) => String(item || "")).filter(Boolean) : [];
     if (!ids.length) {
-      throw new Error("rowIds เน€เธโ€ขเน€เธยเน€เธเธเน€เธยเน€เธเธเน€เธเธ•เน€เธเธเน€เธเธเน€เธยเน€เธเธ’เน€เธยเน€เธยเน€เธยเน€เธเธเน€เธเธ 1 เน€เธเธเน€เธเธ’เน€เธเธเน€เธยเน€เธเธ’เน€เธเธ");
+      throw new Error("rowIds ต้องมีอย่างน้อย 1 รายการ");
     }
 
     const ifVersion = String(this.tableVersions.get(alias) || "");
@@ -184,7 +184,7 @@ class DataRepository {
         mode: "local",
         storage: {
           source: "backend unavailable",
-          edits: "เน€เธยเน€เธเธเน€เธยเน€เธเธเน€เธเธ’เน€เธเธเน€เธเธ’เน€เธเธเน€เธโ€“เน€เธโฌเน€เธยเน€เธเธ—เน€เธยเน€เธเธเน€เธเธเน€เธโ€ขเน€เธยเน€เธเธ backend เน€เธยเน€เธโ€เน€เธย"
+          edits: "เชื่อมต่อ backend ไม่ได้"
         }
       };
     }
@@ -244,7 +244,7 @@ class DataRepository {
 
   async restoreTrash(trashIds) {
     const ids = Array.isArray(trashIds) ? trashIds.map((item) => String(item || "")).filter(Boolean) : [];
-    if (!ids.length) throw new Error("เน€เธยเน€เธเธเน€เธเธเน€เธโ€เน€เธเธ’เน€เธโฌเน€เธเธ…เน€เธเธ—เน€เธเธเน€เธยเน€เธยเน€เธยเน€เธเธเน€เธเธเน€เธเธเน€เธเธ…เน€เธโ€”เน€เธเธ•เน€เธยเน€เธโ€ขเน€เธยเน€เธเธเน€เธยเน€เธยเน€เธเธ’เน€เธเธเน€เธยเน€เธเธเน€เธยเน€เธยเน€เธเธ—เน€เธย");
+    if (!ids.length) throw new Error("กรุณาเลือกรายการที่ต้องการกู้คืน");
 
     const payload = await this.requestJson(`${this.apiBase}/trash/restore`, {
       method: "POST",

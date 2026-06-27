@@ -135,6 +135,8 @@ class LtcApp {
 
       updateControl: document.getElementById("updateControl"),
       updateButton: document.getElementById("updateCheckBtn"),
+      updateManualControl: document.getElementById("updateManualControl"),
+      updateManualButton: document.getElementById("updateManualBtn"),
       updateDialog: document.getElementById("updateDialog"),
       updateDialogTitle: document.getElementById("updateDialogTitle"),
       updateStatusText: document.getElementById("updateStatusText"),

@@ -13,6 +13,8 @@ const STATUS_TEXT = {
 const TOOLTIP_AVAILABLE = "กดเพื่ออัปเดต";
 const TOOLTIP_DOWNLOADING = "กำลังดาวน์โหลดอัปเดต";
 const TOOLTIP_READY = "พร้อมติดตั้งอัปเดต";
+const TOOLTIP_MANUAL_CHECK = "ตรวจสอบอัปเดต";
+const AUTO_CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000;
 
 function tooltipForState(state, status) {
   if (state?.downloaded) return TOOLTIP_READY;
@@ -36,16 +38,18 @@ export class UpdateController {
     this.el = elements;
     this.api = window.ltcUpdater || null;
     this.state = null;
+    this.autoCheckTimer = null;
   }
 
   init() {
-    if (!this.el.updateButton || !this.api) {
+    if ((!this.el.updateButton && !this.el.updateManualButton) || !this.api) {
       this.hide();
       return;
     }
 
     this.hide();
-    this.el.updateButton.addEventListener("click", () => this.handleUpdateClick());
+    this.el.updateButton?.addEventListener("click", () => this.handleUpdateClick());
+    this.el.updateManualButton?.addEventListener("click", () => this.handleManualCheck());
     this.el.updateDownloadBtn?.addEventListener("click", () => this.downloadAvailableUpdate());
     this.el.updateInstallBtn?.addEventListener("click", () => this.installUpdate());
     this.el.updateCloseBtn?.addEventListener("click", () => this.el.updateDialog?.close());
@@ -56,6 +60,7 @@ export class UpdateController {
         this.render(state);
         if (state?.enabled && !state.available && !state.downloaded) {
           void this.checkSilently();
+          this.startAutoCheck();
         }
       })
       .catch((error) => this.render({
@@ -71,6 +76,39 @@ export class UpdateController {
     // Hide the whole control so its hover tooltip cannot show when there is no update.
     if (this.el.updateControl) {
       this.el.updateControl.hidden = true;
+    }
+    if (this.el.updateManualButton) {
+      this.el.updateManualButton.hidden = true;
+    }
+    if (this.el.updateManualControl) {
+      this.el.updateManualControl.hidden = true;
+    }
+  }
+
+  startAutoCheck() {
+    if (this.autoCheckTimer || !this.api) return;
+    const setTimer = window.setInterval || globalThis.setInterval;
+    if (typeof setTimer !== "function") return;
+    this.autoCheckTimer = setTimer(() => {
+      if (!this.state?.enabled || this.state?.busy || this.state?.downloaded) return;
+      void this.checkSilently();
+    }, AUTO_CHECK_INTERVAL_MS);
+    this.autoCheckTimer?.unref?.();
+  }
+
+  async handleManualCheck() {
+    this.openDialog();
+    if (this.state?.busy) return;
+
+    try {
+      const checked = await this.api.checkForUpdates();
+      this.render(checked);
+    } catch (error) {
+      this.render({
+        ...this.state,
+        error: error?.message || "ตรวจสอบอัปเดตไม่สำเร็จ",
+        status: "error"
+      });
     }
   }
 
@@ -171,9 +209,21 @@ export class UpdateController {
       }
     }
 
+    const shouldShowManualButton = Boolean(this.state.enabled);
+    if (this.el.updateManualButton) {
+      this.el.updateManualButton.hidden = !shouldShowManualButton;
+      this.el.updateManualButton.title = TOOLTIP_MANUAL_CHECK;
+      this.el.updateManualButton.setAttribute("aria-label", TOOLTIP_MANUAL_CHECK);
+    }
+    if (this.el.updateManualControl) {
+      this.el.updateManualControl.hidden = !shouldShowManualButton;
+      this.el.updateManualControl.setAttribute("data-tooltip", TOOLTIP_MANUAL_CHECK);
+    }
+
     this.el.updateButton?.classList.toggle("is-busy", Boolean(this.state.busy));
     this.el.updateButton?.classList.toggle("has-update", Boolean(this.state.available));
     this.el.updateButton?.classList.toggle("is-ready", Boolean(this.state.downloaded));
+    this.el.updateManualButton?.classList.toggle("is-busy", Boolean(this.state.busy));
 
     if (this.el.updateDialogTitle) {
       this.el.updateDialogTitle.textContent = this.state.downloaded ? "อัปเดตเสร็จแล้ว" : "อัปเดตโปรแกรม";

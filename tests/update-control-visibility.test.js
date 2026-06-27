@@ -47,6 +47,8 @@ test("update control wrapper hides until a real update exists, then carries an h
 
   const updateControl = createElementMock();
   const updateButton = createElementMock({ style: {} });
+  const updateManualControl = createElementMock();
+  const updateManualButton = createElementMock({ style: {} });
 
   global.window = {
     ltcUpdater: {
@@ -60,6 +62,8 @@ test("update control wrapper hides until a real update exists, then carries an h
   const controller = new UpdateController({
     updateControl,
     updateButton,
+    updateManualControl,
+    updateManualButton,
     updateDialog: { open: false, showModal() {} },
     updateDialogTitle: createElementMock({ style: {} }),
     updateStatusText: createElementMock({ style: {} }),
@@ -78,6 +82,8 @@ test("update control wrapper hides until a real update exists, then carries an h
   // App start + "no update" check → both the wrapper and the button stay hidden.
   assert.equal(updateControl.hidden, true);
   assert.equal(updateButton.hidden, true);
+  assert.equal(updateManualControl.hidden, false);
+  assert.equal(updateManualButton.hidden, false);
 
   // A real available update reveals the wrapper with the "press to update" tooltip.
   controller.render({ enabled: true, status: "available", available: true, downloaded: false });

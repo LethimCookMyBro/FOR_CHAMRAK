@@ -24,7 +24,23 @@
    - installer หรือ portable `.exe`
    - `latest.yml`
    - ไฟล์ `.blockmap` ถ้ามี
-4. ถ้าต้องการให้กล่องอัปเดตโชว์รายละเอียด ให้เพิ่ม `releaseNotes` ใน `latest.yml`
+4. ตรวจว่า `latest.yml` มี `releaseNotes` ก่อน upload
+
+ตอนนี้ `npm run electron:build` จะเติม `releaseNotes` ลง `dist/latest.yml` ให้อัตโนมัติจากค่าใดค่าหนึ่ง:
+
+```powershell
+$env:LTC_RELEASE_NOTES = "เพิ่มปุ่มตรวจสอบอัปเดต`nใส่ icon โปรแกรม"
+npm run electron:build
+```
+
+หรือใช้ไฟล์:
+
+```powershell
+$env:LTC_RELEASE_NOTES_FILE = "release-notes.md"
+npm run electron:build
+```
+
+ถ้าไม่กำหนดค่าไว้ ระบบจะใส่ข้อความ default ตาม version ใน `package.json`
 
 ตัวอย่าง:
 

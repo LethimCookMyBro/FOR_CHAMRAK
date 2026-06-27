@@ -1,7 +1,7 @@
 {
   "name": "ltc-chamrak",
   "productName": "LTC Chamrak",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "private": true,
   "description": "LTC Chamrak desktop app with internal Express backend and local JSON storage",
   "main": "desktop/main.js",
@@ -10,7 +10,7 @@
     "start": "node server/index.js",
     "test": "node --test",
     "electron:dev": "electron .",
-    "electron:build": "electron-builder --win"
+    "electron:build": "electron-builder --win && node scripts/patch-latest-release-notes.js"
   },
   "dependencies": {
     "electron-updater": "^6.8.9",
@@ -44,6 +44,7 @@
     ],
     "asar": true,
     "win": {
+      "icon": "build/icon.svg",
       "target": [
         "nsis",
         "portable"

@@ -10,9 +10,12 @@ const repoRoot = path.resolve(__dirname, "..");
 
 function createButtonMock() {
   const classes = new Set();
+  const attributes = {};
   return {
     hidden: true,
     listeners: {},
+    title: "",
+    attributes,
     classList: {
       contains: (name) => classes.has(name),
       toggle: (name, enabled) => {
@@ -23,6 +26,12 @@ function createButtonMock() {
         }
       }
     },
+    setAttribute(name, value) {
+      attributes[name] = value;
+    },
+    getAttribute(name) {
+      return name in attributes ? attributes[name] : null;
+    },
     addEventListener(event, handler) {
       this.listeners[event] = handler;
     }
@@ -30,11 +39,19 @@ function createButtonMock() {
 }
 
 function createTextMock() {
+  const attributes = {};
   return {
     textContent: "",
     style: {},
     hidden: false,
     listeners: {},
+    attributes,
+    setAttribute(name, value) {
+      attributes[name] = value;
+    },
+    getAttribute(name) {
+      return name in attributes ? attributes[name] : null;
+    },
     replaceChildren() {},
     append() {},
     addEventListener(event, handler) {
@@ -75,10 +92,12 @@ test("update button and release-notes dialog are present in the app shell", asyn
   const controller = await fs.readFile(path.join(repoRoot, "web", "js", "update-ui.js"), "utf8");
 
   assert.match(index, /id="updateCheckBtn"/);
+  assert.match(index, /id="updateManualBtn"/);
   assert.match(index, /id="updateDialog"/);
   assert.match(index, /id="updateNotes"/);
   assert.match(index, /id="updateDownloadBtn"/);
   assert.match(controller, /downloadUpdate/);
+  assert.match(controller, /AUTO_CHECK_INTERVAL_MS/);
   assert.match(controller, /ติดตั้งตอนนี้|installUpdate/);
 });
 
@@ -97,6 +116,8 @@ test("update button stays hidden until an update is actually available", async (
   };
   const controller = new UpdateController({
     updateButton: button,
+    updateManualControl: createTextMock(),
+    updateManualButton: createButtonMock(),
     updateDialog: { open: false, showModal() {} },
     updateDialogTitle: createTextMock(),
     updateStatusText: createTextMock(),
@@ -145,6 +166,8 @@ test("available update waits for explicit user confirmation before downloading",
   };
   const controller = new UpdateController({
     updateButton: createButtonMock(),
+    updateManualControl: createTextMock(),
+    updateManualButton: createButtonMock(),
     updateDialog: dialog,
     updateDialogTitle: createTextMock(),
     updateStatusText: createTextMock(),
@@ -169,4 +192,49 @@ test("available update waits for explicit user confirmation before downloading",
   await downloadButton.listeners.click();
 
   assert.equal(calls.download, 1);
+});
+
+test("manual update check opens the dialog even when no update is visible yet", async () => {
+  const { UpdateController } = await loadUpdateController();
+  const dialog = createDialogMock();
+  const manualButton = createButtonMock();
+  const calls = { check: 0 };
+  const api = {
+    getState: async () => ({ enabled: true, status: "idle", available: false, downloaded: false }),
+    onEvent: () => () => {},
+    checkForUpdates: async () => {
+      calls.check += 1;
+      return { enabled: true, status: "not-available", available: false, downloaded: false };
+    }
+  };
+
+  global.window = { ltcUpdater: api };
+  global.document = {
+    createElement: () => createTextMock()
+  };
+
+  const controller = new UpdateController({
+    updateButton: createButtonMock(),
+    updateManualControl: createTextMock(),
+    updateManualButton: manualButton,
+    updateDialog: dialog,
+    updateDialogTitle: createTextMock(),
+    updateStatusText: createTextMock(),
+    updateVersionText: createTextMock(),
+    updateProgressBar: createTextMock(),
+    updateProgressText: createTextMock(),
+    updateNotes: createTextMock(),
+    updateDownloadBtn: createTextMock(),
+    updateInstallBtn: createTextMock(),
+    updateCloseBtn: createTextMock()
+  });
+
+  controller.init();
+  await new Promise((resolve) => setImmediate(resolve));
+
+  assert.equal(manualButton.hidden, false);
+  await manualButton.listeners.click();
+
+  assert.equal(dialog.open, true);
+  assert.equal(calls.check, 2);
 });

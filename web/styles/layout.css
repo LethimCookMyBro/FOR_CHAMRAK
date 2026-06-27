@@ -271,6 +271,15 @@
   transform: translateY(-1px);
 }
 
+.update-manual-control .update-icon-button {
+  color: var(--color-text-soft);
+}
+
+.update-manual-control .update-icon-button:hover,
+.update-manual-control .update-icon-button:focus-visible {
+  color: var(--brand-700);
+}
+
 .update-icon-button.is-busy .download-glyph {
   animation: update-bounce 760ms ease-in-out infinite;
 }
