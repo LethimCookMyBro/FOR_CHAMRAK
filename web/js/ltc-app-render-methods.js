@@ -19,6 +19,7 @@ class LtcAppRenderMethodCarrier {
       dependents: () => this.renderDependents(),
       cg: () => this.renderCg(),
       cm: () => this.renderCm(),
+      visits: () => this.renderVisits(),
       supplies: () => this.renderSupplies(),
       finance: () => this.renderFinance(),
       units: () => this.renderUnits(),
@@ -40,13 +41,15 @@ class LtcAppRenderMethodCarrier {
   }
 
   async renderOverview() {
-    const [dependents, cgRows, cmRows, unitRows, financeRows, inventoryRows] = await Promise.all([
+    const [dependents, cgRows, cmRows, unitRows, financeRows, inventoryRows, visitRows, groupRows] = await Promise.all([
       this.repo.getTable("t04_dataj"),
       this.repo.getTable("t01_cg"),
       this.repo.getTable("t02_cm"),
       this.repo.getTable("t26_unit"),
       this.repo.getTable("t23_tbl_income_expense"),
-      this.domain.computeInventoryRows()
+      this.domain.computeInventoryRows(),
+      this.repo.getTable("t27_visits"),
+      this.repo.getTable("t07_gro")
     ]);
 
     const taiCounts = this.helpers.countBy(dependents, (row) => String(row.TAI || "ไม่ระบุ").toUpperCase());
@@ -83,6 +86,25 @@ class LtcAppRenderMethodCarrier {
       )
       .join("");
 
+    const coverageRows = this.domain.buildVisitCoverage(dependents, visitRows, groupRows);
+    const coverageCounts = this.helpers.countBy(coverageRows, (row) => row.statusKey);
+    const completedVisits = coverageRows.reduce((sum, row) => sum + row.completedVisits, 0);
+    const targetVisits = coverageRows.reduce((sum, row) => sum + (row.targetVisits || 0), 0);
+    this.el.overviewCoverageRows.innerHTML = renderInfoRows([
+      { label: "เยี่ยมสำเร็จ", display: `${Format.number(completedVisits)} ครั้ง` },
+      { label: "เป้าหมายรวม", display: targetVisits ? `${Format.number(targetVisits)} ครั้ง` : "ไม่มีเป้าหมาย" },
+      { label: "ครบแล้ว", display: `${Format.number(coverageCounts.complete || 0)} ราย` },
+      { label: "ใกล้ครบ", display: `${Format.number(coverageCounts.near || 0)} ราย` },
+      { label: "ยังไม่ครบ", display: `${Format.number(coverageCounts.under || 0)} ราย` }
+    ]);
+
+    const cpAlerts = this.domain.summarizeCarePlanAlerts(dependents);
+    this.el.overviewCpAlertRows.innerHTML = renderInfoRows([
+      { label: "CP หมดอายุแล้ว", display: `${Format.number(cpAlerts.expired.length)} ราย` },
+      { label: "CP ใกล้หมดใน 30 วัน", display: `${Format.number(cpAlerts.expiring.length)} ราย` },
+      { label: "ยังไม่ระบุวันสิ้นสุด CP", display: `${Format.number(cpAlerts.missingEnd.length)} ราย` }
+    ]);
+
     const stockRows = [...inventoryRows]
       .sort((a, b) => this.domain.severityRank(a.status) - this.domain.severityRank(b.status) || a.balance - b.balance)
       .slice(0, 8);
@@ -111,7 +133,12 @@ class LtcAppRenderMethodCarrier {
   }
 
   async renderDependents() {
-    const rows = await this.repo.getTable("t04_dataj");
+    const [rows, visitRows, groupRows] = await Promise.all([
+      this.repo.getTable("t04_dataj"),
+      this.repo.getTable("t27_visits"),
+      this.repo.getTable("t07_gro")
+    ]);
+    const coverageById = new Map(this.domain.buildVisitCoverage(rows, visitRows, groupRows).map((row) => [row.beneficiaryId, row]));
     if (!rows.some((row) => row.__rowid === this.state.selected.dependents)) {
       this.state.selected.dependents = null;
     }
@@ -140,6 +167,9 @@ class LtcAppRenderMethodCarrier {
             const genderTag = gender === "หญิง" ? "tag-female" : "tag-male";
             const tai = String(row.TAI || "ไม่ระบุ").toUpperCase();
             const taiTag = `tag-${tai}`;
+            const coverage = coverageById.get(this.domain.dependentId(row));
+            const coverageText = coverage?.coveragePercent == null ? coverage?.statusLabel || "ไม่มีเป้าหมาย" : `${coverage.coveragePercent}%`;
+            const remainingText = coverage?.remainingVisits == null ? "-" : `${Format.number(coverage.remainingVisits)} ครั้ง`;
             const address = `${row["ที่อยู่"] || "-"} หมู่ ${row["หมู่"] || "-"}`;
             const selectedClass = selectedRowClass(row.__rowid, this.state.selected.dependents);
             return `
@@ -152,6 +182,8 @@ class LtcAppRenderMethodCarrier {
                 <td><span class="tag ${genderTag}">${Format.escapeHtml(gender)}</span></td>
                 <td><span class="tag ${taiTag}">${Format.escapeHtml(tai)}</span></td>
                 <td>${Format.number(row.ADL || 0)}</td>
+                <td><span class="tag ${coverage?.tagClass || "tag-mixed"}">${Format.escapeHtml(coverageText)}</span></td>
+                <td>${Format.escapeHtml(remainingText)}</td>
                 <td>${Format.escapeHtml(address)}</td>
                 <td>${Format.escapeHtml(row["ตำบล"] || "-")}</td>
                 <td>${Format.escapeHtml(row["อำเภอ"] || "-")}</td>
@@ -160,7 +192,7 @@ class LtcAppRenderMethodCarrier {
             `;
           })
           .join("")
-      : `<tr><td colspan="12" class="empty-row">ไม่พบข้อมูลผู้รับบริการ</td></tr>`;
+      : `<tr><td colspan="14" class="empty-row">ไม่พบข้อมูลผู้รับบริการ</td></tr>`;
 
     this.paintSelection(this.el.dependentsBody, this.state.selected.dependents);
     this.syncSelectAllCheckbox(this.el.dependentsBody, "dependents", this.el.dependentsSelectAll);
@@ -287,6 +319,131 @@ class LtcAppRenderMethodCarrier {
         `;
       })
       .join("");
+  }
+
+  renderCompactRows(rows, emptyText = "ยังไม่มีข้อมูล") {
+    return rows.length
+      ? rows
+          .map(
+            (row) =>
+              `<div class="info-row"><span>${Format.escapeHtml(row.label)}</span><span>${Format.escapeHtml(row.value)}</span></div>`
+          )
+          .join("")
+      : `<div class="empty-row">${Format.escapeHtml(emptyText)}</div>`;
+  }
+
+  visitStatusLabel(status) {
+    const labels = {
+      completed: "เสร็จสิ้น",
+      postponed: "เลื่อน",
+      not_found: "ไม่พบตัว",
+      cancelled: "ยกเลิก"
+    };
+    return labels[String(status || "").toLowerCase().replace(/[\s-]+/g, "_")] || "ไม่ระบุ";
+  }
+
+  visitStatusClass(status) {
+    const key = String(status || "").toLowerCase().replace(/[\s-]+/g, "_");
+    if (key === "completed") return "tag-ok";
+    if (key === "postponed") return "tag-warn";
+    if (key === "not_found") return "tag-low";
+    if (key === "cancelled") return "tag-critical";
+    return "tag-mixed";
+  }
+
+  async renderVisits() {
+    const [visitRows, dependentRows, groupRows] = await Promise.all([
+      this.repo.getTable("t27_visits"),
+      this.repo.getTable("t04_dataj"),
+      this.repo.getTable("t07_gro")
+    ]);
+
+    if (!visitRows.some((row) => row.__rowid === this.state.selected.visits)) {
+      this.state.selected.visits = null;
+    }
+    this.reconcileChecked(
+      "visits",
+      visitRows.map((row) => row.__rowid)
+    );
+
+    const query = String(this.state.queries.visits || "").trim().toLowerCase();
+    const statusFilter = String(this.state.queries.visitStatus || "").trim();
+    const dateFilter = String(this.state.queries.visitDate || "").trim();
+    const prepared = visitRows
+      .map((row) => ({
+        row,
+        statusKey: String(row.status || "").toLowerCase().replace(/[\s-]+/g, "_"),
+        dateText: Format.formatDateCompact(row.visitDate),
+        searchText: [
+          row.beneficiaryName,
+          row.beneficiaryId,
+          row.responsibleCgName,
+          row.responsibleCgId,
+          row.responsibleCmName,
+          row.responsibleCmId,
+          row.activityType,
+          row.status,
+          row.note
+        ]
+          .join(" ")
+          .toLowerCase()
+      }))
+      .filter((entry) => (!query || entry.searchText.includes(query)) && (!statusFilter || entry.statusKey === statusFilter) && (!dateFilter || entry.dateText === dateFilter))
+      .sort((a, b) => new Date(b.row.visitDate || 0).getTime() - new Date(a.row.visitDate || 0).getTime());
+
+    this.el.visitBody.innerHTML = prepared.length
+      ? prepared
+          .map((entry) => {
+            const row = entry.row;
+            return `
+              <tr data-rowid="${Format.escapeHtml(row.__rowid)}" class="${selectedRowClass(row.__rowid, this.state.selected.visits)}" tabindex="0">
+                ${renderCheckCell(this.getCheckedSet("visits").has(row.__rowid))}
+                <td>${Format.escapeHtml(entry.dateText)}</td>
+                <td>${Format.escapeHtml(row.beneficiaryName || row.beneficiaryId || "-")}</td>
+                <td>${Format.escapeHtml(row.responsibleCgName || row.responsibleCgId || "-")}</td>
+                <td>${Format.escapeHtml(row.responsibleCmName || row.responsibleCmId || "-")}</td>
+                <td>${Format.escapeHtml(row.activityType || "-")}</td>
+                <td><span class="tag ${this.visitStatusClass(row.status)}">${Format.escapeHtml(this.visitStatusLabel(row.status))}</span></td>
+                <td>${Format.escapeHtml(row.note || "-")}</td>
+              </tr>
+            `;
+          })
+          .join("")
+      : `<tr><td colspan="8" class="empty-row">ยังไม่มีบันทึกเยี่ยมบ้าน กด "เพิ่มบันทึกเยี่ยม" เพื่อเริ่มใช้งาน</td></tr>`;
+
+    if (this.el.visitStatusText) {
+      this.el.visitStatusText.textContent = `แสดง ${Format.number(prepared.length)} จาก ${Format.number(visitRows.length)} รายการ`;
+    }
+
+    this.paintSelection(this.el.visitBody, this.state.selected.visits);
+    this.syncSelectAllCheckbox(this.el.visitBody, "visits", this.el.visitSelectAll);
+
+    const workloads = this.domain.summarizeStaffWorkloads(dependentRows, visitRows, groupRows);
+    const toWorkloadRows = (rows) =>
+      rows
+        .sort((a, b) => b.assignedBeneficiaries - a.assignedBeneficiaries || a.staffId.localeCompare(b.staffId))
+        .slice(0, 8)
+        .map((row) => ({
+          label: row.staffId || "-",
+          value: `${Format.number(row.assignedBeneficiaries)} ราย / เยี่ยม ${Format.number(row.completedVisits)}/${Format.number(row.targetVisits)}`
+        }));
+    this.el.visitCgWorkloadRows.innerHTML = this.renderCompactRows(toWorkloadRows(workloads.cg), "ยังไม่มีข้อมูล CG");
+    this.el.visitCmWorkloadRows.innerHTML = this.renderCompactRows(toWorkloadRows(workloads.cm), "ยังไม่มีข้อมูล CM");
+
+    const reports = this.domain.summarizeAreaReports(dependentRows, visitRows, groupRows);
+    this.el.visitAreaReportRows.innerHTML = this.renderCompactRows(
+      reports.bySubdistrict.slice(0, 8).map((row) => ({ label: row.key, value: `${Format.number(row.count)} ราย` })),
+      "ยังไม่มีข้อมูลพื้นที่"
+    );
+    this.el.visitDependencyReportRows.innerHTML = this.renderCompactRows(
+      reports.byDependency.map((row) => ({ label: row.key, value: `${Format.number(row.count)} ราย` })),
+      "ยังไม่มีข้อมูล TAI"
+    );
+    const coverageLabel = { complete: "ครบแล้ว", near: "ใกล้ครบ", under: "ยังไม่ครบ", "no-target": "ไม่มีเป้าหมาย" };
+    this.el.visitCoverageReportRows.innerHTML = this.renderCompactRows(
+      reports.byCoverageStatus.map((row) => ({ label: coverageLabel[row.key] || row.key, value: `${Format.number(row.count)} ราย` })),
+      "ยังไม่มีข้อมูลความครอบคลุม"
+    );
   }
 
   async renderSupplies() {

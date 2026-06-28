@@ -136,7 +136,31 @@ class EntityDialogService {
         },
         { name: "careStart", label: "วันเริ่ม Care Plan", type: "date", value: initial.careStart },
         { name: "careEnd", label: "วันสิ้นสุด Care Plan", type: "date", value: initial.careEnd }
-      ]
+      ],
+      afterRender: (controls) => {
+        const notice = document.createElement("small");
+        notice.className = "field-status";
+        notice.setAttribute("role", "status");
+        notice.setAttribute("aria-live", "polite");
+        controls.tai?.parentElement?.appendChild(notice);
+
+        const paint = () => {
+          const result = this.domain.getTaiConsistency(controls.adl?.value, controls.tai?.value);
+          if (!result.expected) {
+            notice.textContent = "";
+            notice.classList.remove("is-warning");
+            return;
+          }
+          notice.textContent = result.consistent
+            ? `ADL นี้แนะนำกลุ่ม ${result.expected}`
+            : `ADL นี้แนะนำกลุ่ม ${result.expected} - ${result.warning}`;
+          notice.classList.toggle("is-warning", !result.consistent);
+        };
+
+        controls.adl?.addEventListener("input", paint);
+        controls.tai?.addEventListener("change", paint);
+        paint();
+      }
     });
   }
 
@@ -244,6 +268,81 @@ class EntityDialogService {
         { name: "subdistrict", label: "ตำบล", type: "text", required: true, value: row?.["ตำบล"] || "" },
         { name: "district", label: "อำเภอ", type: "text", required: true, value: row?.["อำเภอ"] || "" },
         { name: "province", label: "จังหวัด", type: "text", required: true, value: row?.["จังหวัด"] || "ตราด" }
+      ]
+    });
+  }
+
+  async openVisitDialog(mode, row = null) {
+    const [dependentRows, cgRows, cmRows] = await Promise.all([
+      this.repo.getTable("t04_dataj"),
+      this.repo.getTable("t01_cg"),
+      this.repo.getTable("t02_cm")
+    ]);
+
+    const initial = {
+      beneficiaryId: row?.beneficiaryId || "",
+      visitDate: row?.visitDate || Format.todayDateInput(),
+      responsibleCgId: row?.responsibleCgId || "",
+      responsibleCmId: row?.responsibleCmId || "",
+      activityType: row?.activityType || "",
+      status: row?.status || "completed",
+      note: row?.note || ""
+    };
+
+    return this.openEntityDialog({
+      title: mode === "add" ? "เพิ่มบันทึกเยี่ยมบ้าน" : "แก้ไขบันทึกเยี่ยมบ้าน",
+      hint: "บันทึกผลการเยี่ยมจริงของ CG/CM โดยนับความครอบคลุมเฉพาะสถานะ completed",
+      fields: [
+        {
+          name: "beneficiaryId",
+          label: "ผู้รับบริการ",
+          type: "select",
+          required: true,
+          value: initial.beneficiaryId,
+          options: dependentRows.map((item) => {
+            const id = this.domain.dependentId(item);
+            return {
+              value: id,
+              label: `${id || "-"} - ${this.helpers.fullNameFromDependent(item) || "-"}`
+            };
+          })
+        },
+        { name: "visitDate", label: "วันที่เยี่ยม", type: "date", required: true, value: initial.visitDate },
+        {
+          name: "responsibleCgId",
+          label: "CG ผู้รับผิดชอบ",
+          type: "select",
+          value: initial.responsibleCgId,
+          options: cgRows.map((item) => ({
+            value: item["รหัสcg"] || item["เธฃเธซเธฑเธชcg"] || "",
+            label: `${item["รหัสcg"] || item["เธฃเธซเธฑเธชcg"] || "-"} - ${Format.expandFemalePrefixInText(item["ชื่อสกุล"] || item["เธเธทเนเธญเธชเธเธธเธฅ"] || "-")}`
+          }))
+        },
+        {
+          name: "responsibleCmId",
+          label: "CM ผู้รับผิดชอบ",
+          type: "select",
+          value: initial.responsibleCmId,
+          options: cmRows.map((item) => ({
+            value: item["รหัสcm"] || item["เธฃเธซเธฑเธชcm"] || "",
+            label: `${item["รหัสcm"] || item["เธฃเธซเธฑเธชcm"] || "-"} - ${Format.expandFemalePrefixInText(item["ชื่อสกุล"] || item["เธเธทเนเธญเธชเธเธธเธฅ"] || "-")}`
+          }))
+        },
+        { name: "activityType", label: "กิจกรรม/ประเภทการเยี่ยม", type: "text", required: true, value: initial.activityType },
+        {
+          name: "status",
+          label: "สถานะ",
+          type: "select",
+          required: true,
+          value: initial.status,
+          options: [
+            { value: "completed", label: "completed" },
+            { value: "postponed", label: "postponed" },
+            { value: "not_found", label: "not found / unavailable" },
+            { value: "cancelled", label: "cancelled" }
+          ]
+        },
+        { name: "note", label: "หมายเหตุ", type: "textarea", wide: true, value: initial.note }
       ]
     });
   }
@@ -764,6 +863,10 @@ class EntityDialogService {
       }
 
       this.el.entityFormFields.appendChild(wrap);
+    }
+
+    if (typeof config.afterRender === "function") {
+      config.afterRender(controls);
     }
 
     return new Promise((resolve) => {

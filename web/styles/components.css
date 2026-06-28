@@ -158,6 +158,13 @@
   margin-bottom: var(--space-3);
 }
 
+.filter-row {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) minmax(150px, 180px) minmax(180px, 220px);
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
 .search-input {
   width: 100%;
   border: 1px solid var(--color-border);
@@ -177,6 +184,22 @@
 }
 
 .search-input:focus {
+  border-color: var(--accent-500);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(14, 148, 136, 0.14);
+}
+
+.filter-control {
+  min-height: 44px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: var(--fs-base) var(--font-sans);
+  padding: 0 var(--space-3);
+}
+
+.filter-control:focus {
   border-color: var(--accent-500);
   outline: none;
   box-shadow: 0 0 0 3px rgba(14, 148, 136, 0.14);
@@ -570,6 +593,15 @@ th.check-col {
   font-variant-numeric: tabular-nums;
   text-align: right;
   white-space: nowrap;
+}
+
+.compact-list {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.compact-list .info-row {
+  padding: var(--space-2) 0;
 }
 
 /* ----------------------------------------------------------------- Footer */

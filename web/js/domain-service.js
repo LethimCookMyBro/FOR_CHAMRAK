@@ -42,6 +42,232 @@ class DomainService {
     return 4;
   }
 
+  firstValue(row, keys) {
+    for (const key of keys) {
+      const value = row?.[key];
+      if (value == null) continue;
+      const text = String(value).trim();
+      if (text) return value;
+    }
+    return null;
+  }
+
+  dateTs(value) {
+    const text = Format.toText(value);
+    if (!text) return null;
+    const date = new Date(text.length <= 10 ? `${text}T00:00:00` : text);
+    const ts = date.getTime();
+    return Number.isNaN(ts) ? null : ts;
+  }
+
+  currentYearPeriod(today = new Date()) {
+    const date = today instanceof Date ? today : new Date(today);
+    const year = Number.isNaN(date.getTime()) ? new Date().getFullYear() : date.getFullYear();
+    return {
+      startTs: new Date(year, 0, 1).getTime(),
+      endTs: new Date(year, 11, 31, 23, 59, 59, 999).getTime()
+    };
+  }
+
+  dependentId(row) {
+    return Format.toText(
+      this.firstValue(row, [
+        "ID",
+        "id",
+        "beneficiaryId",
+        "dependentId",
+        "เลขประชาชน",
+        "เลขบัตรประชาชน",
+        "เธฅเธเธเธฃเธฐเธเธฒเธเธ",
+        "เน€เธฅเธเธเธฃเธฐเธเธฒเธเธ"
+      ]) ?? ""
+    );
+  }
+
+  dependentName(row) {
+    const snapshot = this.firstValue(row, ["beneficiaryName", "dependentName", "displayName", "name"]);
+    if (snapshot) return Format.toText(snapshot);
+    const prefix = Format.toText(this.firstValue(row, ["นาม", "เธเธฒเธก"]) || "");
+    const first = Format.toText(this.firstValue(row, ["ชื่อ", "เธเธทเนเธญ"]) || "");
+    const last = Format.toText(this.firstValue(row, ["สกุล", "เธชเธเธธเธฅ"]) || "");
+    return `${prefix}${first} ${last}`.replace(/\s+/g, " ").trim() || "-";
+  }
+
+  visitBeneficiaryId(row) {
+    return Format.toText(this.firstValue(row, ["beneficiaryId", "dependentId", "ID", "id"]) ?? "");
+  }
+
+  getTargetVisits(row, groupRows = []) {
+    const direct = Number(
+      this.firstValue(row, [
+        "visitsPerYear",
+        "targetVisitsPerYear",
+        "targetVisits",
+        "ครั้งดูแล/ปี",
+        "เธเธฃเธฑเนเธเธ”เธนเนเธฅ/เธเธต"
+      ])
+    );
+    if (Number.isFinite(direct) && direct > 0) return direct;
+
+    const group = String(this.getTaiGroup(row?.TAI));
+    const groupRow = groupRows.find((item) => String(item.Group || item.group || "") === group);
+    const grouped = Number(groupRow?.number || groupRow?.visitsPerYear || 0);
+    return Number.isFinite(grouped) && grouped > 0 ? grouped : 0;
+  }
+
+  carePeriod(row, options = {}) {
+    const start = this.dateTs(this.firstValue(row, ["วันเริ่ม cp", "carePlanStart", "careStart", "เธงเธฑเธเน€เธฃเธดเนเธก cp"]));
+    const end = this.dateTs(this.firstValue(row, ["วันสิ้นสุด cp", "carePlanEnd", "careEnd", "เธงเธฑเธเธชเธดเนเธเธชเธธเธ” cp"]));
+    if (start != null && end != null) return { startTs: start, endTs: end };
+    return this.currentYearPeriod(options.today);
+  }
+
+  coverageStatus(completedVisits, targetVisits) {
+    if (!targetVisits) {
+      return { statusKey: "no-target", statusLabel: "ไม่มีเป้าหมาย", tagClass: "tag-mixed" };
+    }
+    const percent = Math.round((completedVisits / targetVisits) * 100);
+    if (percent >= 100) return { statusKey: "complete", statusLabel: "ครบแล้ว", tagClass: "tag-success" };
+    if (percent >= 75) return { statusKey: "near", statusLabel: "ใกล้ครบ", tagClass: "tag-warn" };
+    return { statusKey: "under", statusLabel: "ยังไม่ครบ", tagClass: "tag-danger" };
+  }
+
+  buildVisitCoverage(dependents, visits, groupRows = [], options = {}) {
+    const visitRows = Array.isArray(visits) ? visits : [];
+    return (Array.isArray(dependents) ? dependents : []).map((row) => {
+      const beneficiaryId = this.dependentId(row);
+      const targetVisits = this.getTargetVisits(row, groupRows);
+      const period = this.carePeriod(row, options);
+      const completedVisits = visitRows.filter((visit) => {
+        if (String(visit.status || "").toLowerCase() !== "completed") return false;
+        if (this.visitBeneficiaryId(visit) !== beneficiaryId) return false;
+        const visitTs = this.dateTs(visit.visitDate);
+        return visitTs != null && visitTs >= period.startTs && visitTs <= period.endTs;
+      }).length;
+      const coveragePercent = targetVisits > 0 ? Math.round((completedVisits / targetVisits) * 100) : null;
+      const status = this.coverageStatus(completedVisits, targetVisits);
+      return {
+        row,
+        beneficiaryId,
+        beneficiaryName: this.dependentName(row),
+        targetVisits,
+        completedVisits,
+        remainingVisits: targetVisits > 0 ? Math.max(targetVisits - completedVisits, 0) : null,
+        coveragePercent,
+        ...status
+      };
+    });
+  }
+
+  getTaiConsistency(adlValue, selectedTai) {
+    const adl = Number(adlValue);
+    if (!Number.isFinite(adl)) return { expected: null, allowedTai: [], consistent: true, warning: "" };
+
+    // ponytail: ADL-only mapping is conservative; replace with owner-verified TAI rules if policy requires exact classification.
+    const expected =
+      adl >= 12
+        ? { label: "I1", allowedTai: ["I1"] }
+        : adl >= 5
+          ? { label: "I2/I3", allowedTai: ["I2", "I3"] }
+          : { label: "B3/C2/C3", allowedTai: ["B3", "C2", "C3"] };
+
+    const tai = String(selectedTai || "").toUpperCase();
+    const consistent = !tai || expected.allowedTai.includes(tai);
+    return {
+      expected: expected.label,
+      allowedTai: expected.allowedTai,
+      consistent,
+      warning: consistent
+        ? ""
+        : "คะแนน ADL อาจไม่สอดคล้องกับระดับพึ่งพิงที่เลือก กรุณาตรวจสอบอีกครั้ง"
+    };
+  }
+
+  summarizeCarePlanAlerts(dependents, options = {}) {
+    const todayTs = this.dateTs(options.today) ?? Date.now();
+    const soonTs = todayTs + 30 * 24 * 60 * 60 * 1000;
+    const result = { expired: [], expiring: [], missingEnd: [] };
+
+    for (const row of Array.isArray(dependents) ? dependents : []) {
+      const endValue = this.firstValue(row, ["วันสิ้นสุด cp", "carePlanEnd", "careEnd", "เธงเธฑเธเธชเธดเนเธเธชเธธเธ” cp"]);
+      const item = { row, beneficiaryId: this.dependentId(row), beneficiaryName: this.dependentName(row), careEnd: endValue || null };
+      const endTs = this.dateTs(endValue);
+      if (endTs == null) result.missingEnd.push(item);
+      else if (endTs < todayTs) result.expired.push(item);
+      else if (endTs <= soonTs) result.expiring.push(item);
+    }
+
+    return result;
+  }
+
+  carePlanStatus(row, options = {}) {
+    const alerts = this.summarizeCarePlanAlerts([row], options);
+    if (alerts.expired.length) return "expired";
+    if (alerts.expiring.length) return "expiring";
+    if (alerts.missingEnd.length) return "missingEnd";
+    return "active";
+  }
+
+  staffCode(row, type) {
+    return Format.toText(
+      type === "cm"
+        ? this.firstValue(row, ["รหัสcm", "cmCode", "responsibleCmId", "เธฃเธซเธฑเธชcm"])
+        : this.firstValue(row, ["รหัสcg", "cgCode", "responsibleCgId", "เธฃเธซเธฑเธชcg"])
+    );
+  }
+
+  summarizeStaffWorkloads(dependents, visits, groupRows = [], options = {}) {
+    const coverage = this.buildVisitCoverage(dependents, visits, groupRows, options);
+    const build = (type) => {
+      const map = new Map();
+      for (const item of coverage) {
+        const staffId = this.staffCode(item.row, type) || "-";
+        if (!map.has(staffId)) {
+          map.set(staffId, {
+            staffId,
+            assignedBeneficiaries: 0,
+            targetVisits: 0,
+            completedVisits: 0,
+            remainingVisits: 0,
+            belowCoverageTarget: 0
+          });
+        }
+        const summary = map.get(staffId);
+        summary.assignedBeneficiaries += 1;
+        summary.targetVisits += item.targetVisits || 0;
+        summary.completedVisits += item.completedVisits || 0;
+        summary.remainingVisits += item.remainingVisits || 0;
+        if (item.statusKey === "under" || item.statusKey === "near") summary.belowCoverageTarget += 1;
+      }
+      return [...map.values()].map((row) => ({
+        ...row,
+        coveragePercent: row.targetVisits > 0 ? Math.round((row.completedVisits / row.targetVisits) * 100) : null
+      }));
+    };
+
+    return { cg: build("cg"), cm: build("cm") };
+  }
+
+  summarizeAreaReports(dependents, visits, groupRows = [], options = {}) {
+    const coverage = this.buildVisitCoverage(dependents, visits, groupRows, options);
+    const count = (selector) => {
+      const map = new Map();
+      for (const item of coverage) {
+        const key = Format.toText(selector(item)) || "-";
+        map.set(key, (map.get(key) || 0) + 1);
+      }
+      return [...map.entries()].map(([key, value]) => ({ key, count: value })).sort((a, b) => b.count - a.count || a.key.localeCompare(b.key));
+    };
+
+    return {
+      bySubdistrict: count((item) => this.firstValue(item.row, ["ตำบล", "subdistrict", "เธ•เธณเธเธฅ"])),
+      byMoo: count((item) => this.firstValue(item.row, ["หมู่", "moo", "เธซเธกเธนเน"])),
+      byDependency: count((item) => String(item.row.TAI || "-").toUpperCase()),
+      byCarePlanStatus: count((item) => this.carePlanStatus(item.row, options)),
+      byCoverageStatus: count((item) => item.statusKey)
+    };
+  }
+
   parseFinanceRow(row) {
     const incomeByCategory = FINANCE_INCOME_FIELDS.map((field) => Number(row[field]) || 0);
     const expenseByCategory = FINANCE_EXPENSE_FIELDS.map((field) => Number(row[field]) || 0);

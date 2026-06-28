@@ -14,7 +14,12 @@ function renderCheckCell(isChecked) {
 
 function renderInfoRows(rows) {
   return rows
-    .map((item) => `<div class="info-row ${item.strong ? "strong" : ""}"><span>${Format.escapeHtml(item.label)}</span><strong>${Format.currency(item.value)}</strong></div>`)
+    .map((item) => {
+      // Use a pre-formatted `display` string verbatim (e.g. counts like "3 ราย");
+      // only fall back to currency formatting for raw numeric `value` (finance).
+      const text = item.display != null ? item.display : Format.currency(item.value);
+      return `<div class="info-row ${item.strong ? "strong" : ""}"><span>${Format.escapeHtml(item.label)}</span><strong>${Format.escapeHtml(text)}</strong></div>`;
+    })
     .join("");
 }
 

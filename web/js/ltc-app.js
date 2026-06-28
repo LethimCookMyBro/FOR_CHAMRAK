@@ -23,12 +23,16 @@ class LtcApp {
       queries: {
         dependents: "",
         cg: "",
+        visits: "",
+        visitStatus: "",
+        visitDate: "",
         supplyIssues: ""
       },
       selected: {
         dependents: null,
         cg: null,
         cm: null,
+        visits: null,
         supplies: null,
         supplyIssues: null,
         finance: null,
@@ -38,6 +42,7 @@ class LtcApp {
         dependents: new Set(),
         cg: new Set(),
         cm: new Set(),
+        visits: new Set(),
         supplies: new Set(),
         supplyIssues: new Set(),
         finance: new Set(),
@@ -55,6 +60,8 @@ class LtcApp {
       statHigh: document.getElementById("statHigh"),
       statUnits: document.getElementById("statUnits"),
       overviewCareRows: document.getElementById("overviewCareRows"),
+      overviewCoverageRows: document.getElementById("overviewCoverageRows"),
+      overviewCpAlertRows: document.getElementById("overviewCpAlertRows"),
       overviewIncomeTotal: document.getElementById("overviewIncomeTotal"),
       overviewExpenseTotal: document.getElementById("overviewExpenseTotal"),
       overviewNetTotal: document.getElementById("overviewNetTotal"),
@@ -83,6 +90,22 @@ class LtcApp {
       cmDeleteBtn: document.getElementById("cmDeleteBtn"),
       cmDeleteBatchBtn: document.getElementById("cmDeleteBatchBtn"),
       cmSelectAll: document.getElementById("cmSelectAll"),
+
+      visitSearch: document.getElementById("visitSearch"),
+      visitDateFilter: document.getElementById("visitDateFilter"),
+      visitStatusFilter: document.getElementById("visitStatusFilter"),
+      visitStatusText: document.getElementById("visitStatusText"),
+      visitBody: document.getElementById("visitBody"),
+      visitAddBtn: document.getElementById("visitAddBtn"),
+      visitEditBtn: document.getElementById("visitEditBtn"),
+      visitDeleteBtn: document.getElementById("visitDeleteBtn"),
+      visitDeleteBatchBtn: document.getElementById("visitDeleteBatchBtn"),
+      visitSelectAll: document.getElementById("visitSelectAll"),
+      visitCgWorkloadRows: document.getElementById("visitCgWorkloadRows"),
+      visitCmWorkloadRows: document.getElementById("visitCmWorkloadRows"),
+      visitAreaReportRows: document.getElementById("visitAreaReportRows"),
+      visitDependencyReportRows: document.getElementById("visitDependencyReportRows"),
+      visitCoverageReportRows: document.getElementById("visitCoverageReportRows"),
 
       suppliesBody: document.getElementById("suppliesBody"),
       supplyAddProductBtn: document.getElementById("supplyAddProductBtn"),
@@ -202,6 +225,18 @@ class LtcApp {
       this.state.queries.cg = Format.toText(event.target.value).toLowerCase();
       this.scheduleRender("cg", () => this.renderCg());
     });
+    this.el.visitSearch?.addEventListener("input", (event) => {
+      this.state.queries.visits = Format.toText(event.target.value).toLowerCase();
+      this.scheduleRender("visits", () => this.renderVisits());
+    });
+    this.el.visitDateFilter?.addEventListener("change", (event) => {
+      this.state.queries.visitDate = Format.toText(event.target.value);
+      this.scheduleRender("visits", () => this.renderVisits());
+    });
+    this.el.visitStatusFilter?.addEventListener("change", (event) => {
+      this.state.queries.visitStatus = Format.toText(event.target.value);
+      this.scheduleRender("visits", () => this.renderVisits());
+    });
     this.el.suppliesIssueSearch?.addEventListener("input", (event) => {
       this.state.queries.supplyIssues = Format.toText(event.target.value).toLowerCase();
       this.scheduleRender("supplyIssues", () => this.renderSupplies());
@@ -210,6 +245,7 @@ class LtcApp {
     this.bindSelectableTable(this.el.dependentsBody, "dependents", this.el.dependentsSelectAll);
     this.bindSelectableTable(this.el.cgBody, "cg", this.el.cgSelectAll);
     this.bindSelectableTable(this.el.cmBody, "cm", this.el.cmSelectAll);
+    this.bindSelectableTable(this.el.visitBody, "visits", this.el.visitSelectAll);
     this.bindSelectableTable(this.el.suppliesBody, "supplies", this.el.suppliesSelectAll);
     this.bindSelectableTable(this.el.suppliesIssueBody, "supplyIssues", this.el.suppliesIssueSelectAll);
     this.bindSelectableTable(this.el.financeBody, "finance", this.el.financeSelectAll);
@@ -229,6 +265,11 @@ class LtcApp {
     this.el.cmEditBtn.addEventListener("click", () => this.handleEditCm().catch(this.handleError));
     this.el.cmDeleteBtn.addEventListener("click", () => this.handleDeleteCm().catch(this.handleError));
     this.el.cmDeleteBatchBtn.addEventListener("click", () => this.handleDeleteCmBatch().catch(this.handleError));
+
+    this.el.visitAddBtn?.addEventListener("click", () => this.handleAddVisit().catch(this.handleError));
+    this.el.visitEditBtn?.addEventListener("click", () => this.handleEditVisit().catch(this.handleError));
+    this.el.visitDeleteBtn?.addEventListener("click", () => this.handleDeleteVisit().catch(this.handleError));
+    this.el.visitDeleteBatchBtn?.addEventListener("click", () => this.handleDeleteVisitBatch().catch(this.handleError));
     this.el.cmRateBody.addEventListener("click", (event) => {
       const trigger = event.target.closest(
         "button[data-cm-rate-rowid], button[data-cm-rate-group], tr[data-cm-rate-rowid], tr[data-cm-rate-group]"
@@ -284,6 +325,16 @@ class LtcApp {
       if (event.target.closest("input.row-check")) return;
       const tr = event.target.closest("tr[data-rowid]");
       if (!tr) return;
+      this.state.selected[key] = tr.dataset.rowid;
+      this.paintSelection(tbody, this.state.selected[key]);
+    });
+
+    tbody.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      if (event.target.closest("input.row-check")) return;
+      const tr = event.target.closest("tr[data-rowid]");
+      if (!tr) return;
+      event.preventDefault();
       this.state.selected[key] = tr.dataset.rowid;
       this.paintSelection(tbody, this.state.selected[key]);
     });

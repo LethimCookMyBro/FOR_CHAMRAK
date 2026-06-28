@@ -103,6 +103,10 @@
     grid-template-columns: 1fr;
   }
 
+  .filter-row {
+    grid-template-columns: 1fr;
+  }
+
   .row-form {
     padding: var(--space-5) var(--space-4);
   }

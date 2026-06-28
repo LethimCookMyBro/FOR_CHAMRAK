@@ -838,6 +838,137 @@ class LtcAppActionMethodCarrier {
     });
   }
 
+  setVisitStatus(message) {
+    if (this.el.visitStatusText) this.el.visitStatusText.textContent = message;
+  }
+
+  findByCode(rows, keys, code) {
+    const wanted = String(code || "");
+    return (Array.isArray(rows) ? rows : []).find((row) => keys.some((key) => String(row[key] || "") === wanted)) || null;
+  }
+
+  findDependentById(rows, code) {
+    const wanted = String(code || "");
+    return (Array.isArray(rows) ? rows : []).find((row) => this.domain.dependentId(row) === wanted) || null;
+  }
+
+  staffName(row) {
+    return Format.expandFemalePrefixInText(row?.["ชื่อสกุล"] || row?.["เธเธทเนเธญเธชเธเธธเธฅ"] || "");
+  }
+
+  buildVisitRow(form, baseRow, lookups) {
+    const now = new Date().toISOString();
+    const beneficiary = this.findDependentById(lookups.dependents, form.beneficiaryId);
+    const cg = this.findByCode(lookups.cgRows, ["รหัสcg", "เธฃเธซเธฑเธชcg"], form.responsibleCgId);
+    const cm = this.findByCode(lookups.cmRows, ["รหัสcm", "เธฃเธซเธฑเธชcm"], form.responsibleCmId);
+
+    return {
+      ...baseRow,
+      id: baseRow?.id || this.repo.createRowId("visit"),
+      beneficiaryId: String(form.beneficiaryId || ""),
+      beneficiaryName: beneficiary ? this.helpers.fullNameFromDependent(beneficiary) : baseRow?.beneficiaryName || "",
+      visitDate: form.visitDate,
+      responsibleCgId: form.responsibleCgId || "",
+      responsibleCgName: cg ? this.staffName(cg) : baseRow?.responsibleCgName || "",
+      responsibleCmId: form.responsibleCmId || "",
+      responsibleCmName: cm ? this.staffName(cm) : baseRow?.responsibleCmName || "",
+      activityType: form.activityType || "",
+      status: form.status || "completed",
+      note: form.note || "",
+      createdAt: baseRow?.createdAt || now,
+      updatedAt: now
+    };
+  }
+
+  async loadVisitLookups() {
+    const [dependents, cgRows, cmRows] = await Promise.all([
+      this.repo.getTable("t04_dataj"),
+      this.repo.getTable("t01_cg"),
+      this.repo.getTable("t02_cm")
+    ]);
+    return { dependents, cgRows, cmRows };
+  }
+
+  async handleAddVisit() {
+    let saved = false;
+    await this.runProtected("เพิ่มบันทึกเยี่ยมบ้าน", async () => {
+      this.setVisitStatus("กำลังบันทึก...");
+      const [rows, lookups] = await Promise.all([this.repo.cloneTable("t27_visits"), this.loadVisitLookups()]);
+      const form = await this.dialogs.openVisitDialog("add");
+      if (!form) return;
+
+      const newRow = this.buildVisitRow(form, {}, lookups);
+      rows.push(newRow);
+      const savedRows = await this.repo.saveTable("t27_visits", rows);
+      this.selectSavedRow("visits", savedRows, (row) => row.id === newRow.id);
+      saved = true;
+    });
+    if (saved) this.setVisitStatus("บันทึกเยี่ยมบ้านแล้ว");
+  }
+
+  async handleEditVisit() {
+    let saved = false;
+    await this.runProtected("แก้ไขบันทึกเยี่ยมบ้าน", async () => {
+      const selected = await this.getSelectedRow("t27_visits", "visits");
+      if (!selected) {
+        alert("กรุณาเลือกบันทึกเยี่ยมบ้านก่อน");
+        return;
+      }
+
+      this.setVisitStatus("กำลังบันทึก...");
+      const [rows, lookups] = await Promise.all([this.repo.cloneTable("t27_visits"), this.loadVisitLookups()]);
+      const index = rows.findIndex((row) => row.__rowid === selected.__rowid);
+      if (index < 0) return;
+
+      const form = await this.dialogs.openVisitDialog("edit", rows[index]);
+      if (!form) return;
+
+      rows[index] = this.buildVisitRow(form, rows[index], lookups);
+      await this.repo.saveTable("t27_visits", rows);
+      saved = true;
+    });
+    if (saved) this.setVisitStatus("แก้ไขบันทึกเยี่ยมบ้านแล้ว");
+  }
+
+  async handleDeleteVisit() {
+    let deleted = false;
+    await this.runProtected("ลบบันทึกเยี่ยมบ้าน", async () => {
+      const selected = await this.getSelectedRow("t27_visits", "visits");
+      if (!selected) {
+        alert("กรุณาเลือกบันทึกเยี่ยมบ้านก่อน");
+        return;
+      }
+      if (!confirm("ยืนยันการลบบันทึกเยี่ยมบ้านที่เลือก?")) return;
+
+      this.setVisitStatus("กำลังลบ...");
+      await this.repo.deleteRows("t27_visits", [selected.__rowid]);
+      this.state.selected.visits = null;
+      this.getCheckedSet("visits").delete(selected.__rowid);
+      deleted = true;
+    });
+    if (deleted) this.setVisitStatus("ลบบันทึกเยี่ยมบ้านแล้ว สามารถกู้คืนได้จากถังข้อมูล");
+  }
+
+  async handleDeleteVisitBatch() {
+    let deleted = false;
+    await this.runProtected("ลบบันทึกเยี่ยมบ้านหลายรายการ", async () => {
+      const rowIds = [...this.getCheckedSet("visits")];
+      if (!rowIds.length) {
+        alert("กรุณาติ๊กเลือกบันทึกเยี่ยมบ้านที่ต้องการลบ");
+        return;
+      }
+      if (!confirm(`ยืนยันการลบบันทึกเยี่ยมบ้าน ${rowIds.length} รายการ?`)) return;
+
+      this.setVisitStatus("กำลังลบ...");
+      const idSet = new Set(rowIds);
+      await this.repo.deleteRows("t27_visits", rowIds);
+      this.clearChecked("visits");
+      if (this.state.selected.visits && idSet.has(this.state.selected.visits)) this.state.selected.visits = null;
+      deleted = true;
+    });
+    if (deleted) this.setVisitStatus("ลบบันทึกเยี่ยมบ้านแล้ว สามารถกู้คืนได้จากถังข้อมูล");
+  }
+
   async handleAddFinance() {
     await this.runProtected("เพิ่มรายการการเงิน", async () => {
       const rows = await this.repo.cloneTable("t23_tbl_income_expense");

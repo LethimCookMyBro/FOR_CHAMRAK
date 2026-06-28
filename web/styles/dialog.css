@@ -228,6 +228,16 @@ dialog[open] {
   font-size: var(--fs-xs);
 }
 
+.field-status {
+  display: block;
+  margin-top: var(--space-1);
+}
+
+.field-status.is-warning {
+  color: var(--amber-600);
+  font-weight: 600;
+}
+
 /* Shared modal footer: top border, right-aligned actions */
 .row-dialog-actions,
 .update-dialog-actions {

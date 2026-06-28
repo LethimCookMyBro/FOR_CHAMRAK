@@ -39,6 +39,10 @@
           <span class="nav-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg></span>
           <span class="nav-label">Care Manager (CM)</span>
         </button>
+        <button class="nav-btn" data-page="visits" type="button">
+          <span class="nav-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg></span>
+          <span class="nav-label">บันทึกเยี่ยมบ้าน</span>
+        </button>
 
         <p class="nav-group-label">คลังและการเงิน</p>
         <button class="nav-btn" data-page="supplies" type="button">
@@ -146,6 +150,23 @@
           <div class="two-col">
             <section class="card">
               <header class="card-head">
+                <span class="card-head-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></span>
+                ความครอบคลุมการเยี่ยม
+              </header>
+              <div class="card-body" id="overviewCoverageRows"></div>
+            </section>
+            <section class="card">
+              <header class="card-head">
+                <span class="card-head-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span>
+                แจ้งเตือน Care Plan
+              </header>
+              <div class="card-body" id="overviewCpAlertRows"></div>
+            </section>
+          </div>
+
+          <div class="two-col">
+            <section class="card">
+              <header class="card-head">
                 <span class="card-head-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg></span>
                 สรุประดับการดูแล
               </header>
@@ -218,6 +239,8 @@
                   <th>เพศ</th>
                   <th>TAI</th>
                   <th>ADL</th>
+                  <th>ความครอบคลุม</th>
+                  <th>คงเหลือ</th>
                   <th>ที่อยู่</th>
                   <th>ตำบล</th>
                   <th>อำเภอ</th>
@@ -316,6 +339,82 @@
               </thead>
               <tbody id="cmRateBody"></tbody>
             </table>
+          </div>
+        </section>
+
+        <section id="page-visits" class="page">
+          <div class="section-head">
+            <h2>บันทึกการเยี่ยมบ้าน LTC</h2>
+            <div class="section-tools">
+              <button id="visitAddBtn" class="btn btn-primary" type="button">
+                <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                เพิ่มบันทึกเยี่ยม
+              </button>
+              <button id="visitEditBtn" class="btn btn-soft" type="button">แก้ไขที่เลือก</button>
+              <button id="visitDeleteBtn" class="btn btn-danger" type="button">ลบที่เลือก</button>
+              <button id="visitDeleteBatchBtn" class="btn btn-danger" type="button">ลบที่ติ๊กหลายรายการ</button>
+            </div>
+          </div>
+          <div class="filter-row">
+            <input id="visitSearch" class="search-input" type="search" placeholder="ค้นหาผู้รับบริการ, CG, CM, กิจกรรม, หมายเหตุ...">
+            <input id="visitDateFilter" class="filter-control" type="date" aria-label="กรองวันที่เยี่ยม">
+            <select id="visitStatusFilter" class="filter-control" aria-label="กรองสถานะการเยี่ยม">
+              <option value="">ทุกสถานะ</option>
+              <option value="completed">completed</option>
+              <option value="postponed">postponed</option>
+              <option value="not_found">not found / unavailable</option>
+              <option value="cancelled">cancelled</option>
+            </select>
+          </div>
+          <p id="visitStatusText" class="table-note" role="status" aria-live="polite">ยังไม่มีการทำรายการ</p>
+          <div class="table-card table-scroll">
+            <table class="table-selectable">
+              <thead>
+                <tr>
+                  <th class="check-col"><input id="visitSelectAll" class="select-all-check" type="checkbox" aria-label="เลือกทั้งหมด"></th>
+                  <th>วันที่เยี่ยม</th>
+                  <th>ผู้รับบริการ</th>
+                  <th>CG</th>
+                  <th>CM</th>
+                  <th>กิจกรรม</th>
+                  <th>สถานะ</th>
+                  <th>หมายเหตุ</th>
+                </tr>
+              </thead>
+              <tbody id="visitBody"></tbody>
+            </table>
+          </div>
+
+          <div class="section-head">
+            <h2>ภาระงาน CG/CM</h2>
+          </div>
+          <div class="two-col">
+            <section class="card">
+              <header class="card-head">สรุป CG</header>
+              <div class="card-body compact-list" id="visitCgWorkloadRows"></div>
+            </section>
+            <section class="card">
+              <header class="card-head">สรุป CM</header>
+              <div class="card-body compact-list" id="visitCmWorkloadRows"></div>
+            </section>
+          </div>
+
+          <div class="section-head">
+            <h2>รายงานพื้นที่และระดับพึ่งพิง</h2>
+          </div>
+          <div class="three-col">
+            <section class="card">
+              <header class="card-head">ตำบล</header>
+              <div class="card-body compact-list" id="visitAreaReportRows"></div>
+            </section>
+            <section class="card">
+              <header class="card-head">ระดับ TAI</header>
+              <div class="card-body compact-list" id="visitDependencyReportRows"></div>
+            </section>
+            <section class="card">
+              <header class="card-head">สถานะความครอบคลุม</header>
+              <div class="card-body compact-list" id="visitCoverageReportRows"></div>
+            </section>
           </div>
         </section>
 
