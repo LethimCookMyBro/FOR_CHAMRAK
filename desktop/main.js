@@ -99,7 +99,7 @@ async function createMainWindow() {
     minHeight: 760,
     autoHideMenuBar: true,
     show: false,
-    title: "LTC Chamrak",
+    title: "LTC System",
     webPreferences: {
       contextIsolation: true,
       devTools: !app.isPackaged,

@@ -404,7 +404,6 @@ class TrashStore {
       for (const [alias, recordsByAlias] of byAlias.entries()) {
         const loaded = await this.tableStore.loadTable(alias);
         const currentRows = loaded.rows.map((row) => ({ ...row }));
-        const existingKeys = new Set(currentRows.map((row) => this.tableStore.rowIdentityKey(alias, row)));
         let changed = false;
 
         for (const record of recordsByAlias) {
@@ -413,17 +412,12 @@ class TrashStore {
             continue;
           }
 
-          const rowKey = this.tableStore.rowIdentityKey(alias, record.row || {});
-          if (existingKeys.has(rowKey)) {
-            record.restoredAt = restoreTimestamp;
-            record.restoredBy = sanitizeText(actor?.username || "anonymous", 80);
-            record.restoreResult = "already_exists";
-            skipped += 1;
-            continue;
-          }
-
+          // Each trash record represents one deleted copy, so restore it as its
+          // own row. We intentionally do not dedupe by row identity here: rows
+          // without a unique key (e.g. repeated visits, identical payments)
+          // share the same identity hash, and skipping "already existing"
+          // identities would silently drop every duplicate after the first.
           currentRows.push({ ...(record.row || {}) });
-          existingKeys.add(rowKey);
           record.restoredAt = restoreTimestamp;
           record.restoredBy = sanitizeText(actor?.username || "anonymous", 80);
           record.restoreResult = "restored";

@@ -1,7 +1,7 @@
 {
   "name": "ltc-chamrak",
-  "productName": "LTC Chamrak",
-  "version": "1.0.8",
+  "productName": "LTC System",
+  "version": "1.0.9",
   "private": true,
   "description": "LTC Chamrak desktop app with internal Express backend and local JSON storage",
   "main": "desktop/main.js",
@@ -23,7 +23,7 @@
   },
   "build": {
     "appId": "com.ltc.chamrak",
-    "productName": "LTC Chamrak",
+    "productName": "LTC System",
     "directories": {
       "output": "dist"
     },
@@ -51,12 +51,12 @@
       ]
     },
     "nsis": {
-      "artifactName": "LTC-Chamrak-Setup-${version}.${ext}",
+      "artifactName": "LTC-System-Setup-${version}.${ext}",
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true
     },
     "portable": {
-      "artifactName": "LTC-Chamrak-Portable-${version}.${ext}"
+      "artifactName": "LTC-System-Portable-${version}.${ext}"
     }
   }
 }
