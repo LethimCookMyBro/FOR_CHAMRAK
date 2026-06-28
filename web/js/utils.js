@@ -1,17 +1,21 @@
 import { SORTED_PREFIXES } from "./config.js";
 
+const THAI_NUMBER_FORMATTER = new Intl.NumberFormat("th-TH");
+const HTML_ESCAPE_REPLACEMENTS = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  "\"": "&quot;",
+  "'": "&#39;"
+};
+
 class Format {
   static escapeHtml(value) {
-    return String(value ?? "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#39;");
+    return String(value ?? "").replace(/[&<>"']/g, (match) => HTML_ESCAPE_REPLACEMENTS[match]);
   }
 
   static number(value) {
-    return new Intl.NumberFormat("th-TH").format(Number(value) || 0);
+    return THAI_NUMBER_FORMATTER.format(Number(value) || 0);
   }
 
   static currency(value) {
@@ -46,7 +50,11 @@ class Format {
   }
 
   static todayDateInput() {
-    return new Date().toISOString().slice(0, 10);
+    const now = new Date();
+    const year = String(now.getFullYear());
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
   }
 
   static formatDate(value) {

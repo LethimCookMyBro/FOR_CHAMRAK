@@ -15,6 +15,8 @@ const TOOLTIP_DOWNLOADING = "กำลังดาวน์โหลดอัป
 const TOOLTIP_READY = "พร้อมติดตั้งอัปเดต";
 const TOOLTIP_MANUAL_CHECK = "ตรวจสอบอัปเดต";
 const AUTO_CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000;
+const UPDATE_ACTION_DOWNLOAD_TEXT = "ดาวน์โหลดและอัปเดต";
+const UPDATE_ACTION_INSTALL_TEXT = "ติดตั้งตอนนี้";
 
 function tooltipForState(state, status) {
   if (state?.downloaded) return TOOLTIP_READY;
@@ -31,6 +33,34 @@ function asPercent(value) {
 function normalizeNotes(notes) {
   if (!Array.isArray(notes)) return [];
   return notes.map((item) => String(item || "").trim()).filter(Boolean);
+}
+
+function normalizeState(previousState, nextState) {
+  const state = {
+    ...previousState,
+    ...nextState
+  };
+  const status = String(state.status || "idle");
+
+  if (!state.enabled || status === "not-available" || status === "error" || status === "idle") {
+    state.available = false;
+    state.downloaded = false;
+  } else if (status === "downloaded") {
+    state.available = true;
+    state.downloaded = true;
+  } else if (status === "available") {
+    state.available = true;
+    state.downloaded = false;
+  } else if (status === "downloading") {
+    state.available = true;
+    state.downloaded = false;
+  }
+
+  if (!state.available && !state.downloaded && status !== "downloading") {
+    state.progress = 0;
+  }
+
+  return state;
 }
 
 export class UpdateController {
@@ -50,8 +80,7 @@ export class UpdateController {
     this.hide();
     this.el.updateButton?.addEventListener("click", () => this.handleUpdateClick());
     this.el.updateManualButton?.addEventListener("click", () => this.handleManualCheck());
-    this.el.updateDownloadBtn?.addEventListener("click", () => this.downloadAvailableUpdate());
-    this.el.updateInstallBtn?.addEventListener("click", () => this.installUpdate());
+    this.el.updateDownloadBtn?.addEventListener("click", () => this.handlePrimaryUpdateAction());
     this.el.updateCloseBtn?.addEventListener("click", () => this.el.updateDialog?.close());
 
     this.api.onEvent((state) => this.render(state));
@@ -148,6 +177,15 @@ export class UpdateController {
     }
   }
 
+  async handlePrimaryUpdateAction() {
+    if (this.state?.downloaded) {
+      await this.installUpdate();
+      return;
+    }
+
+    await this.downloadAvailableUpdate();
+  }
+
   async checkSilently() {
     try {
       const checked = await this.api.checkForUpdates();
@@ -179,10 +217,7 @@ export class UpdateController {
   }
 
   render(nextState) {
-    this.state = {
-      ...this.state,
-      ...nextState
-    };
+    this.state = normalizeState(this.state, nextState);
 
     const status = this.state.status || "idle";
     const progress = asPercent(this.state.progress);
@@ -241,10 +276,13 @@ export class UpdateController {
       this.el.updateProgressText.textContent = status === "downloading" ? `${progress}%` : "";
     }
     if (this.el.updateDownloadBtn) {
-      this.el.updateDownloadBtn.hidden = !(this.state.available && !this.state.downloaded && !this.state.busy);
+      const canDownload = Boolean(this.state.available && !this.state.downloaded && !this.state.busy);
+      const canInstall = Boolean(this.state.downloaded);
+      this.el.updateDownloadBtn.hidden = !(canDownload || canInstall);
+      this.el.updateDownloadBtn.textContent = canInstall ? UPDATE_ACTION_INSTALL_TEXT : UPDATE_ACTION_DOWNLOAD_TEXT;
     }
     if (this.el.updateInstallBtn) {
-      this.el.updateInstallBtn.hidden = !this.state.downloaded;
+      this.el.updateInstallBtn.hidden = true;
     }
 
     this.renderNotes(notes);

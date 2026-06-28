@@ -16,6 +16,7 @@ class LtcApp {
     this.repo = new DataRepository(API_BASE, DATA_ROOT, STORAGE_PREFIX);
     this.domain = new DomainService(this.repo);
     this.helpers = new AppHelpers();
+    this.renderTimers = new Map();
 
     this.state = {
       page: "overview",
@@ -194,16 +195,16 @@ class LtcApp {
 
     this.el.dependentsSearch.addEventListener("input", (event) => {
       this.state.queries.dependents = Format.toText(event.target.value).toLowerCase();
-      this.renderDependents().catch(this.handleError);
+      this.scheduleRender("dependents", () => this.renderDependents());
     });
 
     this.el.cgSearch.addEventListener("input", (event) => {
       this.state.queries.cg = Format.toText(event.target.value).toLowerCase();
-      this.renderCg().catch(this.handleError);
+      this.scheduleRender("cg", () => this.renderCg());
     });
     this.el.suppliesIssueSearch?.addEventListener("input", (event) => {
       this.state.queries.supplyIssues = Format.toText(event.target.value).toLowerCase();
-      this.renderSupplies().catch(this.handleError);
+      this.scheduleRender("supplyIssues", () => this.renderSupplies());
     });
 
     this.bindSelectableTable(this.el.dependentsBody, "dependents", this.el.dependentsSelectAll);
@@ -288,6 +289,17 @@ class LtcApp {
     });
   }
 
+  scheduleRender(key, render, delay = 120) {
+    const timer = this.renderTimers.get(key);
+    if (timer) clearTimeout(timer);
+
+    const nextTimer = setTimeout(() => {
+      this.renderTimers.delete(key);
+      Promise.resolve(render()).catch(this.handleError);
+    }, delay);
+    this.renderTimers.set(key, nextTimer);
+  }
+
   paintSelection(tbody, selectedRowId) {
     const rows = [...tbody.querySelectorAll("tr[data-rowid]")];
     for (const row of rows) {
@@ -359,14 +371,36 @@ class LtcApp {
       section.classList.toggle("show", section.id === `page-${page}`);
     }
 
-    if (page === "logs") {
-      this.renderActivity().catch(this.handleError);
+    this.renderCurrentPage().catch(this.handleError);
+  }
+
+  captureActiveScrollState() {
+    const activePage = this.el.pages.find((section) => section.classList.contains("show"));
+    if (!activePage) return [];
+
+    return [activePage, ...activePage.querySelectorAll("*")]
+      .filter((element) => element.scrollTop > 0)
+      .map((element) => [element, element.scrollTop, element.scrollLeft]);
+  }
+
+  restoreScrollState(scrollState) {
+    for (const [element, top, left] of scrollState) {
+      element.scrollTop = top;
+      element.scrollLeft = left;
     }
   }
+
+  async withPreservedActiveScroll(render) {
+    const scrollState = this.captureActiveScrollState();
+    await render();
+    this.restoreScrollState(scrollState);
+  }
+
   handleError = (error) => {
     console.error(error);
     if (error?.versionConflict) {
       this.repo.clearTableCache();
+      this.domain.clearInventoryCache();
       this.renderAll().catch(() => {});
       alert("ข้อมูลมีการแก้ไขจากผู้ใช้อื่น กรุณาตรวจสอบข้อมูลล่าสุดแล้วลองใหม่อีกครั้ง");
       return;

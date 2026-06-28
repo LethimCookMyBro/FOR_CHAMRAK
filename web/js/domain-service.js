@@ -4,6 +4,9 @@ import { Format } from "./utils.js";
 class DomainService {
   constructor(repo) {
     this.repo = repo;
+    this.inventoryRows = null;
+    this.inventoryRowsPromise = null;
+    this.inventoryCacheVersion = 0;
   }
 
   summarizeFinance(rows) {
@@ -120,7 +123,32 @@ class DomainService {
     return row;
   }
 
+  clearInventoryCache() {
+    this.inventoryRows = null;
+    this.inventoryRowsPromise = null;
+    this.inventoryCacheVersion += 1;
+  }
+
   async computeInventoryRows() {
+    if (this.inventoryRows) return this.inventoryRows;
+    if (this.inventoryRowsPromise) return this.inventoryRowsPromise;
+
+    const cacheVersion = this.inventoryCacheVersion;
+    this.inventoryRowsPromise = this.buildInventoryRows();
+    try {
+      const inventoryRows = await this.inventoryRowsPromise;
+      if (cacheVersion === this.inventoryCacheVersion) {
+        this.inventoryRows = inventoryRows;
+      }
+      return inventoryRows;
+    } finally {
+      if (cacheVersion === this.inventoryCacheVersion) {
+        this.inventoryRowsPromise = null;
+      }
+    }
+  }
+
+  async buildInventoryRows() {
     const [products, inRows, outRows] = await Promise.all([
       this.repo.getTable("t16_product"),
       this.repo.getTable("t09_intproduct"),

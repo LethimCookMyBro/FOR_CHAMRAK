@@ -172,6 +172,15 @@ class DataRepository {
     if (includeVersion) this.tableVersions.delete(key);
   }
 
+  buildQueryString(source, fields) {
+    const params = new URLSearchParams();
+    for (const field of fields) {
+      if (source?.[field]) params.set(field, String(source[field]));
+    }
+    const query = params.toString();
+    return query ? `?${query}` : "";
+  }
+
   async getStorageInfo() {
     try {
       const payload = await this.requestJson(`${this.apiBase}/storage`);
@@ -200,29 +209,13 @@ class DataRepository {
   }
 
   async listActivityLogs(filters = {}) {
-    const params = new URLSearchParams();
-    if (filters.from) params.set("from", String(filters.from));
-    if (filters.to) params.set("to", String(filters.to));
-    if (filters.user) params.set("user", String(filters.user));
-    if (filters.type) params.set("type", String(filters.type));
-    if (filters.action) params.set("action", String(filters.action));
-    if (filters.page) params.set("page", String(filters.page));
-    if (filters.pageSize) params.set("pageSize", String(filters.pageSize));
-
-    const query = params.toString();
-    return this.requestJson(`${this.apiBase}/logs${query ? `?${query}` : ""}`);
+    const query = this.buildQueryString(filters, ["from", "to", "user", "type", "action", "page", "pageSize"]);
+    return this.requestJson(`${this.apiBase}/logs${query}`);
   }
 
   async exportActivityLogs(filters = {}) {
-    const params = new URLSearchParams();
-    if (filters.from) params.set("from", String(filters.from));
-    if (filters.to) params.set("to", String(filters.to));
-    if (filters.user) params.set("user", String(filters.user));
-    if (filters.type) params.set("type", String(filters.type));
-    if (filters.action) params.set("action", String(filters.action));
-
-    const query = params.toString();
-    const response = await fetch(`${this.apiBase}/logs/export${query ? `?${query}` : ""}`, {
+    const query = this.buildQueryString(filters, ["from", "to", "user", "type", "action"]);
+    const response = await fetch(`${this.apiBase}/logs/export${query}`, {
       cache: "no-store",
       credentials: "same-origin",
       headers: { "X-Requested-With": "XMLHttpRequest" }
@@ -234,12 +227,14 @@ class DataRepository {
   }
 
   async listTrash(options = {}) {
-    const params = new URLSearchParams();
-    if (options.alias) params.set("alias", String(options.alias));
-    if (options.includeRestored) params.set("includeRestored", "1");
-
-    const query = params.toString();
-    return this.requestJson(`${this.apiBase}/trash${query ? `?${query}` : ""}`);
+    const query = this.buildQueryString(
+      {
+        alias: options.alias,
+        includeRestored: options.includeRestored ? "1" : ""
+      },
+      ["alias", "includeRestored"]
+    );
+    return this.requestJson(`${this.apiBase}/trash${query}`);
   }
 
   async restoreTrash(trashIds) {

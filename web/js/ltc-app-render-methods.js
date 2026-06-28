@@ -1,18 +1,31 @@
 import { Format } from "./utils.js";
 import { HIGH_TAI } from "./config.js";
+import { methodsFromPrototype } from "./mixin-utils.js";
+import { renderCheckCell, renderInfoRows, selectedRowClass } from "./render-helpers.js";
 
 class LtcAppRenderMethodCarrier {
   async renderAll() {
-    await Promise.all([
-      this.renderOverview(),
-      this.renderDependents(),
-      this.renderCg(),
-      this.renderCm(),
-      this.renderSupplies(),
-      this.renderFinance(),
-      this.renderUnits(),
-      this.renderActivity()
-    ]);
+    await this.withPreservedActiveScroll(async () => {
+      if (this.state.page === "overview") {
+        await this.renderOverview();
+        return;
+      }
+      await Promise.all([this.renderOverview(), this.renderCurrentPage()]);
+    });
+  }
+
+  async renderCurrentPage() {
+    const renderers = {
+      dependents: () => this.renderDependents(),
+      cg: () => this.renderCg(),
+      cm: () => this.renderCm(),
+      supplies: () => this.renderSupplies(),
+      finance: () => this.renderFinance(),
+      units: () => this.renderUnits(),
+      logs: () => this.renderActivity()
+    };
+    const render = renderers[this.state.page];
+    if (render) await render();
   }
 
   async renderActivity() {
@@ -128,11 +141,10 @@ class LtcAppRenderMethodCarrier {
             const tai = String(row.TAI || "ไม่ระบุ").toUpperCase();
             const taiTag = `tag-${tai}`;
             const address = `${row["ที่อยู่"] || "-"} หมู่ ${row["หมู่"] || "-"}`;
-            const selectedClass = row.__rowid === this.state.selected.dependents ? "is-selected" : "";
-            const checked = this.getCheckedSet("dependents").has(row.__rowid) ? "checked" : "";
+            const selectedClass = selectedRowClass(row.__rowid, this.state.selected.dependents);
             return `
               <tr data-rowid="${Format.escapeHtml(row.__rowid)}" class="${selectedClass}">
-                <td class="check-col"><input class="row-check" type="checkbox" ${checked} aria-label="เลือกแถว"></td>
+                ${renderCheckCell(this.getCheckedSet("dependents").has(row.__rowid))}
                 <td>${index + 1}</td>
                 <td class="image-cell">${this.renderImageThumb(row.photoDataUrl, fullName)}</td>
                 <td>${Format.escapeHtml(row["เลขประชาชน"] || "-")}</td>
@@ -170,11 +182,10 @@ class LtcAppRenderMethodCarrier {
       ? filtered
           .map((row, index) => {
             const fullName = Format.expandFemalePrefixInText(row["ชื่อสกุล"] || "-");
-            const selectedClass = row.__rowid === this.state.selected.cg ? "is-selected" : "";
-            const checked = this.getCheckedSet("cg").has(row.__rowid) ? "checked" : "";
+            const selectedClass = selectedRowClass(row.__rowid, this.state.selected.cg);
             return `
               <tr data-rowid="${Format.escapeHtml(row.__rowid)}" class="${selectedClass}">
-                <td class="check-col"><input class="row-check" type="checkbox" ${checked} aria-label="เลือกแถว"></td>
+                ${renderCheckCell(this.getCheckedSet("cg").has(row.__rowid))}
                 <td>${index + 1}</td>
                 <td class="image-cell">${this.renderImageThumb(row.photoDataUrl, fullName)}</td>
                 <td><span class="unit-badge">${Format.escapeHtml(row["รหัสcg"] || "-")}</span></td>
@@ -216,13 +227,12 @@ class LtcAppRenderMethodCarrier {
     this.el.cmBody.innerHTML = cmRows.length
       ? cmRows
           .map((row, index) => {
-            const selectedClass = row.__rowid === this.state.selected.cm ? "is-selected" : "";
+            const selectedClass = selectedRowClass(row.__rowid, this.state.selected.cm);
             const cmCode = String(row["รหัสcm"] || "");
             const fullName = Format.expandFemalePrefixInText(row["ชื่อสกุล"] || "-");
-            const checked = this.getCheckedSet("cm").has(row.__rowid) ? "checked" : "";
             return `
               <tr data-rowid="${Format.escapeHtml(row.__rowid)}" class="${selectedClass}">
-                <td class="check-col"><input class="row-check" type="checkbox" ${checked} aria-label="เลือกแถว"></td>
+                ${renderCheckCell(this.getCheckedSet("cm").has(row.__rowid))}
                 <td>${index + 1}</td>
                 <td class="image-cell">${this.renderImageThumb(row.photoDataUrl, fullName)}</td>
                 <td><span class="unit-badge">${Format.escapeHtml(cmCode || "-")}</span></td>
@@ -301,12 +311,11 @@ class LtcAppRenderMethodCarrier {
     this.el.suppliesBody.innerHTML = sorted.length
       ? sorted
           .map((row) => {
-            const selectedClass = row.rowId === this.state.selected.supplies ? "is-selected" : "";
+            const selectedClass = selectedRowClass(row.rowId, this.state.selected.supplies);
             const statusClass = this.domain.statusClass(row.status);
-            const checked = this.getCheckedSet("supplies").has(row.rowId) ? "checked" : "";
             return `
               <tr data-rowid="${Format.escapeHtml(row.rowId)}" class="${selectedClass}">
-                <td class="check-col"><input class="row-check" type="checkbox" ${checked} aria-label="เลือกแถว"></td>
+                ${renderCheckCell(this.getCheckedSet("supplies").has(row.rowId))}
                 <td class="image-cell">${this.renderImageThumb(row.product?.imageDataUrl || row.imageDataUrl, row.productName)}</td>
                 <td><span class="unit-badge">${Format.escapeHtml(row.productID || "-")}</span></td>
                 <td>${Format.escapeHtml(row.productName)}</td>
@@ -420,8 +429,8 @@ class LtcAppRenderMethodCarrier {
         ? filteredIssues
             .map(
               (row) => `
-                <tr data-rowid="${Format.escapeHtml(row.rowId)}" class="${row.rowId === this.state.selected.supplyIssues ? "is-selected" : ""}">
-                  <td class="check-col"><input class="row-check" type="checkbox" ${this.getCheckedSet("supplyIssues").has(row.rowId) ? "checked" : ""} aria-label="เลือกแถว"></td>
+                <tr data-rowid="${Format.escapeHtml(row.rowId)}" class="${selectedRowClass(row.rowId, this.state.selected.supplyIssues)}">
+                  ${renderCheckCell(this.getCheckedSet("supplyIssues").has(row.rowId))}
                   <td>${Format.escapeHtml(Format.formatDateCompact(row.outdate))}</td>
                   <td><span class="unit-badge">${Format.escapeHtml(row.productID || "-")}</span></td>
                   <td>${Format.escapeHtml(row.productName || "-")}</td>
@@ -465,9 +474,7 @@ class LtcAppRenderMethodCarrier {
       { label: "รวมรายรับ", value: summary.totalIncome, strong: true }
     ];
 
-    this.el.financeIncomeRows.innerHTML = incomeRows
-      .map((item) => `<div class="info-row ${item.strong ? "strong" : ""}"><span>${item.label}</span><strong>${Format.currency(item.value)}</strong></div>`)
-      .join("");
+    this.el.financeIncomeRows.innerHTML = renderInfoRows(incomeRows);
 
     const expenseRows = [
       { label: "รายจ่ายประเภท 1", value: summary.expense[0] },
@@ -477,9 +484,7 @@ class LtcAppRenderMethodCarrier {
       { label: "รวมรายจ่าย", value: summary.totalExpense, strong: true }
     ];
 
-    this.el.financeExpenseRows.innerHTML = expenseRows
-      .map((item) => `<div class="info-row ${item.strong ? "strong" : ""}"><span>${item.label}</span><strong>${Format.currency(item.value)}</strong></div>`)
-      .join("");
+    this.el.financeExpenseRows.innerHTML = renderInfoRows(expenseRows);
 
     const highestIncomeCategory = this.helpers.maxIndex(summary.income) + 1;
     const highestExpenseCategory = this.helpers.maxIndex(summary.expense) + 1;
@@ -508,13 +513,12 @@ class LtcAppRenderMethodCarrier {
     this.el.financeBody.innerHTML = parsedRows.length
       ? parsedRows
           .map((entry) => {
-            const selectedClass = entry.row.__rowid === this.state.selected.finance ? "is-selected" : "";
-            const checked = this.getCheckedSet("finance").has(entry.row.__rowid) ? "checked" : "";
+            const selectedClass = selectedRowClass(entry.row.__rowid, this.state.selected.finance);
             const tagClass = entry.type === "income" ? "tag-income" : entry.type === "expense" ? "tag-expense" : "tag-mixed";
             const typeLabel = entry.type === "income" ? "รายรับ" : entry.type === "expense" ? "รายจ่าย" : "ผสม/อื่นๆ";
             return `
               <tr data-rowid="${Format.escapeHtml(entry.row.__rowid)}" class="${selectedClass}">
-                <td class="check-col"><input class="row-check" type="checkbox" ${checked} aria-label="เลือกแถว"></td>
+                ${renderCheckCell(this.getCheckedSet("finance").has(entry.row.__rowid))}
                 <td>${Format.escapeHtml(Format.formatDateCompact(entry.date))}</td>
                 <td>${Format.escapeHtml(entry.year)}</td>
                 <td><span class="tag ${tagClass}">${Format.escapeHtml(typeLabel)}</span></td>
@@ -566,11 +570,10 @@ class LtcAppRenderMethodCarrier {
       ? units
           .map((row) => {
             const unitCode = String(row["รหัสหน่วย"] || "");
-            const selectedClass = row.__rowid === this.state.selected.units ? "is-selected" : "";
-            const checked = this.getCheckedSet("units").has(row.__rowid) ? "checked" : "";
+            const selectedClass = selectedRowClass(row.__rowid, this.state.selected.units);
             return `
               <tr data-rowid="${Format.escapeHtml(row.__rowid)}" class="${selectedClass}">
-                <td class="check-col"><input class="row-check" type="checkbox" ${checked} aria-label="เลือกแถว"></td>
+                ${renderCheckCell(this.getCheckedSet("units").has(row.__rowid))}
                 <td><span class="unit-badge">${Format.escapeHtml(unitCode || "-")}</span></td>
                 <td>${Format.escapeHtml(row["หน่วย"] || "-")}</td>
                 <td>${Format.escapeHtml(row["ตำบล"] || "-")}</td>
@@ -589,10 +592,6 @@ class LtcAppRenderMethodCarrier {
   }
 }
 
-const ltcAppRenderMethods = Object.fromEntries(
-  Object.getOwnPropertyNames(LtcAppRenderMethodCarrier.prototype)
-    .filter((name) => name !== "constructor")
-    .map((name) => [name, LtcAppRenderMethodCarrier.prototype[name]])
-);
+const ltcAppRenderMethods = methodsFromPrototype(LtcAppRenderMethodCarrier.prototype);
 
 export { ltcAppRenderMethods };

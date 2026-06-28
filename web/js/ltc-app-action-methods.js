@@ -1,4 +1,5 @@
 import { Format, NameUtils } from "./utils.js";
+import { methodsFromPrototype } from "./mixin-utils.js";
 
 class LtcAppActionMethodCarrier {
   async handleAddDependent() {
@@ -572,11 +573,9 @@ class LtcAppActionMethodCarrier {
       const inDeleteIds = inRows.filter((row) => String(row.productID || "") === productId).map((row) => row.__rowid);
       const outDeleteIds = outRows.filter((row) => String(row.productID || "") === productId).map((row) => row.__rowid);
 
-      await Promise.all([
-        this.repo.deleteRows("t16_product", [selected.__rowid]),
-        inDeleteIds.length ? this.repo.deleteRows("t09_intproduct", inDeleteIds) : Promise.resolve(),
-        outDeleteIds.length ? this.repo.deleteRows("t13_outproduct", outDeleteIds) : Promise.resolve()
-      ]);
+      if (inDeleteIds.length) await this.repo.deleteRows("t09_intproduct", inDeleteIds);
+      if (outDeleteIds.length) await this.repo.deleteRows("t13_outproduct", outDeleteIds);
+      await this.repo.deleteRows("t16_product", [selected.__rowid]);
 
       this.state.selected.supplies = null;
       this.getCheckedSet("supplies").delete(selected.__rowid);
@@ -621,11 +620,9 @@ class LtcAppActionMethodCarrier {
         .filter((row) => productCodeSet.has(String(row.productID || "")))
         .map((row) => row.__rowid);
 
-      await Promise.all([
-        this.repo.deleteRows("t16_product", rowIds),
-        inDeleteIds.length ? this.repo.deleteRows("t09_intproduct", inDeleteIds) : Promise.resolve(),
-        outDeleteIds.length ? this.repo.deleteRows("t13_outproduct", outDeleteIds) : Promise.resolve()
-      ]);
+      if (inDeleteIds.length) await this.repo.deleteRows("t09_intproduct", inDeleteIds);
+      if (outDeleteIds.length) await this.repo.deleteRows("t13_outproduct", outDeleteIds);
+      await this.repo.deleteRows("t16_product", rowIds);
 
       this.clearChecked("supplies");
       if (this.state.selected.supplies && rowIdSet.has(this.state.selected.supplies)) {
@@ -1171,8 +1168,13 @@ class LtcAppActionMethodCarrier {
   async runProtected(actionLabel, handler) {
     try {
       await handler();
+      this.domain.clearInventoryCache();
       await this.renderAll();
     } catch (error) {
+      error.actionLabel = actionLabel;
+      this.repo.clearTableCache(null, { includeVersion: false });
+      this.domain.clearInventoryCache();
+      this.renderAll().catch(() => {});
       throw error;
     }
   }
@@ -1183,6 +1185,7 @@ class LtcAppActionMethodCarrier {
     for (const alias of uniqueAliases) {
       this.repo.clearTableCache(alias);
     }
+    this.domain.clearInventoryCache();
     await this.renderAll();
   }
 
@@ -1240,10 +1243,6 @@ class LtcAppActionMethodCarrier {
   }
 }
 
-const ltcAppActionMethods = Object.fromEntries(
-  Object.getOwnPropertyNames(LtcAppActionMethodCarrier.prototype)
-    .filter((name) => name !== "constructor")
-    .map((name) => [name, LtcAppActionMethodCarrier.prototype[name]])
-);
+const ltcAppActionMethods = methodsFromPrototype(LtcAppActionMethodCarrier.prototype);
 
 export { ltcAppActionMethods };

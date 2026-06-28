@@ -96,7 +96,9 @@ test("update button and release-notes dialog are present in the app shell", asyn
   assert.match(index, /id="updateDialog"/);
   assert.match(index, /id="updateNotes"/);
   assert.match(index, /id="updateDownloadBtn"/);
+  assert.doesNotMatch(index, /id="updateInstallBtn"/);
   assert.match(controller, /downloadUpdate/);
+  assert.match(controller, /handlePrimaryUpdateAction/);
   assert.match(controller, /AUTO_CHECK_INTERVAL_MS/);
   assert.match(controller, /ติดตั้งตอนนี้|installUpdate/);
 });
@@ -137,6 +139,63 @@ test("update button stays hidden until an update is actually available", async (
 
   controller.render({ enabled: true, status: "available", available: true, downloaded: false });
   assert.equal(button.hidden, false);
+
+  controller.render({ enabled: true, status: "not-available" });
+  assert.equal(button.hidden, true);
+});
+
+test("update dialog uses one primary action that switches from download to install", async () => {
+  const { UpdateController } = await loadUpdateController();
+  const actionButton = createTextMock();
+  const legacyInstallButton = createTextMock();
+  const calls = { install: 0 };
+
+  global.window = {
+    ltcUpdater: {
+      getState: async () => ({ enabled: true, status: "idle", available: false, downloaded: false }),
+      onEvent: () => () => {},
+      checkForUpdates: async () => ({ enabled: true, status: "available", available: true, downloaded: false }),
+      downloadUpdate: async () => ({ enabled: true, status: "downloaded", available: true, downloaded: true }),
+      installUpdate: async () => {
+        calls.install += 1;
+      }
+    }
+  };
+  global.document = {
+    createElement: () => createTextMock()
+  };
+
+  const controller = new UpdateController({
+    updateButton: createButtonMock(),
+    updateManualControl: createTextMock(),
+    updateManualButton: createButtonMock(),
+    updateDialog: createDialogMock(),
+    updateDialogTitle: createTextMock(),
+    updateStatusText: createTextMock(),
+    updateVersionText: createTextMock(),
+    updateProgressBar: createTextMock(),
+    updateProgressText: createTextMock(),
+    updateNotes: createTextMock(),
+    updateDownloadBtn: actionButton,
+    updateInstallBtn: legacyInstallButton,
+    updateCloseBtn: createTextMock()
+  });
+
+  controller.init();
+  await new Promise((resolve) => setImmediate(resolve));
+
+  controller.render({ enabled: true, status: "available", available: true, downloaded: false });
+  const downloadLabel = actionButton.textContent;
+  assert.equal(actionButton.hidden, false);
+  assert.equal(legacyInstallButton.hidden, true);
+
+  controller.render({ enabled: true, status: "downloaded", available: true, downloaded: true });
+  assert.equal(actionButton.hidden, false);
+  assert.notEqual(actionButton.textContent, downloadLabel);
+  assert.equal(legacyInstallButton.hidden, true);
+
+  await actionButton.listeners.click();
+  assert.equal(calls.install, 1);
 });
 
 test("available update waits for explicit user confirmation before downloading", async () => {
