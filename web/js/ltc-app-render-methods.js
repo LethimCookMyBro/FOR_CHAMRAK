@@ -118,7 +118,6 @@ class LtcAppRenderMethodCarrier {
               <tr>
                 <td>${Format.escapeHtml(row.productName)}</td>
                 <td>${Format.number(row.balance)} ${Format.escapeHtml(row.unit)}</td>
-                <td>${Format.number(row.reorderPoint)} ${Format.escapeHtml(row.unit)}</td>
                 <td><span class="tag ${tagClass}">${Format.escapeHtml(row.status)}</span></td>
                 <td>
                   <div class="progress ${progressClass}">
@@ -129,7 +128,7 @@ class LtcAppRenderMethodCarrier {
             `;
           })
           .join("")
-      : `<tr><td colspan="5" class="empty-row">ไม่พบข้อมูลคลัง</td></tr>`;
+      : `<tr><td colspan="4" class="empty-row">ไม่พบข้อมูลคลัง</td></tr>`;
   }
 
   async renderDependents() {
@@ -167,6 +166,7 @@ class LtcAppRenderMethodCarrier {
             const genderTag = gender === "หญิง" ? "tag-female" : "tag-male";
             const tai = String(row.TAI || "ไม่ระบุ").toUpperCase();
             const taiTag = `tag-${tai}`;
+            const group = row.G || this.domain.getTaiGroup(tai);
             const coverage = coverageById.get(this.domain.dependentId(row));
             const coverageText = coverage?.coveragePercent == null ? coverage?.statusLabel || "ไม่มีเป้าหมาย" : `${coverage.coveragePercent}%`;
             const remainingText = coverage?.remainingVisits == null ? "-" : `${Format.number(coverage.remainingVisits)} ครั้ง`;
@@ -180,8 +180,9 @@ class LtcAppRenderMethodCarrier {
                 <td>${Format.escapeHtml(row["เลขประชาชน"] || "-")}</td>
                 <td>${Format.escapeHtml(fullName)}</td>
                 <td><span class="tag ${genderTag}">${Format.escapeHtml(gender)}</span></td>
-                <td><span class="tag ${taiTag}">${Format.escapeHtml(tai)}</span></td>
                 <td>${Format.number(row.ADL || 0)}</td>
+                <td>${Format.escapeHtml(String(group || "-"))}</td>
+                <td><span class="tag ${taiTag}">${Format.escapeHtml(tai)}</span></td>
                 <td><span class="tag ${coverage?.tagClass || "tag-mixed"}">${Format.escapeHtml(coverageText)}</span></td>
                 <td>${Format.escapeHtml(remainingText)}</td>
                 <td>${Format.escapeHtml(address)}</td>
@@ -192,7 +193,7 @@ class LtcAppRenderMethodCarrier {
             `;
           })
           .join("")
-      : `<tr><td colspan="14" class="empty-row">ไม่พบข้อมูลผู้รับบริการ</td></tr>`;
+      : `<tr><td colspan="15" class="empty-row">ไม่พบข้อมูลผู้รับบริการ</td></tr>`;
 
     this.paintSelection(this.el.dependentsBody, this.state.selected.dependents);
     this.syncSelectAllCheckbox(this.el.dependentsBody, "dependents", this.el.dependentsSelectAll);
@@ -482,14 +483,13 @@ class LtcAppRenderMethodCarrier {
                 <td>${Format.number(row.inQty)}</td>
                 <td>${Format.number(row.outQty)}</td>
                 <td>${Format.number(row.balance)}</td>
-                <td>${Format.number(row.reorderPoint)}</td>
                 <td class="cell-money">${Format.currency(row.stockValue)}</td>
                 <td><span class="tag ${statusClass}">${Format.escapeHtml(row.status)}</span></td>
               </tr>
             `;
           })
           .join("")
-      : `<tr><td colspan="13" class="empty-row">ไม่พบข้อมูลวัสดุ</td></tr>`;
+      : `<tr><td colspan="12" class="empty-row">ไม่พบข้อมูลวัสดุ</td></tr>`;
 
     this.paintSelection(this.el.suppliesBody, this.state.selected.supplies);
     this.syncSelectAllCheckbox(this.el.suppliesBody, "supplies", this.el.suppliesSelectAll);

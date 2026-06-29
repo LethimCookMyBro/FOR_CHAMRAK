@@ -65,3 +65,14 @@ test("validation reveals the offending field instead of failing silently", async
     "a failing required/validated field must be scrolled into view so the user sees why Save was blocked"
   );
 });
+
+test("entity date fields use Buddhist Era controls starting at 2460", async () => {
+  const source = await fs.readFile(path.join(repoRoot, "web", "js", "entity-dialog-service.js"), "utf8");
+  const css = await fs.readFile(path.join(repoRoot, "web", "styles", "dialog.css"), "utf8");
+
+  assert.match(source, /createThaiDateControl/);
+  assert.match(source, /field\.type === "date"[\s\S]*createThaiDateControl/);
+  assert.match(source, /field\.yearStart \|\| 2460/);
+  assert.match(source, /ปี พ\.ศ\./);
+  assert.match(css, /\.thai-date-control/);
+});

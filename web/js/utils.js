@@ -57,18 +57,29 @@ class Format {
     return `${year}-${month}-${day}`;
   }
 
+  static isoDateParts(value) {
+    const text = Format.isoToDateInput(value);
+    const match = text.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!match) return null;
+    return {
+      year: Number(match[1]),
+      month: Number(match[2]),
+      day: Number(match[3])
+    };
+  }
+
   static formatDate(value) {
     const text = Format.toText(value);
     if (!text) return "-";
     const date = new Date(text);
     if (Number.isNaN(date.getTime())) return text;
-    return date.toLocaleDateString("th-TH");
+    return date.toLocaleDateString("th-TH-u-ca-buddhist");
   }
 
   static formatDateCompact(value) {
-    const text = Format.toText(value);
-    if (!text) return "-";
-    return text.slice(0, 10);
+    const parts = Format.isoDateParts(value);
+    if (!parts) return Format.toText(value) || "-";
+    return `${String(parts.day).padStart(2, "0")}/${String(parts.month).padStart(2, "0")}/${parts.year + 543}`;
   }
 }
 

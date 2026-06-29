@@ -35,3 +35,9 @@ test("todayDateInput formats the local calendar date instead of UTC", async () =
     global.Date = RealDate;
   }
 });
+
+test("compact dates display Buddhist Era years", async () => {
+  const { Format } = await importModule("web/js/utils.js");
+
+  assert.equal(Format.formatDateCompact("2026-06-25T00:00:00"), "25/06/2569");
+});

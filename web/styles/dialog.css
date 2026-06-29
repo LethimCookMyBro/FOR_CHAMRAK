@@ -83,7 +83,7 @@ dialog[open] {
      field is reachable by scrolling the dialog normally. */
   display: grid;
   gap: var(--space-4);
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 }
 
 .row-field {
@@ -148,6 +148,12 @@ dialog[open] {
 .row-field textarea {
   min-height: 84px;
   resize: vertical;
+}
+
+.thai-date-control {
+  display: grid;
+  grid-template-columns: minmax(72px, 0.8fr) minmax(96px, 1fr) minmax(104px, 1fr);
+  gap: var(--space-2);
 }
 
 /* ----------------------------------------------------------- Image picker */

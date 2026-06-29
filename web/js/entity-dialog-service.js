@@ -23,6 +23,7 @@ class EntityDialogService {
       gender: row?.["เพศ"] || this.helpers.inferGenderFromPrefix(row?.["นาม"] || "นาย"),
       adl: row?.ADL ?? 0,
       tai: String(row?.TAI || "I1").toUpperCase(),
+      group: row?.G || this.domain.getTaiGroup(row?.TAI || "I1"),
       birthDate: row?.["วันเดือนปีเกิด"] || null,
       address: row?.["ที่อยู่"] || "",
       moo: row?.["หมู่"] || "",
@@ -49,6 +50,7 @@ class EntityDialogService {
           type: "text",
           required: true,
           value: initial.citizenId,
+          wide: true,
           placeholder: "13 หลัก",
           validate: (value) => {
             if (!/^\d{13}$/.test(value)) return "เลขบัตรประชาชนต้องเป็นตัวเลข 13 หลัก";
@@ -89,6 +91,19 @@ class EntityDialogService {
           }
         },
         {
+          name: "group",
+          label: "กลุ่ม",
+          type: "select",
+          required: true,
+          value: String(initial.group || "1"),
+          options: [
+            { value: "1", label: "กลุ่ม 1 (I1)" },
+            { value: "2", label: "กลุ่ม 2 (I2)" },
+            { value: "3", label: "กลุ่ม 3 (I3)" },
+            { value: "4", label: "กลุ่ม 4 (B3/C2/C3)" }
+          ]
+        },
+        {
           name: "tai",
           label: "ระดับการพึ่งพิง (TAI)",
           type: "select",
@@ -116,22 +131,22 @@ class EntityDialogService {
         },
         {
           name: "cmCode",
-          label: "รหัส CM",
+          label: "ชื่อ CM",
           type: "select",
           value: initial.cmCode,
           options: cmRows.map((cm) => ({
             value: cm["รหัสcm"] || "",
-            label: `${cm["รหัสcm"] || "-"} - ${Format.expandFemalePrefixInText(cm["ชื่อสกุล"] || "-")}`
+            label: Format.expandFemalePrefixInText(cm["ชื่อสกุล"] || "-")
           }))
         },
         {
           name: "cgCode",
-          label: "รหัส CG",
+          label: "ชื่อ CG",
           type: "select",
           value: initial.cgCode,
           options: cgRows.map((cg) => ({
             value: cg["รหัสcg"] || "",
-            label: `${cg["รหัสcg"] || "-"} - ${Format.expandFemalePrefixInText(cg["ชื่อสกุล"] || "-")}`
+            label: Format.expandFemalePrefixInText(cg["ชื่อสกุล"] || "-")
           }))
         },
         { name: "careStart", label: "วันเริ่ม Care Plan", type: "date", value: initial.careStart },
@@ -158,7 +173,10 @@ class EntityDialogService {
         };
 
         controls.adl?.addEventListener("input", paint);
-        controls.tai?.addEventListener("change", paint);
+        controls.tai?.addEventListener("change", () => {
+          if (controls.group) controls.group.value = String(this.domain.getTaiGroup(controls.tai?.value));
+          paint();
+        });
         paint();
       }
     });
@@ -178,6 +196,7 @@ class EntityDialogService {
           label: "รหัส CG",
           type: "text",
           value: row?.["รหัสcg"] || "",
+          wide: true,
           placeholder: "ปล่อยว่างเพื่อสร้างอัตโนมัติ"
         },
         {
@@ -205,13 +224,13 @@ class EntityDialogService {
         { name: "province", label: "จังหวัด", type: "text", required: true, value: row?.["จังหวัด"] || "ตราด" },
         {
           name: "cmCode",
-          label: "รหัส CM",
+          label: "ชื่อ CM",
           type: "select",
           required: true,
           value: row?.["รหัสcm"] || "",
           options: cmRows.map((cm) => ({
             value: cm["รหัสcm"] || "",
-            label: `${cm["รหัสcm"] || "-"} - ${Format.expandFemalePrefixInText(cm["ชื่อสกุล"] || "-")}`
+            label: Format.expandFemalePrefixInText(cm["ชื่อสกุล"] || "-")
           }))
         }
       ]
@@ -232,6 +251,7 @@ class EntityDialogService {
           label: "รหัส CM",
           type: "text",
           value: row?.["รหัสcm"] || "",
+          wide: true,
           placeholder: "ปล่อยว่างเพื่อสร้างรหัสใหม่"
         },
         {
@@ -315,7 +335,7 @@ class EntityDialogService {
           value: initial.responsibleCgId,
           options: cgRows.map((item) => ({
             value: item["รหัสcg"] || item["เธฃเธซเธฑเธชcg"] || "",
-            label: `${item["รหัสcg"] || item["เธฃเธซเธฑเธชcg"] || "-"} - ${Format.expandFemalePrefixInText(item["ชื่อสกุล"] || item["เธเธทเนเธญเธชเธเธธเธฅ"] || "-")}`
+            label: Format.expandFemalePrefixInText(item["ชื่อสกุล"] || item["เธเธทเนเธญเธชเธเธธเธฅ"] || "-")
           }))
         },
         {
@@ -325,7 +345,7 @@ class EntityDialogService {
           value: initial.responsibleCmId,
           options: cmRows.map((item) => ({
             value: item["รหัสcm"] || item["เธฃเธซเธฑเธชcm"] || "",
-            label: `${item["รหัสcm"] || item["เธฃเธซเธฑเธชcm"] || "-"} - ${Format.expandFemalePrefixInText(item["ชื่อสกุล"] || item["เธเธทเนเธญเธชเธเธธเธฅ"] || "-")}`
+            label: Format.expandFemalePrefixInText(item["ชื่อสกุล"] || item["เธเธทเนเธญเธชเธเธธเธฅ"] || "-")
           }))
         },
         { name: "activityType", label: "กิจกรรม/ประเภทการเยี่ยม", type: "text", required: true, value: initial.activityType },
@@ -411,15 +431,6 @@ class EntityDialogService {
           min: 0,
           step: 0.01,
           validate: (value) => (Validate.nonNegative(value) ? null : "ราคาต้องไม่ติดลบ")
-        },
-        {
-          name: "reorderPoint",
-          label: "จุดสั่งซื้อขั้นต่ำ",
-          type: "number",
-          required: true,
-          value: Number(row?.reorderPoint ?? row?.threshold ?? 10),
-          min: 0,
-          validate: (value) => (Validate.nonNegative(value) ? null : "ค่าจุดสั่งซื้อต้องไม่ติดลบ")
         }
       ]
     });
@@ -702,6 +713,104 @@ class EntityDialogService {
     return canvas.toDataURL("image/jpeg", 0.78);
   }
 
+  createThaiDateControl(field) {
+    const hidden = document.createElement("input");
+    hidden.type = "hidden";
+    hidden.name = field.name;
+    hidden.value = Format.isoToDateInput(field.value);
+
+    const wrap = document.createElement("div");
+    wrap.className = "thai-date-control";
+
+    const day = document.createElement("select");
+    const month = document.createElement("select");
+    const year = document.createElement("select");
+    day.setAttribute("aria-label", "วัน");
+    month.setAttribute("aria-label", "เดือน");
+    year.setAttribute("aria-label", "ปี พ.ศ.");
+
+    const empty = (label) => {
+      const option = document.createElement("option");
+      option.value = "";
+      option.textContent = label;
+      return option;
+    };
+
+    const monthNames = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+    day.appendChild(empty("วัน"));
+    month.appendChild(empty("เดือน"));
+    year.appendChild(empty("ปี พ.ศ."));
+
+    for (let i = 1; i <= 12; i += 1) {
+      const option = document.createElement("option");
+      option.value = String(i);
+      option.textContent = monthNames[i - 1];
+      month.appendChild(option);
+    }
+
+    const currentThaiYear = new Date().getFullYear() + 543;
+    const startYear = Math.max(1, Number(field.yearStart || 2460));
+    const endYear = Math.max(startYear, Number(field.yearEnd || currentThaiYear + 10));
+    for (let beYear = endYear; beYear >= startYear; beYear -= 1) {
+      const option = document.createElement("option");
+      option.value = String(beYear);
+      option.textContent = String(beYear);
+      year.appendChild(option);
+    }
+
+    const daysInMonth = () => {
+      const beYear = Number(year.value);
+      const monthValue = Number(month.value);
+      if (!beYear || !monthValue) return 31;
+      return new Date(beYear - 543, monthValue, 0).getDate();
+    };
+
+    const fillDays = () => {
+      const selected = Number(day.value);
+      day.replaceChildren(empty("วัน"));
+      const maxDay = daysInMonth();
+      for (let i = 1; i <= maxDay; i += 1) {
+        const option = document.createElement("option");
+        option.value = String(i);
+        option.textContent = String(i);
+        day.appendChild(option);
+      }
+      if (selected && selected <= maxDay) day.value = String(selected);
+    };
+
+    const syncHidden = () => {
+      const beYear = Number(year.value);
+      const monthValue = Number(month.value);
+      const dayValue = Number(day.value);
+      hidden.value =
+        beYear && monthValue && dayValue
+          ? `${String(beYear - 543).padStart(4, "0")}-${String(monthValue).padStart(2, "0")}-${String(dayValue).padStart(2, "0")}`
+          : "";
+    };
+
+    const initial = Format.isoDateParts(field.value);
+    fillDays();
+    if (initial) {
+      year.value = String(initial.year + 543);
+      month.value = String(initial.month);
+      fillDays();
+      day.value = String(initial.day);
+      syncHidden();
+    }
+
+    for (const control of [day, month, year]) {
+      control.addEventListener("change", () => {
+        fillDays();
+        syncHidden();
+      });
+    }
+
+    wrap.append(day, month, year, hidden);
+    hidden._ltcVisibleElement = wrap;
+    hidden._ltcFocusElement = day;
+    return { control: hidden, element: wrap };
+  }
+
   createImageControl(field) {
     const hidden = document.createElement("input");
     hidden.type = "hidden";
@@ -825,21 +934,19 @@ class EntityDialogService {
         const imageControl = this.createImageControl(field);
         control = imageControl.control;
         controlElement = imageControl.element;
+      } else if (field.type === "date") {
+        const dateControl = this.createThaiDateControl(field);
+        control = dateControl.control;
+        controlElement = dateControl.element;
       } else {
         control = document.createElement("input");
         control.type =
-          field.type === "date"
-            ? "date"
-            : field.type === "number"
+          field.type === "number"
               ? "number"
               : field.type === "password"
                 ? "password"
                 : "text";
-        if (field.type === "date") {
-          control.value = Format.isoToDateInput(field.value);
-        } else {
-          control.value = field.value == null ? "" : String(field.value);
-        }
+        control.value = field.value == null ? "" : String(field.value);
         if (field.type === "password") {
           control.autocomplete = "new-password";
         }
@@ -901,12 +1008,13 @@ class EntityDialogService {
         const revealField = (name) => {
           const control = controls[name];
           if (!control) return;
+          const visibleElement = control._ltcVisibleElement || control;
           try {
-            control.scrollIntoView({ block: "center", behavior: "auto" });
+            visibleElement.scrollIntoView({ block: "center", behavior: "auto" });
           } catch {
             // older engines: focus() below still scrolls it into view
           }
-          control.focus({ preventScroll: true });
+          (control._ltcFocusElement || control).focus({ preventScroll: true });
         };
 
         for (const field of fields) {

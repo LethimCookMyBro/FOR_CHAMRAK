@@ -36,7 +36,7 @@ class LtcAppActionMethodCarrier {
         "วันเริ่ม cp": form.careStart,
         "วันสิ้นสุด cp": form.careEnd,
         photoDataUrl: form.photoDataUrl,
-        G: this.domain.getTaiGroup(form.tai)
+        G: Number(form.group) || this.domain.getTaiGroup(form.tai)
       };
 
       rows.push(newRow);
@@ -87,7 +87,7 @@ class LtcAppActionMethodCarrier {
         "วันเริ่ม cp": form.careStart,
         "วันสิ้นสุด cp": form.careEnd,
         photoDataUrl: form.photoDataUrl,
-        G: this.domain.getTaiGroup(form.tai)
+        G: Number(form.group) || this.domain.getTaiGroup(form.tai)
       };
 
       await this.repo.saveTable("t04_dataj", rows);
@@ -472,7 +472,6 @@ class LtcAppActionMethodCarrier {
         machineCode: Format.cleanWhitespace(form.machineCode) || null,
         price: Number(form.price),
         unit: form.unit,
-        reorderPoint: Number(form.reorderPoint),
         imageDataUrl: form.imageDataUrl
       };
 
@@ -509,7 +508,6 @@ class LtcAppActionMethodCarrier {
         machineCode: Format.cleanWhitespace(form.machineCode) || null,
         price: Number(form.price),
         unit: form.unit,
-        reorderPoint: Number(form.reorderPoint),
         imageDataUrl: form.imageDataUrl
       };
 

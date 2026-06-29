@@ -36,6 +36,15 @@ class FakeRepo {
     return clone(savedRows);
   }
 
+  async deleteRows(alias, rowIds) {
+    const ids = new Set(Array.isArray(rowIds) ? rowIds : []);
+    const rows = (this.tables.get(alias) || []).filter((row) => !ids.has(row.__rowid));
+    this.tables.set(alias, clone(rows));
+    return { ok: true, deleted: ids.size };
+  }
+
+  clearTableCache() {}
+
   createRowId(alias) {
     return `${alias}:row:${this.rowCounter++}`;
   }
@@ -52,6 +61,13 @@ async function createApp({ dialogs, initialTables = {} }) {
     importModule("web/js/domain-service.js")
   ]);
   const repo = new FakeRepo(initialTables);
+  const checked = {
+    dependents: new Set(),
+    cg: new Set(),
+    cm: new Set(),
+    supplies: new Set(),
+    finance: new Set()
+  };
   return {
     ...ltcAppActionMethods,
     repo,
@@ -61,9 +77,16 @@ async function createApp({ dialogs, initialTables = {} }) {
       selected: {
         dependents: null,
         cg: null,
+        cm: null,
         supplies: null,
         finance: null
       }
+    },
+    getCheckedSet(key) {
+      return checked[key];
+    },
+    clearChecked(key) {
+      checked[key]?.clear();
     },
     renderAllCalls: 0,
     async renderAll() {
@@ -166,6 +189,8 @@ test("dependent, CG, supply, and finance add handlers save new rows and select s
   assert.equal(dependents[0].photoDataUrl, sampleImageDataUrl);
   assert.equal(cgRows[0].photoDataUrl, sampleImageDataUrl);
   assert.equal(products[0].imageDataUrl, sampleImageDataUrl);
+  assert.equal(products[0].reorderPoint, undefined);
+  assert.equal(dependents[0].G, 1);
   assert.equal(financeRows[0].ID, 1);
 
   assert.equal(app.state.selected.dependents, dependents[0].__rowid);
@@ -173,4 +198,201 @@ test("dependent, CG, supply, and finance add handlers save new rows and select s
   assert.equal(app.state.selected.supplies, products[0].__rowid);
   assert.equal(app.state.selected.finance, financeRows[0].__rowid);
   assert.equal(app.renderAllCalls, 4);
+});
+
+test("dependent and supply edit/delete paths keep new fields stable", async () => {
+  const dialogs = {
+    async openDependentDialog() {
+      return {
+        citizenId: "1111111111111",
+        prefix: "นาย",
+        firstName: "Edited",
+        lastName: "Person",
+        adl: 7,
+        group: "3",
+        tai: "I2",
+        birthDate: "1917-01-01",
+        gender: "ชาย",
+        address: "2",
+        moo: "2",
+        road: "",
+        subdistrict: "ชำราก",
+        district: "เมือง",
+        province: "ตราด",
+        unitCode: "UNIT01",
+        cmCode: "CM1",
+        cgCode: "CG1",
+        careStart: "2026-06-25",
+        careEnd: "",
+        photoDataUrl: sampleImageDataUrl
+      };
+    },
+    async openProductDialog() {
+      return {
+        productID: "SUP-EDIT",
+        productName: "Edited supply",
+        brand: "Brand",
+        machineCode: "SN-EDIT",
+        price: 25,
+        unit: "ชิ้น",
+        reorderPoint: 999,
+        imageDataUrl: sampleImageDataUrl
+      };
+    }
+  };
+  const app = await createApp({
+    dialogs,
+    initialTables: {
+      t04_dataj: [
+        {
+          __rowid: "dep-1",
+          ID: 1,
+          "เลขประชาชน": "1111111111111",
+          "นาม": "นาย",
+          "ชื่อ": "Old",
+          "สกุล": "Person",
+          ADL: 5,
+          G: 1,
+          TAI: "I1",
+          "รหัสcm": "CM1",
+          "รหัสcg": "CG1"
+        }
+      ],
+      t16_product: [
+        {
+          __rowid: "product-1",
+          id: 1,
+          productID: "SUP-OLD",
+          productName: "Old supply",
+          price: 10,
+          unit: "ชิ้น",
+          reorderPoint: 10
+        }
+      ],
+      t09_intproduct: [],
+      t13_outproduct: []
+    }
+  });
+  global.confirm = () => true;
+
+  app.state.selected.dependents = "dep-1";
+  await app.handleEditDependent();
+  const editedDependent = app.repo.tables.get("t04_dataj")[0];
+  assert.equal(editedDependent["ชื่อ"], "Edited");
+  assert.equal(editedDependent.G, 3);
+  assert.equal(editedDependent["วันเดือนปีเกิด"], "1917-01-01");
+
+  app.state.selected.supplies = "product-1";
+  await app.handleEditProduct();
+  const editedProduct = app.repo.tables.get("t16_product")[0];
+  assert.equal(editedProduct.productID, "SUP-EDIT");
+  assert.equal(editedProduct.productName, "Edited supply");
+  assert.equal(editedProduct.reorderPoint, 10, "editing must not overwrite hidden reorderPoint from dialog data");
+
+  await app.handleDeleteProduct();
+  assert.equal(app.repo.tables.get("t16_product").length, 0);
+  assert.equal(app.state.selected.supplies, null);
+
+  await app.handleDeleteDependent();
+  assert.equal(app.repo.tables.get("t04_dataj").length, 0);
+  assert.equal(app.state.selected.dependents, null);
+});
+
+test("CM and CG add/edit/delete paths keep names and links working", async () => {
+  const dialogs = {
+    async openCmDialog(mode) {
+      return mode === "add"
+        ? {
+            cmCode: "CM1",
+            prefix: "นางสาว",
+            firstName: "Care",
+            lastName: "Manager",
+            unitCode: "UNIT01",
+            phone: "0999999999",
+            birthDate: "1917-01-01",
+            address: "1",
+            moo: "1",
+            subdistrict: "ชำราก",
+            district: "เมือง",
+            province: "ตราด",
+            photoDataUrl: sampleImageDataUrl
+          }
+        : {
+            cmCode: "CM2",
+            prefix: "นางสาว",
+            firstName: "Care",
+            lastName: "Manager Two",
+            unitCode: "UNIT01",
+            phone: "0888888888",
+            birthDate: "1918-01-01",
+            address: "2",
+            moo: "2",
+            subdistrict: "ชำราก",
+            district: "เมือง",
+            province: "ตราด",
+            photoDataUrl: sampleImageDataUrl
+          };
+    },
+    async openCgDialog(mode) {
+      return mode === "add"
+        ? {
+            cgCode: "CG1",
+            prefix: "นางสาว",
+            firstName: "Care",
+            lastName: "Giver",
+            birthDate: "1917-01-01",
+            phone: "0777777777",
+            address: "1",
+            moo: "1",
+            subdistrict: "ชำราก",
+            district: "เมือง",
+            province: "ตราด",
+            cmCode: "CM1",
+            photoDataUrl: sampleImageDataUrl
+          }
+        : {
+            cgCode: "CG2",
+            prefix: "นางสาว",
+            firstName: "Care",
+            lastName: "Giver Two",
+            birthDate: "1918-01-01",
+            phone: "0666666666",
+            address: "2",
+            moo: "2",
+            subdistrict: "ชำราก",
+            district: "เมือง",
+            province: "ตราด",
+            cmCode: "CM2",
+            photoDataUrl: sampleImageDataUrl
+          };
+    }
+  };
+  const app = await createApp({
+    dialogs,
+    initialTables: {
+      t01_cg: [],
+      t02_cm: [],
+      t04_dataj: []
+    }
+  });
+  global.confirm = () => true;
+
+  await app.handleAddCm();
+  await app.handleAddCg();
+  assert.equal(app.repo.tables.get("t02_cm")[0]["รหัสcm"], "CM1");
+  assert.match(app.repo.tables.get("t02_cm")[0]["ชื่อสกุล"], /Manager/);
+  assert.equal(app.repo.tables.get("t01_cg")[0]["รหัสcm"], "CM1");
+
+  app.state.selected.cm = app.repo.tables.get("t02_cm")[0].__rowid;
+  app.state.selected.cg = app.repo.tables.get("t01_cg")[0].__rowid;
+  await app.handleEditCm();
+  await app.handleEditCg();
+  assert.equal(app.repo.tables.get("t02_cm")[0]["รหัสcm"], "CM2");
+  assert.equal(app.repo.tables.get("t01_cg")[0]["รหัสcm"], "CM2");
+  assert.equal(app.repo.tables.get("t01_cg")[0]["รหัสcg"], "CG2");
+
+  await app.handleDeleteCg();
+  await app.handleDeleteCm();
+  assert.equal(app.repo.tables.get("t01_cg").length, 0);
+  assert.equal(app.repo.tables.get("t02_cm").length, 0);
 });
