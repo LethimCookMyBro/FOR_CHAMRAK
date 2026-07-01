@@ -14,18 +14,23 @@ export const STORAGE_PREFIX = "chamrak_edit_";
 export const INTERNAL_KEYS = new Set(["__rowid"]);
 export const FINANCE_INCOME_FIELDS = ["รายรับ1", "รายรับ2", "รายรับ3", "รายรับ4", "รายรับ5"];
 export const FINANCE_EXPENSE_FIELDS = ["รายจ่าย1", "รายจ่าย2", "รายจ่าย3", "รายจ่าย4", "รายจ่าย5"];
+// Finance category display labels, split by type. Category is stored POSITIONALLY
+// (the amount lands in รายรับ1..5 / รายจ่าย1..5), so the array index = category
+// number 1-5 and income/expense are already separate storage columns. Editing
+// these labels is display-only — it never changes stored data, and old rows
+// simply pick up the new label for their existing positional category.
 export const FINANCE_INCOME_LABELS = [
-  "เงินสนับสนุนตามแผนงาน/โครงการ จากกองทุนหลักประกันสุขภาพฯ เพื่อการดูแลผู้สูงอายุที่มีภาวะพึ่งพิง",
-  "เงินสนับสนุนตามแผนงาน/โครงการ จากกองทุนหลักประกันสุขภาพฯ เทศบาลตำบลชำราก",
-  "เงินบริจาค",
-  "ดอกเบี้ยเงินฝากธนาคาร",
+  "แผนงาน LTC / CM",
+  "แผนงานกองทุนฯ ทต. ชำราก",
+  "เงินบริจาค / วัสดุแพทย์",
+  "ดอกเบี้ย / รายรับอื่น",
   "อื่นๆ"
 ];
 export const FINANCE_EXPENSE_LABELS = [
-  "ค่าตอบแทนผู้จัดการดูแลผู้สูงอายุที่มีภาวะพึ่งพิง (Care Manager : CM)",
-  "ค่าตอบแทนผู้ดูแลผู้สูงอายุที่มีภาวะพึ่งพิง (Care Giver : CG)",
-  "ค่าวัสดุและอุปกรณ์ทางการแพทย์",
-  "ค่าบริหารจัดการศูนย์พัฒนาคุณภาพชีวิตผู้สูงอายุฯ",
+  "ค่าตอบแทน CG / CM",
+  "แผนงานกองทุนฯ ทต. ชำราก",
+  "วัสดุแพทย์ / อุปกรณ์ดูแล",
+  "ค่าใช้จ่ายบริหารศูนย์",
   "อื่นๆ"
 ];
 // Visit status: internal values stay English (completed/postponed/not_found/

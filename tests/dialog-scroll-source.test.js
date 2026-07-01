@@ -96,13 +96,18 @@ test("composite date fields get enough grid width and shrink safely", async () =
   assert.match(responsiveCss, /\.row-field\.date-field\s*\{[\s\S]*grid-column\s*:\s*1\s*\/\s*-1/);
 });
 
-test("finance category select uses compact option text", async () => {
+test("finance category dropdown splits by type and resets on type change", async () => {
   const source = await fs.readFile(path.join(repoRoot, "web", "js", "entity-dialog-service.js"), "utf8");
+  const config = await fs.readFile(path.join(repoRoot, "web", "js", "config.js"), "utf8");
 
-  assert.match(source, /FINANCE_CATEGORY_OPTION_LABELS/);
-  assert.doesNotMatch(
-    source,
-    /label:\s*`\$\{index \+ 1\}\. รายรับ:/,
-    "native select dropdowns should not be widened by full finance category sentences"
-  );
+  // Category options come from a per-type map (income vs expense), not one shared list.
+  assert.match(source, /FINANCE_CATEGORY_LABELS\s*=\s*\{\s*income:\s*FINANCE_INCOME_LABELS,\s*expense:\s*FINANCE_EXPENSE_LABELS/);
+  // Changing type rebuilds the category list with the selection reset.
+  assert.match(source, /typeSelect\.addEventListener\("change",[\s\S]*rebuild\(typeSelect\.value,\s*0\)/);
+
+  // Category #2 label is the requested wording, in both income and expense lists.
+  const catTwo = config.match(/แผนงานกองทุนฯ ทต\. ชำราก/g) || [];
+  assert.ok(catTwo.length >= 2, "หมวดข้อ 2 must read 'แผนงานกองทุนฯ ทต. ชำราก' for income and expense");
+  // Compact labels only — the old long official sentences must not widen the select.
+  assert.doesNotMatch(config, /เงินสนับสนุนตามแผนงาน/);
 });

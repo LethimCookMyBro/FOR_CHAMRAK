@@ -1,13 +1,26 @@
 import { Format, Validate, NameUtils } from "./utils.js";
 import { FINANCE_EXPENSE_LABELS, FINANCE_INCOME_LABELS, VISIT_STATUS_OPTIONS } from "./config.js";
 
-const FINANCE_CATEGORY_OPTION_LABELS = [
-  "1. แผนงาน LTC / CM",
-  "2. เทศบาลชำราก / CG",
-  "3. เงินบริจาค / วัสดุแพทย์",
-  "4. ดอกเบี้ย / บริหารศูนย์",
-  "5. อื่นๆ"
-];
+const FINANCE_CATEGORY_LABELS = { income: FINANCE_INCOME_LABELS, expense: FINANCE_EXPENSE_LABELS };
+
+// Pure view model for the finance "หมวด" dropdown: which options + label to show
+// for a given type. Category values stay 1-5 (positional storage), so this is
+// display-only. Exported so the behavior is unit-testable without a DOM.
+function financeCategoryView(typeValue) {
+  const labels = FINANCE_CATEGORY_LABELS[typeValue];
+  if (!labels) {
+    return { type: "", disabled: true, label: "หมวด", options: [{ value: "", text: "เลือกประเภทก่อน" }] };
+  }
+  return {
+    type: typeValue,
+    disabled: false,
+    label: typeValue === "income" ? "หมวดรายรับ" : "หมวดรายจ่าย",
+    options: [
+      { value: "", text: "เลือกหมวด" },
+      ...labels.map((label, index) => ({ value: String(index + 1), text: `${index + 1}. ${label}` }))
+    ]
+  };
+}
 
 class EntityDialogService {
   constructor(el, repo, domain, helpers) {
@@ -586,11 +599,11 @@ class EntityDialogService {
 
   async openFinanceDialog(mode, parsed = null) {
     const todayYear = new Date().getFullYear() + 543;
-    const type = parsed?.type === "income" || parsed?.type === "expense" ? parsed.type : "income";
-    const category = parsed?.category && parsed.category !== "-" ? Number(parsed.category) : 1;
+    const type = parsed?.type === "income" || parsed?.type === "expense" ? parsed.type : "";
+    const category = parsed?.category && parsed.category !== "-" ? Number(parsed.category) : 0;
     return this.openEntityDialog({
       title: mode === "add" ? "เพิ่มรายการการเงิน" : "แก้ไขรายการการเงิน",
-      hint: "เลือกประเภทเป็นรายรับหรือรายจ่าย แล้วระบบจะสรุปยอดให้ทันที",
+      hint: "เลือกประเภทเป็นรายรับหรือรายจ่ายก่อน แล้วเลือกหมวดของประเภทนั้น ระบบจะสรุปยอดให้ทันที",
       fields: [
         {
           name: "date",
@@ -605,21 +618,21 @@ class EntityDialogService {
           type: "select",
           required: true,
           value: type,
+          // empty option lets the user consciously pick income/expense first
           options: [
             { value: "income", label: "รายรับ" },
             { value: "expense", label: "รายจ่าย" }
           ]
         },
         {
+          // Options are (re)built by afterRender based on the selected type, so
+          // income and expense never share one confusing category list.
           name: "category",
-          label: "หมวด (1-5)",
+          label: "หมวด",
           type: "select",
           required: true,
-          value: String(category),
-          options: FINANCE_INCOME_LABELS.map((incomeLabel, index) => ({
-            value: String(index + 1),
-            label: FINANCE_CATEGORY_OPTION_LABELS[index] || `${index + 1}. ${incomeLabel} / ${FINANCE_EXPENSE_LABELS[index]}`
-          }))
+          value: "",
+          options: []
         },
         {
           name: "amount",
@@ -653,8 +666,48 @@ class EntityDialogService {
           wide: true,
           value: parsed?.note || ""
         }
-      ]
+      ],
+      afterRender: (controls) => this.wireFinanceCategory(controls, { initialType: type, initialCategory: category })
     });
+  }
+
+  // Makes the "หมวด" dropdown follow the "ประเภท" dropdown: income vs expense get
+  // their own category list, changing type resets the chosen category, and the
+  // field label/placeholder update to match. Category values stay 1-5 (positional).
+  wireFinanceCategory(controls, { initialType, initialCategory }) {
+    const typeSelect = controls.type;
+    const categorySelect = controls.category;
+    if (!typeSelect || !categorySelect) return;
+
+    const labelEl = categorySelect.closest(".row-field")?.querySelector("label");
+    const setLabel = (text) => {
+      if (labelEl) labelEl.innerHTML = `${Format.escapeHtml(text)} <span class="req">*</span>`;
+    };
+    const makeOption = (value, text) => {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = text;
+      return option;
+    };
+
+    // Prepend an empty option so "ประเภท" can start unchosen.
+    if (!typeSelect.querySelector('option[value=""]')) {
+      typeSelect.insertBefore(makeOption("", "เลือกประเภท"), typeSelect.firstChild);
+    }
+    typeSelect.value = initialType || "";
+
+    const rebuild = (typeValue, selectedCategory) => {
+      const view = financeCategoryView(typeValue);
+      categorySelect.replaceChildren();
+      for (const option of view.options) categorySelect.appendChild(makeOption(option.value, option.text));
+      categorySelect.disabled = view.disabled;
+      const wanted = String(selectedCategory || "");
+      categorySelect.value = view.options.some((option) => option.value === wanted && wanted) ? wanted : "";
+      setLabel(view.label);
+    };
+
+    rebuild(typeSelect.value, initialCategory);
+    typeSelect.addEventListener("change", () => rebuild(typeSelect.value, 0)); // reset category on type change
   }
 
   async openUnitDialog(mode, row = null) {
@@ -1170,4 +1223,4 @@ class EntityDialogService {
   }
 }
 
-export { EntityDialogService };
+export { EntityDialogService, financeCategoryView };
