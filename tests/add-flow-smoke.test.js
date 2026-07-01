@@ -66,7 +66,10 @@ async function createApp({ dialogs, initialTables = {} }) {
     cg: new Set(),
     cm: new Set(),
     supplies: new Set(),
-    finance: new Set()
+    supplyIssues: new Set(),
+    visits: new Set(),
+    finance: new Set(),
+    units: new Set()
   };
   return {
     ...ltcAppActionMethods,
@@ -79,8 +82,19 @@ async function createApp({ dialogs, initialTables = {} }) {
         cg: null,
         cm: null,
         supplies: null,
-        finance: null
+        supplyIssues: null,
+        visits: null,
+        finance: null,
+        units: null
       }
+    },
+    helpers: {
+      fullNameFromDependent(row) {
+        return [row?.["ชื่อ"], row?.["สกุล"]].filter(Boolean).join(" ") || row?.beneficiaryName || row?.name || "-";
+      }
+    },
+    el: {
+      visitStatusText: { textContent: "" }
     },
     getCheckedSet(key) {
       return checked[key];
@@ -397,4 +411,108 @@ test("CM and CG add/edit/delete paths keep names and links working", async () =>
   await app.handleDeleteCm();
   assert.equal(app.repo.tables.get("t01_cg").length, 0);
   assert.equal(app.repo.tables.get("t02_cm").length, 0);
+});
+
+test("visit, supply issue, finance, and unit add/edit/delete paths work", async () => {
+  const dialogs = {
+    async openVisitDialog(mode) {
+      return {
+        beneficiaryId: "1",
+        visitDate: mode === "add" ? "2026-07-01" : "2026-07-02",
+        visitorName: mode === "add" ? "Visitor One" : "Visitor Two",
+        responsibleCgId: "CG1",
+        responsibleCmId: "CM1",
+        activityType: "home-visit",
+        status: "completed",
+        note: mode
+      };
+    },
+    async openSupplyMovementDialog(mode, _product, defaults = null) {
+      if (mode === "in") {
+        return { typeCode: "11", date: "2026-07-01", quantity: 10, reference: "IN", note: "" };
+      }
+      return {
+        typeCode: "11",
+        date: defaults ? "2026-07-03" : "2026-07-02",
+        quantity: defaults ? 4 : 3,
+        ltcCode: "",
+        round: "1",
+        brand: "",
+        machineCode: "",
+        reference: defaults ? "OUT-EDIT" : "OUT",
+        note: ""
+      };
+    },
+    async openFinanceDialog(mode) {
+      return mode === "add"
+        ? { date: "2026-07-01", type: "income", category: "5", amount: 100, year: 2569, note: "income" }
+        : { date: "2026-07-02", type: "expense", category: "5", amount: 40, year: 2569, note: "expense" };
+    },
+    async openUnitDialog(mode) {
+      return {
+        unitCode: mode === "add" ? "UNIT-A" : "UNIT-B",
+        unitName: mode === "add" ? "Unit A" : "Unit B",
+        addressNo: "1",
+        moo: "1",
+        road: "",
+        subdistrict: "ชำราก",
+        district: "เมือง",
+        province: "ตราด",
+        postcode: "23000",
+        phone: "039000000"
+      };
+    }
+  };
+  const app = await createApp({
+    dialogs,
+    initialTables: {
+      t04_dataj: [{ __rowid: "dep-1", ID: 1, "ชื่อ": "Patient", "สกุล": "One" }],
+      t01_cg: [{ __rowid: "cg-1", "รหัสcg": "CG1", "ชื่อสกุล": "CG One" }],
+      t02_cm: [{ __rowid: "cm-1", "รหัสcm": "CM1", "ชื่อสกุล": "CM One" }],
+      t16_product: [{ __rowid: "product-1", id: 1, productID: "SUP-001", productName: "Gloves", price: 10, unit: "ชิ้น" }],
+      t09_intproduct: [],
+      t13_outproduct: [],
+      t23_tbl_income_expense: [],
+      t26_unit: [],
+      t27_visits: []
+    }
+  });
+  global.confirm = () => true;
+
+  await app.handleAddVisit();
+  assert.equal(app.repo.tables.get("t27_visits").length, 1);
+  assert.equal(app.repo.tables.get("t27_visits")[0].visitorName, "Visitor One");
+  app.state.selected.visits = app.repo.tables.get("t27_visits")[0].__rowid;
+  await app.handleEditVisit();
+  assert.equal(app.repo.tables.get("t27_visits")[0].visitorName, "Visitor Two");
+  await app.handleDeleteVisit();
+  assert.equal(app.repo.tables.get("t27_visits").length, 0);
+
+  app.state.selected.supplies = "product-1";
+  await app.handleSupplyIn();
+  await app.handleSupplyOut();
+  assert.equal(app.repo.tables.get("t09_intproduct")[0].quantity, 10);
+  assert.equal(app.repo.tables.get("t13_outproduct")[0].quantity, 3);
+  app.state.selected.supplyIssues = app.repo.tables.get("t13_outproduct")[0].__rowid;
+  await app.handleEditSupplyIssue();
+  assert.equal(app.repo.tables.get("t13_outproduct")[0].quantity, 4);
+  assert.equal(app.repo.tables.get("t13_outproduct")[0].reference, "OUT-EDIT");
+  await app.handleDeleteSupplyIssue();
+  assert.equal(app.repo.tables.get("t13_outproduct").length, 0);
+
+  await app.handleAddFinance();
+  assert.equal(app.repo.tables.get("t23_tbl_income_expense")[0]["รายรับ5"], 100);
+  app.state.selected.finance = app.repo.tables.get("t23_tbl_income_expense")[0].__rowid;
+  await app.handleEditFinance();
+  assert.equal(app.repo.tables.get("t23_tbl_income_expense")[0]["รายจ่าย5"], 40);
+  await app.handleDeleteFinance();
+  assert.equal(app.repo.tables.get("t23_tbl_income_expense").length, 0);
+
+  await app.handleAddUnit();
+  assert.equal(app.repo.tables.get("t26_unit")[0]["รหัสหน่วย"], "UNIT-A");
+  app.state.selected.units = app.repo.tables.get("t26_unit")[0].__rowid;
+  await app.handleEditUnit();
+  assert.equal(app.repo.tables.get("t26_unit")[0]["รหัสหน่วย"], "UNIT-B");
+  await app.handleDeleteUnit();
+  assert.equal(app.repo.tables.get("t26_unit").length, 0);
 });
