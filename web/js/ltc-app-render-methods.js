@@ -1,5 +1,5 @@
 import { Format } from "./utils.js";
-import { HIGH_TAI } from "./config.js";
+import { FINANCE_EXPENSE_LABELS, FINANCE_INCOME_LABELS, HIGH_TAI } from "./config.js";
 import { methodsFromPrototype } from "./mixin-utils.js";
 import { renderCheckCell, renderInfoRows, selectedRowClass } from "./render-helpers.js";
 
@@ -369,15 +369,20 @@ class LtcAppRenderMethodCarrier {
 
     const query = String(this.state.queries.visits || "").trim().toLowerCase();
     const statusFilter = String(this.state.queries.visitStatus || "").trim();
-    const dateFilter = String(this.state.queries.visitDate || "").trim();
+    const monthFrom = String(this.state.queries.visitMonthFrom || "").trim();
+    const monthTo = String(this.state.queries.visitMonthTo || "").trim();
+    const hasMonthFilter = Boolean(monthFrom || monthTo);
+    const monthRange = this.domain.visitMonthRange({ fromMonth: monthFrom, toMonth: monthTo });
     const prepared = visitRows
       .map((row) => ({
         row,
         statusKey: String(row.status || "").toLowerCase().replace(/[\s-]+/g, "_"),
+        visitTs: this.domain.dateTs(row.visitDate),
         dateText: Format.formatDateCompact(row.visitDate),
         searchText: [
           row.beneficiaryName,
           row.beneficiaryId,
+          row.visitorName,
           row.responsibleCgName,
           row.responsibleCgId,
           row.responsibleCmName,
@@ -389,7 +394,12 @@ class LtcAppRenderMethodCarrier {
           .join(" ")
           .toLowerCase()
       }))
-      .filter((entry) => (!query || entry.searchText.includes(query)) && (!statusFilter || entry.statusKey === statusFilter) && (!dateFilter || entry.dateText === dateFilter))
+      .filter(
+        (entry) =>
+          (!query || entry.searchText.includes(query)) &&
+          (!statusFilter || entry.statusKey === statusFilter) &&
+          (!hasMonthFilter || (entry.visitTs != null && entry.visitTs >= monthRange.startTs && entry.visitTs <= monthRange.endTs))
+      )
       .sort((a, b) => new Date(b.row.visitDate || 0).getTime() - new Date(a.row.visitDate || 0).getTime());
 
     this.el.visitBody.innerHTML = prepared.length
@@ -401,6 +411,7 @@ class LtcAppRenderMethodCarrier {
                 ${renderCheckCell(this.getCheckedSet("visits").has(row.__rowid))}
                 <td>${Format.escapeHtml(entry.dateText)}</td>
                 <td>${Format.escapeHtml(row.beneficiaryName || row.beneficiaryId || "-")}</td>
+                <td>${Format.escapeHtml(row.visitorName || "-")}</td>
                 <td>${Format.escapeHtml(row.responsibleCgName || row.responsibleCgId || "-")}</td>
                 <td>${Format.escapeHtml(row.responsibleCmName || row.responsibleCmId || "-")}</td>
                 <td>${Format.escapeHtml(row.activityType || "-")}</td>
@@ -410,7 +421,7 @@ class LtcAppRenderMethodCarrier {
             `;
           })
           .join("")
-      : `<tr><td colspan="8" class="empty-row">ยังไม่มีบันทึกเยี่ยมบ้าน กด "เพิ่มบันทึกเยี่ยม" เพื่อเริ่มใช้งาน</td></tr>`;
+      : `<tr><td colspan="9" class="empty-row">ยังไม่มีบันทึกเยี่ยมบ้าน กด "เพิ่มบันทึกเยี่ยม" เพื่อเริ่มใช้งาน</td></tr>`;
 
     if (this.el.visitStatusText) {
       this.el.visitStatusText.textContent = `แสดง ${Format.number(prepared.length)} จาก ${Format.number(visitRows.length)} รายการ`;
@@ -418,6 +429,15 @@ class LtcAppRenderMethodCarrier {
 
     this.paintSelection(this.el.visitBody, this.state.selected.visits);
     this.syncSelectAllCheckbox(this.el.visitBody, "visits", this.el.visitSelectAll);
+
+    const monthlySummary = this.domain.buildVisitMonthSummary(visitRows, { fromMonth: monthFrom, toMonth: monthTo });
+    this.el.visitPersonMonthRows.innerHTML = this.renderCompactRows(
+      monthlySummary.map((row) => ({
+        label: row.beneficiaryName || row.beneficiaryId || "-",
+        value: `${Format.number(row.count)} ครั้ง: ${row.dates.map((date) => Format.formatDateCompact(date)).join(", ")}`
+      })),
+      "ยังไม่มีบันทึกเยี่ยมสำเร็จในช่วงเดือนนี้"
+    );
 
     const workloads = this.domain.summarizeStaffWorkloads(dependentRows, visitRows, groupRows);
     const toWorkloadRows = (rows) =>
@@ -624,20 +644,14 @@ class LtcAppRenderMethodCarrier {
     this.el.financeNetCard.textContent = Format.currency(summary.net);
 
     const incomeRows = [
-      { label: "รายรับประเภท 1", value: summary.income[0] },
-      { label: "รายรับประเภท 2", value: summary.income[1] },
-      { label: "รายรับประเภท 3", value: summary.income[2] },
-      { label: "รายรับประเภท 4", value: summary.income[3] },
+      ...FINANCE_INCOME_LABELS.map((label, index) => ({ label, value: summary.income[index] || 0 })),
       { label: "รวมรายรับ", value: summary.totalIncome, strong: true }
     ];
 
     this.el.financeIncomeRows.innerHTML = renderInfoRows(incomeRows);
 
     const expenseRows = [
-      { label: "รายจ่ายประเภท 1", value: summary.expense[0] },
-      { label: "รายจ่ายประเภท 2", value: summary.expense[1] },
-      { label: "รายจ่ายประเภท 3", value: summary.expense[2] },
-      { label: "รายจ่ายประเภท 4", value: summary.expense[3] },
+      ...FINANCE_EXPENSE_LABELS.map((label, index) => ({ label, value: summary.expense[index] || 0 })),
       { label: "รวมรายจ่าย", value: summary.totalExpense, strong: true }
     ];
 
@@ -651,8 +665,8 @@ class LtcAppRenderMethodCarrier {
     const analysisRows = [
       { label: "จำนวนรายการทั้งหมด", value: `${Format.number(rows.length)} รายการ` },
       { label: "รายจ่ายต่อรายรับ", value: `${expenseRatio.toFixed(2)}%` },
-      { label: "หมวดรายรับสูงสุด", value: `ประเภท ${highestIncomeCategory}` },
-      { label: "หมวดรายจ่ายสูงสุด", value: `ประเภท ${highestExpenseCategory}` },
+      { label: "หมวดรายรับสูงสุด", value: FINANCE_INCOME_LABELS[highestIncomeCategory - 1] || `ประเภท ${highestIncomeCategory}` },
+      { label: "หมวดรายจ่ายสูงสุด", value: FINANCE_EXPENSE_LABELS[highestExpenseCategory - 1] || `ประเภท ${highestExpenseCategory}` },
       { label: "อัตราเงินคงเหลือ", value: `${savingsRate.toFixed(2)}%` }
     ];
 
@@ -666,6 +680,11 @@ class LtcAppRenderMethodCarrier {
       if (dateDiff !== 0) return dateDiff;
       return (Number(b.row.ID) || 0) - (Number(a.row.ID) || 0);
     });
+    const categoryLabel = (entry) => {
+      if (entry.type === "income") return FINANCE_INCOME_LABELS[entry.category - 1] || entry.category;
+      if (entry.type === "expense") return FINANCE_EXPENSE_LABELS[entry.category - 1] || entry.category;
+      return entry.category;
+    };
 
     this.el.financeBody.innerHTML = parsedRows.length
       ? parsedRows
@@ -679,7 +698,7 @@ class LtcAppRenderMethodCarrier {
                 <td>${Format.escapeHtml(Format.formatDateCompact(entry.date))}</td>
                 <td>${Format.escapeHtml(entry.year)}</td>
                 <td><span class="tag ${tagClass}">${Format.escapeHtml(typeLabel)}</span></td>
-                <td>${Format.escapeHtml(entry.category)}</td>
+                <td>${Format.escapeHtml(categoryLabel(entry))}</td>
                 <td class="cell-money">${Format.currency(entry.amount)}</td>
                 <td>${Format.escapeHtml(entry.note || "-")}</td>
               </tr>

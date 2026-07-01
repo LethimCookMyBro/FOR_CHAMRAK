@@ -25,7 +25,8 @@ class LtcApp {
         cg: "",
         visits: "",
         visitStatus: "",
-        visitDate: "",
+        visitMonthFrom: "",
+        visitMonthTo: "",
         supplyIssues: ""
       },
       selected: {
@@ -92,7 +93,8 @@ class LtcApp {
       cmSelectAll: document.getElementById("cmSelectAll"),
 
       visitSearch: document.getElementById("visitSearch"),
-      visitDateFilter: document.getElementById("visitDateFilter"),
+      visitMonthFromFilter: document.getElementById("visitMonthFromFilter"),
+      visitMonthToFilter: document.getElementById("visitMonthToFilter"),
       visitStatusFilter: document.getElementById("visitStatusFilter"),
       visitStatusText: document.getElementById("visitStatusText"),
       visitBody: document.getElementById("visitBody"),
@@ -101,6 +103,7 @@ class LtcApp {
       visitDeleteBtn: document.getElementById("visitDeleteBtn"),
       visitDeleteBatchBtn: document.getElementById("visitDeleteBatchBtn"),
       visitSelectAll: document.getElementById("visitSelectAll"),
+      visitPersonMonthRows: document.getElementById("visitPersonMonthRows"),
       visitCgWorkloadRows: document.getElementById("visitCgWorkloadRows"),
       visitCmWorkloadRows: document.getElementById("visitCmWorkloadRows"),
       visitAreaReportRows: document.getElementById("visitAreaReportRows"),
@@ -229,8 +232,12 @@ class LtcApp {
       this.state.queries.visits = Format.toText(event.target.value).toLowerCase();
       this.scheduleRender("visits", () => this.renderVisits());
     });
-    this.el.visitDateFilter?.addEventListener("change", (event) => {
-      this.state.queries.visitDate = Format.toText(event.target.value);
+    this.el.visitMonthFromFilter?.addEventListener("change", (event) => {
+      this.state.queries.visitMonthFrom = Format.toText(event.target.value);
+      this.scheduleRender("visits", () => this.renderVisits());
+    });
+    this.el.visitMonthToFilter?.addEventListener("change", (event) => {
+      this.state.queries.visitMonthTo = Format.toText(event.target.value);
       this.scheduleRender("visits", () => this.renderVisits());
     });
     this.el.visitStatusFilter?.addEventListener("change", (event) => {

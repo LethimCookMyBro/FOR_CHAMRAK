@@ -866,6 +866,7 @@ class LtcAppActionMethodCarrier {
       beneficiaryId: String(form.beneficiaryId || ""),
       beneficiaryName: beneficiary ? this.helpers.fullNameFromDependent(beneficiary) : baseRow?.beneficiaryName || "",
       visitDate: form.visitDate,
+      visitorName: Format.cleanWhitespace(form.visitorName) || "",
       responsibleCgId: form.responsibleCgId || "",
       responsibleCgName: cg ? this.staffName(cg) : baseRow?.responsibleCgName || "",
       responsibleCmId: form.responsibleCmId || "",

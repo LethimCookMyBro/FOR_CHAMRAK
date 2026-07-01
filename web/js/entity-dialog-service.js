@@ -1,4 +1,5 @@
 import { Format, Validate, NameUtils } from "./utils.js";
+import { FINANCE_EXPENSE_LABELS, FINANCE_INCOME_LABELS } from "./config.js";
 
 class EntityDialogService {
   constructor(el, repo, domain, helpers) {
@@ -302,6 +303,7 @@ class EntityDialogService {
     const initial = {
       beneficiaryId: row?.beneficiaryId || "",
       visitDate: row?.visitDate || Format.todayDateInput(),
+      visitorName: row?.visitorName || row?.responsibleCgName || row?.responsibleCmName || "",
       responsibleCgId: row?.responsibleCgId || "",
       responsibleCmId: row?.responsibleCmId || "",
       activityType: row?.activityType || "",
@@ -328,6 +330,7 @@ class EntityDialogService {
           })
         },
         { name: "visitDate", label: "วันที่เยี่ยม", type: "date", required: true, value: initial.visitDate },
+        { name: "visitorName", label: "ชื่อ-นามสกุลผู้เข้าเยี่ยม", type: "text", required: true, value: initial.visitorName },
         {
           name: "responsibleCgId",
           label: "CG ผู้รับผิดชอบ",
@@ -606,16 +609,14 @@ class EntityDialogService {
         },
         {
           name: "category",
-          label: "หมวด (1-4)",
+          label: "หมวด (1-5)",
           type: "select",
           required: true,
           value: String(category),
-          options: [
-            { value: "1", label: "ประเภท 1" },
-            { value: "2", label: "ประเภท 2" },
-            { value: "3", label: "ประเภท 3" },
-            { value: "4", label: "ประเภท 4" }
-          ]
+          options: FINANCE_INCOME_LABELS.map((incomeLabel, index) => ({
+            value: String(index + 1),
+            label: `${index + 1}. รายรับ: ${incomeLabel} / รายจ่าย: ${FINANCE_EXPENSE_LABELS[index]}`
+          }))
         },
         {
           name: "amount",

@@ -356,8 +356,9 @@
             </div>
           </div>
           <div class="filter-row">
-            <input id="visitSearch" class="search-input" type="search" placeholder="ค้นหาผู้รับบริการ, CG, CM, กิจกรรม, หมายเหตุ...">
-            <input id="visitDateFilter" class="filter-control" type="date" aria-label="กรองวันที่เยี่ยม">
+            <input id="visitSearch" class="search-input" type="search" placeholder="ค้นหาผู้รับบริการ, ผู้เข้าเยี่ยม, CG, CM, กิจกรรม, หมายเหตุ...">
+            <input id="visitMonthFromFilter" class="filter-control" type="month" aria-label="กรองตั้งแต่เดือน" title="ตั้งแต่เดือน">
+            <input id="visitMonthToFilter" class="filter-control" type="month" aria-label="กรองถึงเดือน" title="ถึงเดือน">
             <select id="visitStatusFilter" class="filter-control" aria-label="กรองสถานะการเยี่ยม">
               <option value="">ทุกสถานะ</option>
               <option value="completed">completed</option>
@@ -374,6 +375,7 @@
                   <th class="check-col"><input id="visitSelectAll" class="select-all-check" type="checkbox" aria-label="เลือกทั้งหมด"></th>
                   <th>วันที่เยี่ยม</th>
                   <th>ผู้รับบริการ</th>
+                  <th>ผู้เข้าเยี่ยม</th>
                   <th>CG</th>
                   <th>CM</th>
                   <th>กิจกรรม</th>
@@ -384,6 +386,11 @@
               <tbody id="visitBody"></tbody>
             </table>
           </div>
+
+          <section class="card">
+            <header class="card-head">สรุปวันที่เข้าเยี่ยมตามช่วงเดือน</header>
+            <div class="card-body compact-list" id="visitPersonMonthRows"></div>
+          </section>
 
           <div class="section-head">
             <h2>ภาระงาน CG/CM</h2>

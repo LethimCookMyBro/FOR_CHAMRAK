@@ -23,12 +23,16 @@ test("visit workflow is exposed as a local table-backed screen", async () => {
   await fs.access(path.join(repoRoot, "chamrak_export", "data", "t27_visits.json"));
   assert.match(index, /data-page="visits"/);
   assert.match(index, /id="visitAddBtn"/);
-  assert.match(index, /id="visitStatusFilter"/);
+  assert.match(index, /id="visitMonthFromFilter"/);
+  assert.match(index, /id="visitPersonMonthRows"/);
   assert.match(app, /visits:\s*""/);
+  assert.match(app, /visitMonthFrom:\s*""/);
   assert.match(app, /bindSelectableTable\(this\.el\.visitBody,\s*"visits"/);
   assert.match(actions, /handleAddVisit/);
+  assert.match(actions, /visitorName/);
   assert.match(actions, /handleDeleteVisit/);
   assert.match(dialogs, /openVisitDialog/);
+  assert.match(dialogs, /visitorName/);
 });
 
 test("visit coverage counts only completed visits in the care plan window", async () => {
@@ -113,4 +117,21 @@ test("domain summaries cover ADL warnings, care plan alerts, workload, and area 
   const reports = domain.summarizeAreaReports(dependents, visits, [], { today: "2026-06-28" });
   assert.equal(reports.bySubdistrict.find((row) => row.key === "A").count, 2);
   assert.equal(reports.byDependency.find((row) => row.key === "C3").count, 1);
+});
+
+test("visit month summary lists completed visit dates per beneficiary", async () => {
+  const DomainService = await loadDomainService();
+  const domain = new DomainService({});
+  const visits = [
+    { beneficiaryId: 1, beneficiaryName: "A", visitDate: "2026-02-01", status: "completed" },
+    { beneficiaryId: 1, beneficiaryName: "A", visitDate: "2026-03-05", status: "completed" },
+    { beneficiaryId: 1, beneficiaryName: "A", visitDate: "2026-04-01", status: "completed" },
+    { beneficiaryId: 2, beneficiaryName: "B", visitDate: "2026-03-10", status: "cancelled" }
+  ];
+
+  const [summary] = domain.buildVisitMonthSummary(visits, { fromMonth: "2026-02", toMonth: "2026-03" });
+
+  assert.equal(summary.beneficiaryName, "A");
+  assert.equal(summary.count, 2);
+  assert.deepEqual(summary.dates, ["2026-02-01", "2026-03-05"]);
 });

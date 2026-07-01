@@ -154,7 +154,7 @@ test("dependent, CG, supply, and finance add handlers save new rows and select s
       return {
         date: "2026-06-25",
         type: "income",
-        category: "1",
+        category: "5",
         amount: 100,
         year: 2569,
         note: "smoke test"
@@ -192,6 +192,8 @@ test("dependent, CG, supply, and finance add handlers save new rows and select s
   assert.equal(products[0].reorderPoint, undefined);
   assert.equal(dependents[0].G, 1);
   assert.equal(financeRows[0].ID, 1);
+  assert.equal(financeRows[0]["รายรับ5"], 100);
+  assert.equal(financeRows[0]["รายรับ1"], null);
 
   assert.equal(app.state.selected.dependents, dependents[0].__rowid);
   assert.equal(app.state.selected.cg, cgRows[0].__rowid);

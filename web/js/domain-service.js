@@ -69,6 +69,30 @@ class DomainService {
     };
   }
 
+  monthBoundary(value, end = false) {
+    const match = Format.toText(value).match(/^(\d{4})-(\d{2})$/);
+    if (!match) return null;
+    const year = Number(match[1]);
+    const month = Number(match[2]);
+    if (!Number.isInteger(year) || month < 1 || month > 12) return null;
+    return end ? new Date(year, month, 0, 23, 59, 59, 999).getTime() : new Date(year, month - 1, 1).getTime();
+  }
+
+  visitMonthRange(options = {}) {
+    const from = this.monthBoundary(options.fromMonth);
+    const to = this.monthBoundary(options.toMonth, true);
+    if (from != null && to != null && from > to) {
+      return {
+        startTs: this.monthBoundary(options.toMonth),
+        endTs: this.monthBoundary(options.fromMonth, true)
+      };
+    }
+    return {
+      startTs: from ?? Number.NEGATIVE_INFINITY,
+      endTs: to ?? Number.POSITIVE_INFINITY
+    };
+  }
+
   dependentId(row) {
     return Format.toText(
       this.firstValue(row, [
@@ -268,6 +292,31 @@ class DomainService {
     };
   }
 
+  buildVisitMonthSummary(visits, options = {}) {
+    const range = this.visitMonthRange(options);
+    const grouped = new Map();
+
+    for (const row of Array.isArray(visits) ? visits : []) {
+      if (String(row.status || "").toLowerCase() !== "completed") continue;
+      const visitTs = this.dateTs(row.visitDate);
+      if (visitTs == null || visitTs < range.startTs || visitTs > range.endTs) continue;
+
+      const beneficiaryId = this.visitBeneficiaryId(row);
+      const beneficiaryName = Format.toText(row.beneficiaryName || row.dependentName || row.displayName || beneficiaryId || "-");
+      const key = beneficiaryId || beneficiaryName;
+      if (!grouped.has(key)) grouped.set(key, { beneficiaryId, beneficiaryName, dates: [] });
+      grouped.get(key).dates.push(row.visitDate);
+    }
+
+    return [...grouped.values()]
+      .map((row) => ({
+        ...row,
+        dates: row.dates.sort((a, b) => (this.dateTs(a) || 0) - (this.dateTs(b) || 0)),
+        count: row.dates.length
+      }))
+      .sort((a, b) => b.count - a.count || a.beneficiaryName.localeCompare(b.beneficiaryName));
+  }
+
   parseFinanceRow(row) {
     const incomeByCategory = FINANCE_INCOME_FIELDS.map((field) => Number(row[field]) || 0);
     const expenseByCategory = FINANCE_EXPENSE_FIELDS.map((field) => Number(row[field]) || 0);
@@ -321,14 +370,6 @@ class DomainService {
       "ปี": String(form.year),
       "รุ่น": Number(baseRow["รุ่น"] || 1),
       "รอบ": baseRow["รอบ"] ?? null,
-      "รายรับ1": null,
-      "รายรับ2": null,
-      "รายรับ3": null,
-      "รายรับ4": null,
-      "รายจ่าย1": null,
-      "รายจ่าย2": null,
-      "รายจ่าย3": null,
-      "รายจ่าย4": null,
       "หมายเหตุ": Format.cleanWhitespace(form.note) || null,
       "สถานะ": type === "income" ? 1 : 2,
       iout: baseRow.iout ?? null,
@@ -340,11 +381,9 @@ class DomainService {
       inid: baseRow.inid ?? null
     };
 
-    if (type === "income") {
-      row[`รายรับ${categoryIndex}`] = amount;
-    } else {
-      row[`รายจ่าย${categoryIndex}`] = amount;
-    }
+    for (const field of [...FINANCE_INCOME_FIELDS, ...FINANCE_EXPENSE_FIELDS]) row[field] = null;
+    const fields = type === "income" ? FINANCE_INCOME_FIELDS : FINANCE_EXPENSE_FIELDS;
+    row[fields[categoryIndex - 1] || fields[0]] = amount;
 
     return row;
   }
