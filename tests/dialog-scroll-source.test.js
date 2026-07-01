@@ -105,9 +105,14 @@ test("finance category dropdown splits by type and resets on type change", async
   // Changing type rebuilds the category list with the selection reset.
   assert.match(source, /typeSelect\.addEventListener\("change",[\s\S]*rebuild\(typeSelect\.value,\s*0\)/);
 
-  // Category #2 label is the requested wording, in both income and expense lists.
-  const catTwo = config.match(/แผนงานกองทุนฯ ทต\. ชำราก/g) || [];
-  assert.ok(catTwo.length >= 2, "หมวดข้อ 2 must read 'แผนงานกองทุนฯ ทต. ชำราก' for income and expense");
-  // Compact labels only — the old long official sentences must not widen the select.
-  assert.doesNotMatch(config, /เงินสนับสนุนตามแผนงาน/);
+  // Category labels stay display-only, but the shown wording must match the latest owner-provided list.
+  assert.match(config, /"แผนงาน\/โครงการ LTC"/);
+  assert.match(config, /"แผนงาน\/โครงการ กองทุนฯ ทต\. ชำราก"/);
+  assert.match(config, /"เงินบริจาค"/);
+  assert.match(config, /"ดอกเบี้ยเงินฝาก"/);
+  assert.match(config, /"ค่าตอบแทน CM"/);
+  assert.match(config, /"ค่าตอบแทน CG"/);
+  assert.match(config, /"ค่าวัสดุอุปกรณ์"/);
+  assert.match(config, /"ค่าบริหารจัดการศูนย์ฯ"/);
+  assert.doesNotMatch(config, /แผนงาน LTC \/ CM|ค่าตอบแทน CG \/ CM|วัสดุแพทย์ \/ อุปกรณ์ดูแล|ค่าใช้จ่ายบริหารศูนย์/);
 });

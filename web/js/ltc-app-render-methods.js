@@ -676,9 +676,13 @@ class LtcAppRenderMethodCarrier {
       return (Number(b.row.ID) || 0) - (Number(a.row.ID) || 0);
     });
     const categoryLabel = (entry) => {
-      if (entry.type === "income") return FINANCE_INCOME_LABELS[entry.category - 1] || entry.category;
-      if (entry.type === "expense") return FINANCE_EXPENSE_LABELS[entry.category - 1] || entry.category;
-      return entry.category;
+      const label =
+        entry.type === "income"
+          ? FINANCE_INCOME_LABELS[entry.category - 1] || entry.category
+          : entry.type === "expense"
+            ? FINANCE_EXPENSE_LABELS[entry.category - 1] || entry.category
+            : entry.category;
+      return entry.legacyNeedsReview ? `${label} (ข้อมูลเดิม โปรดตรวจสอบ)` : label;
     };
 
     this.el.financeBody.innerHTML = parsedRows.length

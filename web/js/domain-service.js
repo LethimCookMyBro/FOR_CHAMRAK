@@ -1,4 +1,9 @@
-import { FINANCE_EXPENSE_FIELDS, FINANCE_INCOME_FIELDS } from "./config.js";
+import {
+  FINANCE_CATEGORY_SCHEMA_VERSION,
+  FINANCE_EXPENSE_FIELDS,
+  FINANCE_INCOME_FIELDS,
+  FINANCE_LEGACY_REVIEW_CATEGORIES
+} from "./config.js";
 import { Format } from "./utils.js";
 
 class DomainService {
@@ -343,10 +348,15 @@ class DomainService {
       amount = 0;
     }
 
+    const categorySchemaVersion = Number(row.financeCategorySchemaVersion || 0) || 0;
+    const legacyReviewSet = FINANCE_LEGACY_REVIEW_CATEGORIES[type];
+
     return {
       row,
       type,
       category,
+      categorySchemaVersion,
+      legacyNeedsReview: categorySchemaVersion < FINANCE_CATEGORY_SCHEMA_VERSION && Boolean(legacyReviewSet?.has(category)),
       amount,
       incomeTotal,
       expenseTotal,
@@ -361,6 +371,10 @@ class DomainService {
     const amount = Number(form.amount);
     const categoryIndex = Number(form.category);
     const type = form.type;
+    const fields = type === "income" ? FINANCE_INCOME_FIELDS : type === "expense" ? FINANCE_EXPENSE_FIELDS : null;
+    if (!fields || !Number.isInteger(categoryIndex) || categoryIndex < 1 || categoryIndex > fields.length) {
+      throw new Error("หมวดรายรับ/รายจ่ายไม่ถูกต้อง");
+    }
 
     const row = {
       ...baseRow,
@@ -377,13 +391,15 @@ class DomainService {
       number: baseRow.number ?? null,
       name: baseRow.name ?? null,
       exdate: Format.dateInputToIso(form.date),
+      financeCategorySchemaVersion: FINANCE_CATEGORY_SCHEMA_VERSION,
+      financeCategory: String(categoryIndex),
+      financeCategoryType: type,
       outlist: baseRow.outlist ?? null,
       inid: baseRow.inid ?? null
     };
 
     for (const field of [...FINANCE_INCOME_FIELDS, ...FINANCE_EXPENSE_FIELDS]) row[field] = null;
-    const fields = type === "income" ? FINANCE_INCOME_FIELDS : FINANCE_EXPENSE_FIELDS;
-    row[fields[categoryIndex - 1] || fields[0]] = amount;
+    row[fields[categoryIndex - 1]] = amount;
 
     return row;
   }

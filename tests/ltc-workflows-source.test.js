@@ -153,3 +153,29 @@ test("finance summary includes all five income and expense categories", async ()
   assert.equal(summary.totalExpense, 45);
   assert.equal(summary.net, 75);
 });
+
+test("finance rows mark the current category schema and flag ambiguous legacy rows", async () => {
+  const DomainService = await loadDomainService();
+  const domain = new DomainService({});
+
+  const current = domain.buildFinanceRow(
+    { type: "expense", category: "2", amount: 50, date: "2026-07-01", year: 2569, note: "cg" },
+    {},
+    1
+  );
+
+  assert.equal(current.financeCategorySchemaVersion, 2);
+  assert.equal(current.financeCategoryType, "expense");
+  assert.equal(current.financeCategory, "2");
+  assert.equal(domain.parseFinanceRow(current).legacyNeedsReview, false);
+
+  const legacyExpense = domain.parseFinanceRow({ "รายจ่าย2": 50 });
+  assert.equal(legacyExpense.type, "expense");
+  assert.equal(legacyExpense.category, "2");
+  assert.equal(legacyExpense.legacyNeedsReview, true);
+
+  assert.throws(
+    () => domain.buildFinanceRow({ type: "expense", category: "9", amount: 50, date: "2026-07-01", year: 2569 }, {}, 1),
+    /หมวดรายรับ\/รายจ่ายไม่ถูกต้อง/
+  );
+});

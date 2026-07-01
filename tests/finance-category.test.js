@@ -24,13 +24,23 @@ test("finance category view splits income vs expense with placeholder before typ
   assert.equal(income.label, "หมวดรายรับ");
   assert.equal(income.options[0].text, "เลือกหมวด");
   assert.equal(income.options.length, 6, "placeholder + 5 categories");
-  assert.equal(income.options[1].text, "1. แผนงาน LTC / CM");
-  assert.equal(income.options[2].text, "2. แผนงานกองทุนฯ ทต. ชำราก");
+  assert.deepEqual(income.options.slice(1).map((o) => o.text), [
+    "1. แผนงาน/โครงการ LTC",
+    "2. แผนงาน/โครงการ กองทุนฯ ทต. ชำราก",
+    "3. เงินบริจาค",
+    "4. ดอกเบี้ยเงินฝาก",
+    "5. อื่นๆ"
+  ]);
 
   const expense = financeCategoryView("expense");
   assert.equal(expense.label, "หมวดรายจ่าย");
-  assert.equal(expense.options[1].text, "1. ค่าตอบแทน CG / CM");
-  assert.equal(expense.options[2].text, "2. แผนงานกองทุนฯ ทต. ชำราก");
+  assert.deepEqual(expense.options.slice(1).map((o) => o.text), [
+    "1. ค่าตอบแทน CM",
+    "2. ค่าตอบแทน CG",
+    "3. ค่าวัสดุอุปกรณ์",
+    "4. ค่าบริหารจัดการศูนย์ฯ",
+    "5. อื่นๆ"
+  ]);
 
   // Values are positional 1-5 for both types (no schema/id change).
   assert.deepEqual(income.options.slice(1).map((o) => o.value), ["1", "2", "3", "4", "5"]);
