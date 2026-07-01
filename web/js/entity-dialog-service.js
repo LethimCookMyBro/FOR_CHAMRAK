@@ -1,6 +1,14 @@
 import { Format, Validate, NameUtils } from "./utils.js";
 import { FINANCE_EXPENSE_LABELS, FINANCE_INCOME_LABELS } from "./config.js";
 
+const FINANCE_CATEGORY_OPTION_LABELS = [
+  "1. แผนงาน LTC / CM",
+  "2. เทศบาลชำราก / CG",
+  "3. เงินบริจาค / วัสดุแพทย์",
+  "4. ดอกเบี้ย / บริหารศูนย์",
+  "5. อื่นๆ"
+];
+
 class EntityDialogService {
   constructor(el, repo, domain, helpers) {
     this.el = el;
@@ -615,7 +623,7 @@ class EntityDialogService {
           value: String(category),
           options: FINANCE_INCOME_LABELS.map((incomeLabel, index) => ({
             value: String(index + 1),
-            label: `${index + 1}. รายรับ: ${incomeLabel} / รายจ่าย: ${FINANCE_EXPENSE_LABELS[index]}`
+            label: FINANCE_CATEGORY_OPTION_LABELS[index] || `${index + 1}. ${incomeLabel} / ${FINANCE_EXPENSE_LABELS[index]}`
           }))
         },
         {
@@ -897,7 +905,10 @@ class EntityDialogService {
       if (field.hidden) continue;
 
       const wrap = document.createElement("div");
-      wrap.className = `row-field${field.wide ? " wide" : ""}`;
+      const fieldClasses = ["row-field"];
+      if (field.wide) fieldClasses.push("wide");
+      if (field.type === "date") fieldClasses.push("date-field");
+      wrap.className = fieldClasses.join(" ");
 
       const label = document.createElement("label");
       label.innerHTML = `${Format.escapeHtml(field.label)}${field.required ? ' <span class="req">*</span>' : ""}`;

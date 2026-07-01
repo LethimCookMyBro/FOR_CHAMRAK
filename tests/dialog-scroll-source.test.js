@@ -76,3 +76,33 @@ test("entity date fields use Buddhist Era controls starting at 2460", async () =
   assert.match(source, /ปี พ\.ศ\./);
   assert.match(css, /\.thai-date-control/);
 });
+
+test("composite date fields get enough grid width and shrink safely", async () => {
+  const source = await fs.readFile(path.join(repoRoot, "web", "js", "entity-dialog-service.js"), "utf8");
+  const dialogCss = await fs.readFile(path.join(repoRoot, "web", "styles", "dialog.css"), "utf8");
+  const responsiveCss = await fs.readFile(path.join(repoRoot, "web", "styles", "responsive.css"), "utf8");
+
+  assert.match(source, /field\.type === "date"[\s\S]*fieldClasses\.push\("date-field"\)/);
+
+  const rowField = ruleBody(dialogCss, ".row-field");
+  assert.match(rowField, /min-width\s*:\s*0/, "grid children must shrink instead of overlapping neighbors");
+
+  const dateField = ruleBody(dialogCss, ".row-field.date-field");
+  assert.match(dateField, /grid-column\s*:\s*span 2/, "three-part date controls need two grid columns on desktop");
+
+  const dateControl = ruleBody(dialogCss, ".thai-date-control");
+  assert.match(dateControl, /min-width\s*:\s*0/, "date control wrapper must shrink within its field");
+  assert.match(dialogCss, /\.thai-date-control select\s*\{[\s\S]*min-width\s*:\s*0/);
+  assert.match(responsiveCss, /\.row-field\.date-field\s*\{[\s\S]*grid-column\s*:\s*1\s*\/\s*-1/);
+});
+
+test("finance category select uses compact option text", async () => {
+  const source = await fs.readFile(path.join(repoRoot, "web", "js", "entity-dialog-service.js"), "utf8");
+
+  assert.match(source, /FINANCE_CATEGORY_OPTION_LABELS/);
+  assert.doesNotMatch(
+    source,
+    /label:\s*`\$\{index \+ 1\}\. รายรับ:/,
+    "native select dropdowns should not be widened by full finance category sentences"
+  );
+});

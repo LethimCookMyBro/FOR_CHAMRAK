@@ -90,10 +90,15 @@ dialog[open] {
   display: grid;
   gap: var(--space-2);
   align-content: start;
+  min-width: 0;
 }
 
 .row-field.wide {
   grid-column: 1 / -1;
+}
+
+.row-field.date-field {
+  grid-column: span 2;
 }
 
 .row-field label {
@@ -111,6 +116,7 @@ dialog[open] {
 .row-field textarea,
 .row-field select {
   width: 100%;
+  min-width: 0;
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-md);
   padding: 10px 12px;
@@ -154,6 +160,11 @@ dialog[open] {
   display: grid;
   grid-template-columns: minmax(72px, 0.8fr) minmax(96px, 1fr) minmax(104px, 1fr);
   gap: var(--space-2);
+  min-width: 0;
+}
+
+.thai-date-control select {
+  min-width: 0;
 }
 
 /* ----------------------------------------------------------- Image picker */

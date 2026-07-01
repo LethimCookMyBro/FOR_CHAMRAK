@@ -115,6 +115,10 @@
     grid-template-columns: 1fr;
   }
 
+  .row-field.date-field {
+    grid-column: 1 / -1;
+  }
+
   .image-picker {
     grid-template-columns: 1fr;
     justify-items: center;
