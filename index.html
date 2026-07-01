@@ -352,20 +352,27 @@
               </button>
               <button id="visitEditBtn" class="btn btn-soft" type="button">แก้ไขที่เลือก</button>
               <button id="visitDeleteBtn" class="btn btn-danger" type="button">ลบที่เลือก</button>
-              <button id="visitDeleteBatchBtn" class="btn btn-danger" type="button">ลบที่ติ๊กหลายรายการ</button>
+              <button id="visitDeleteBatchBtn" class="btn btn-danger" type="button">ลบหลายรายการ</button>
             </div>
           </div>
-          <div class="filter-row">
+          <div class="visit-search-row">
             <input id="visitSearch" class="search-input" type="search" placeholder="ค้นหาผู้รับบริการ, ผู้เข้าเยี่ยม, CG, CM, กิจกรรม, หมายเหตุ...">
-            <input id="visitMonthFromFilter" class="filter-control" type="month" aria-label="กรองตั้งแต่เดือน" title="ตั้งแต่เดือน">
-            <input id="visitMonthToFilter" class="filter-control" type="month" aria-label="กรองถึงเดือน" title="ถึงเดือน">
-            <select id="visitStatusFilter" class="filter-control" aria-label="กรองสถานะการเยี่ยม">
-              <option value="">ทุกสถานะ</option>
-              <option value="completed">completed</option>
-              <option value="postponed">postponed</option>
-              <option value="not_found">not found / unavailable</option>
-              <option value="cancelled">cancelled</option>
-            </select>
+          </div>
+          <div class="visit-filter-bar">
+            <div class="filter-group">
+              <span class="filter-label">สถานะ</span>
+              <select id="visitStatusFilter" class="filter-control" aria-label="กรองสถานะการเยี่ยม">
+                <option value="">ทุกสถานะ</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <span class="filter-label">ตั้งแต่</span>
+              <input id="visitMonthFromFilter" type="hidden">
+            </div>
+            <div class="filter-group">
+              <span class="filter-label">ถึง</span>
+              <input id="visitMonthToFilter" type="hidden">
+            </div>
           </div>
           <p id="visitStatusText" class="table-note" role="status" aria-live="polite">ยังไม่มีการทำรายการ</p>
           <div class="table-card table-scroll">

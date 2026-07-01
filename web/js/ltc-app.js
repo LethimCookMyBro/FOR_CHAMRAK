@@ -1,4 +1,4 @@
-import { API_BASE, DATA_ROOT, STORAGE_PREFIX } from "./config.js";
+import { API_BASE, DATA_ROOT, STORAGE_PREFIX, VISIT_STATUS_OPTIONS } from "./config.js";
 import { Format } from "./utils.js";
 import { DataRepository } from "./data-repository.js";
 import { DomainService } from "./domain-service.js";
@@ -202,6 +202,7 @@ class LtcApp {
   async init() {
     try {
       this.bindEvents();
+      this.setupVisitFilters();
       this.setPage(this.state.page);
       this.activityPage.init();
       this.updateController.init();
@@ -307,6 +308,74 @@ class LtcApp {
     this.el.unitEditBtn.addEventListener("click", () => this.handleEditUnit().catch(this.handleError));
     this.el.unitDeleteBtn.addEventListener("click", () => this.handleDeleteUnit().catch(this.handleError));
     this.el.unitDeleteBatchBtn.addEventListener("click", () => this.handleDeleteUnitBatch().catch(this.handleError));
+  }
+
+  // Builds the visit filter bar. Status options come from the shared
+  // VISIT_STATUS_OPTIONS (Thai label, internal value). The month pickers replace
+  // the native <input type="month"> (which renders ค.ศ. and can't be switched to
+  // พ.ศ.) with month + Buddhist-year <select>s; the hidden input keeps its
+  // Gregorian "YYYY-MM" value so the range filter logic stays unchanged.
+  setupVisitFilters() {
+    if (this.el.visitStatusFilter) {
+      for (const option of VISIT_STATUS_OPTIONS) {
+        const optionEl = document.createElement("option");
+        optionEl.value = option.value;
+        optionEl.textContent = option.label;
+        this.el.visitStatusFilter.appendChild(optionEl);
+      }
+    }
+
+    const monthNames = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+    const currentThaiYear = new Date().getFullYear() + 543;
+
+    const build = (hidden, label) => {
+      if (!hidden || !hidden.parentNode) return;
+      const wrap = document.createElement("div");
+      wrap.className = "thai-month-filter";
+
+      const month = document.createElement("select");
+      const year = document.createElement("select");
+      month.className = "filter-control";
+      year.className = "filter-control";
+      month.setAttribute("aria-label", `${label} (เดือน)`);
+      year.setAttribute("aria-label", `${label} (ปี พ.ศ.)`);
+
+      const emptyOption = (text) => {
+        const option = document.createElement("option");
+        option.value = "";
+        option.textContent = text;
+        return option;
+      };
+      month.appendChild(emptyOption("ทุกเดือน"));
+      year.appendChild(emptyOption("ทุกปี"));
+
+      for (let i = 1; i <= 12; i += 1) {
+        const option = document.createElement("option");
+        option.value = String(i).padStart(2, "0");
+        option.textContent = monthNames[i - 1];
+        month.appendChild(option);
+      }
+      // ponytail: recent 16-year window; widen if old visit records need filtering.
+      for (let beYear = currentThaiYear + 1; beYear >= currentThaiYear - 15; beYear -= 1) {
+        const option = document.createElement("option");
+        option.value = String(beYear - 543); // stored value stays Gregorian
+        option.textContent = String(beYear); // shown as พ.ศ.
+        year.appendChild(option);
+      }
+
+      const sync = () => {
+        hidden.value = year.value && month.value ? `${year.value}-${month.value}` : "";
+        hidden.dispatchEvent(new Event("change", { bubbles: true }));
+      };
+      month.addEventListener("change", sync);
+      year.addEventListener("change", sync);
+
+      hidden.parentNode.insertBefore(wrap, hidden);
+      wrap.append(month, year);
+    };
+
+    build(this.el.visitMonthFromFilter, "เดือนที่เยี่ยม ตั้งแต่");
+    build(this.el.visitMonthToFilter, "เดือนที่เยี่ยม ถึง");
   }
 
   bindSelectableTable(tbody, key, selectAllControl) {

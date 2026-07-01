@@ -157,14 +157,107 @@ dialog[open] {
 }
 
 .thai-date-control {
-  display: grid;
-  grid-template-columns: minmax(72px, 0.8fr) minmax(96px, 1fr) minmax(104px, 1fr);
-  gap: var(--space-2);
+  position: relative;
   min-width: 0;
 }
 
 .thai-date-control select {
   min-width: 0;
+}
+
+.thai-date-display {
+  cursor: pointer;
+}
+
+.thai-calendar {
+  margin-top: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-lg);
+}
+
+.thai-calendar[hidden] {
+  display: none;
+}
+
+.thai-calendar-header {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  margin-bottom: var(--space-3);
+}
+
+.thai-calendar-header select {
+  flex: 1 1 auto;
+  padding: 8px 34px 8px 10px;
+}
+
+.thai-calendar-nav {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 38px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: 700 18px/1 var(--font-sans);
+  cursor: pointer;
+  transition: border-color var(--transition), color var(--transition);
+}
+
+.thai-calendar-nav:hover {
+  border-color: var(--accent-500);
+  color: var(--accent-700);
+}
+
+.thai-calendar-weekdays,
+.thai-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.thai-calendar-weekday {
+  padding: 4px 0;
+  text-align: center;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.thai-calendar-day {
+  aspect-ratio: 1 / 1;
+  display: grid;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text);
+  font: var(--fs-sm) var(--font-sans);
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+.thai-calendar-day:hover {
+  background: var(--accent-50);
+}
+
+.thai-calendar-day.is-today {
+  border-color: var(--accent-500);
+}
+
+.thai-calendar-day.is-selected {
+  background: var(--accent-500);
+  border-color: var(--accent-500);
+  color: #fff;
+  font-weight: 700;
+}
+
+.thai-calendar-day.is-blank {
+  visibility: hidden;
+  cursor: default;
 }
 
 /* ----------------------------------------------------------- Image picker */

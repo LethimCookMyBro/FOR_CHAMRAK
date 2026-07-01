@@ -1,5 +1,5 @@
 import { Format } from "./utils.js";
-import { FINANCE_EXPENSE_LABELS, FINANCE_INCOME_LABELS, HIGH_TAI } from "./config.js";
+import { FINANCE_EXPENSE_LABELS, FINANCE_INCOME_LABELS, HIGH_TAI, VISIT_STATUS_LABELS } from "./config.js";
 import { methodsFromPrototype } from "./mixin-utils.js";
 import { renderCheckCell, renderInfoRows, selectedRowClass } from "./render-helpers.js";
 
@@ -334,13 +334,8 @@ class LtcAppRenderMethodCarrier {
   }
 
   visitStatusLabel(status) {
-    const labels = {
-      completed: "เสร็จสิ้น",
-      postponed: "เลื่อน",
-      not_found: "ไม่พบตัว",
-      cancelled: "ยกเลิก"
-    };
-    return labels[String(status || "").toLowerCase().replace(/[\s-]+/g, "_")] || "ไม่ระบุ";
+    const key = String(status || "").toLowerCase().replace(/[\s-]+/g, "_");
+    return VISIT_STATUS_LABELS[key] || "ไม่ระบุ";
   }
 
   visitStatusClass(status) {

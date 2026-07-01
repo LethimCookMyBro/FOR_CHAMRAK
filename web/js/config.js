@@ -28,6 +28,18 @@ export const FINANCE_EXPENSE_LABELS = [
   "ค่าบริหารจัดการศูนย์พัฒนาคุณภาพชีวิตผู้สูงอายุฯ",
   "อื่นๆ"
 ];
+// Visit status: internal values stay English (completed/postponed/not_found/
+// cancelled) for backend/data compatibility; only the Thai label is shown.
+// Single source for the filter dropdown, the add/edit dialog, and the table chip.
+export const VISIT_STATUS_OPTIONS = [
+  { value: "completed", label: "เยี่ยมสำเร็จ" },
+  { value: "postponed", label: "เลื่อนนัด" },
+  { value: "not_found", label: "ไม่พบ / ไม่สะดวก" },
+  { value: "cancelled", label: "ยกเลิก" }
+];
+export const VISIT_STATUS_LABELS = Object.fromEntries(
+  VISIT_STATUS_OPTIONS.map((option) => [option.value, option.label])
+);
 export const HIGH_TAI = new Set(["I3", "B3", "C2", "C3"]);
 export const NAME_PREFIXES = ["นางสาว", "น.ส.", "นาย", "นาง", "ด.ช.", "ด.ญ.", "พ.จ.อ.", "จ.ส.อ.", "คุณ"];
 export const SORTED_PREFIXES = [...NAME_PREFIXES].sort((a, b) => b.length - a.length);

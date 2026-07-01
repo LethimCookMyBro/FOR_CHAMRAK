@@ -1,5 +1,5 @@
 import { Format, Validate, NameUtils } from "./utils.js";
-import { FINANCE_EXPENSE_LABELS, FINANCE_INCOME_LABELS } from "./config.js";
+import { FINANCE_EXPENSE_LABELS, FINANCE_INCOME_LABELS, VISIT_STATUS_OPTIONS } from "./config.js";
 
 const FINANCE_CATEGORY_OPTION_LABELS = [
   "1. แผนงาน LTC / CM",
@@ -366,12 +366,7 @@ class EntityDialogService {
           type: "select",
           required: true,
           value: initial.status,
-          options: [
-            { value: "completed", label: "completed" },
-            { value: "postponed", label: "postponed" },
-            { value: "not_found", label: "not found / unavailable" },
-            { value: "cancelled", label: "cancelled" }
-          ]
+          options: VISIT_STATUS_OPTIONS
         },
         { name: "note", label: "หมายเหตุ", type: "textarea", wide: true, value: initial.note }
       ]
@@ -722,6 +717,10 @@ class EntityDialogService {
     return canvas.toDataURL("image/jpeg", 0.78);
   }
 
+  // Click-to-open Buddhist-Era calendar. Chromium's native date picker only
+  // renders ค.ศ., so we draw our own grid: a readonly display shows the picked
+  // date in พ.ศ., the popup lets the user click a day, and a hidden input keeps
+  // the Gregorian "YYYY-MM-DD" value the rest of the form already expects.
   createThaiDateControl(field) {
     const hidden = document.createElement("input");
     hidden.type = "hidden";
@@ -731,92 +730,184 @@ class EntityDialogService {
     const wrap = document.createElement("div");
     wrap.className = "thai-date-control";
 
-    const day = document.createElement("select");
-    const month = document.createElement("select");
-    const year = document.createElement("select");
-    day.setAttribute("aria-label", "วัน");
-    month.setAttribute("aria-label", "เดือน");
-    year.setAttribute("aria-label", "ปี พ.ศ.");
+    const display = document.createElement("input");
+    display.type = "text";
+    display.readOnly = true;
+    display.className = "thai-date-display";
+    display.placeholder = "เลือกวันที่";
+    display.setAttribute("aria-label", `${field.label || "วันที่"} (ปี พ.ศ.)`);
 
-    const empty = (label) => {
-      const option = document.createElement("option");
-      option.value = "";
-      option.textContent = label;
-      return option;
-    };
+    const calendar = document.createElement("div");
+    calendar.className = "thai-calendar";
+    calendar.hidden = true;
 
-    const monthNames = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
-    day.appendChild(empty("วัน"));
-    month.appendChild(empty("เดือน"));
-    year.appendChild(empty("ปี พ.ศ."));
+    const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+    const weekdayNames = ["อา", "จ", "อ", "พ", "พฤ", "ศ", "ส"];
 
-    for (let i = 1; i <= 12; i += 1) {
-      const option = document.createElement("option");
-      option.value = String(i);
-      option.textContent = monthNames[i - 1];
-      month.appendChild(option);
-    }
-
+    // Config years arrive in พ.ศ.; convert to the Gregorian range we navigate in.
     const currentThaiYear = new Date().getFullYear() + 543;
-    const startYear = Math.max(1, Number(field.yearStart || 2460));
-    const endYear = Math.max(startYear, Number(field.yearEnd || currentThaiYear + 10));
-    for (let beYear = endYear; beYear >= startYear; beYear -= 1) {
+    const startBe = Math.max(1, Number(field.yearStart || 2460));
+    const endBe = Math.max(startBe, Number(field.yearEnd || currentThaiYear + 10));
+    const startYear = startBe - 543;
+    const endYear = endBe - 543;
+
+    const header = document.createElement("div");
+    header.className = "thai-calendar-header";
+    const prevBtn = document.createElement("button");
+    prevBtn.type = "button";
+    prevBtn.className = "thai-calendar-nav";
+    prevBtn.textContent = "‹";
+    prevBtn.setAttribute("aria-label", "เดือนก่อนหน้า");
+    const nextBtn = document.createElement("button");
+    nextBtn.type = "button";
+    nextBtn.className = "thai-calendar-nav";
+    nextBtn.textContent = "›";
+    nextBtn.setAttribute("aria-label", "เดือนถัดไป");
+
+    const monthSelect = document.createElement("select");
+    monthSelect.setAttribute("aria-label", "เดือน");
+    for (let i = 0; i < 12; i += 1) {
       const option = document.createElement("option");
-      option.value = String(beYear);
-      option.textContent = String(beYear);
-      year.appendChild(option);
+      option.value = String(i + 1);
+      option.textContent = monthNames[i];
+      monthSelect.appendChild(option);
+    }
+    const yearSelect = document.createElement("select");
+    yearSelect.setAttribute("aria-label", "ปี พ.ศ.");
+    for (let g = endYear; g >= startYear; g -= 1) {
+      const option = document.createElement("option");
+      option.value = String(g);
+      option.textContent = String(g + 543); // show พ.ศ., store ค.ศ.
+      yearSelect.appendChild(option);
+    }
+    header.append(prevBtn, monthSelect, yearSelect, nextBtn);
+
+    const weekRow = document.createElement("div");
+    weekRow.className = "thai-calendar-weekdays";
+    for (const name of weekdayNames) {
+      const cell = document.createElement("div");
+      cell.className = "thai-calendar-weekday";
+      cell.textContent = name;
+      weekRow.appendChild(cell);
     }
 
-    const daysInMonth = () => {
-      const beYear = Number(year.value);
-      const monthValue = Number(month.value);
-      if (!beYear || !monthValue) return 31;
-      return new Date(beYear - 543, monthValue, 0).getDate();
-    };
+    const grid = document.createElement("div");
+    grid.className = "thai-calendar-grid";
+    calendar.append(header, weekRow, grid);
 
-    const fillDays = () => {
-      const selected = Number(day.value);
-      day.replaceChildren(empty("วัน"));
-      const maxDay = daysInMonth();
-      for (let i = 1; i <= maxDay; i += 1) {
-        const option = document.createElement("option");
-        option.value = String(i);
-        option.textContent = String(i);
-        day.appendChild(option);
-      }
-      if (selected && selected <= maxDay) day.value = String(selected);
-    };
-
-    const syncHidden = () => {
-      const beYear = Number(year.value);
-      const monthValue = Number(month.value);
-      const dayValue = Number(day.value);
-      hidden.value =
-        beYear && monthValue && dayValue
-          ? `${String(beYear - 543).padStart(4, "0")}-${String(monthValue).padStart(2, "0")}-${String(dayValue).padStart(2, "0")}`
-          : "";
-    };
-
+    const today = new Date();
     const initial = Format.isoDateParts(field.value);
-    fillDays();
-    if (initial) {
-      year.value = String(initial.year + 543);
-      month.value = String(initial.month);
-      fillDays();
-      day.value = String(initial.day);
-      syncHidden();
+    const view = {
+      year: initial ? initial.year : today.getFullYear(),
+      month: initial ? initial.month : today.getMonth() + 1
+    };
+    view.year = Math.min(endYear, Math.max(startYear, view.year));
+
+    const setDisplay = () => {
+      display.value = hidden.value ? Format.formatDateCompact(hidden.value) : "";
+    };
+
+    const renderGrid = () => {
+      monthSelect.value = String(view.month);
+      yearSelect.value = String(view.year);
+      grid.replaceChildren();
+      const firstDow = new Date(view.year, view.month - 1, 1).getDay();
+      const totalDays = new Date(view.year, view.month, 0).getDate();
+      const selected = Format.isoDateParts(hidden.value);
+      for (let i = 0; i < firstDow; i += 1) {
+        const blank = document.createElement("div");
+        blank.className = "thai-calendar-day is-blank";
+        grid.appendChild(blank);
+      }
+      for (let d = 1; d <= totalDays; d += 1) {
+        const cell = document.createElement("button");
+        cell.type = "button";
+        cell.className = "thai-calendar-day";
+        cell.textContent = String(d);
+        if (selected && selected.year === view.year && selected.month === view.month && selected.day === d) {
+          cell.classList.add("is-selected");
+        }
+        if (view.year === today.getFullYear() && view.month === today.getMonth() + 1 && d === today.getDate()) {
+          cell.classList.add("is-today");
+        }
+        cell.addEventListener("click", () => chooseDay(d));
+        grid.appendChild(cell);
+      }
+    };
+
+    let onDocPointer = null;
+    const closeCalendar = () => {
+      if (calendar.hidden) return;
+      calendar.hidden = true;
+      if (onDocPointer) {
+        document.removeEventListener("pointerdown", onDocPointer, true);
+        onDocPointer = null;
+      }
+    };
+    const openCalendar = () => {
+      if (!calendar.hidden) return;
+      const selected = Format.isoDateParts(hidden.value);
+      if (selected) {
+        view.year = Math.min(endYear, Math.max(startYear, selected.year));
+        view.month = selected.month;
+      }
+      renderGrid();
+      calendar.hidden = false;
+      onDocPointer = (event) => {
+        if (!wrap.contains(event.target)) closeCalendar();
+      };
+      document.addEventListener("pointerdown", onDocPointer, true);
+      calendar.scrollIntoView({ block: "nearest" });
+    };
+
+    function chooseDay(day) {
+      hidden.value = `${String(view.year).padStart(4, "0")}-${String(view.month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+      setDisplay();
+      closeCalendar();
+      hidden.dispatchEvent(new Event("change", { bubbles: true }));
     }
 
-    for (const control of [day, month, year]) {
-      control.addEventListener("change", () => {
-        fillDays();
-        syncHidden();
-      });
-    }
+    const stepMonth = (delta) => {
+      let month = view.month + delta;
+      let year = view.year;
+      if (month < 1) {
+        month = 12;
+        year -= 1;
+      } else if (month > 12) {
+        month = 1;
+        year += 1;
+      }
+      if (year < startYear || year > endYear) return;
+      view.month = month;
+      view.year = year;
+      renderGrid();
+    };
 
-    wrap.append(day, month, year, hidden);
+    prevBtn.addEventListener("click", () => stepMonth(-1));
+    nextBtn.addEventListener("click", () => stepMonth(1));
+    monthSelect.addEventListener("change", () => {
+      view.month = Number(monthSelect.value);
+      renderGrid();
+    });
+    yearSelect.addEventListener("change", () => {
+      view.year = Number(yearSelect.value);
+      renderGrid();
+    });
+
+    display.addEventListener("click", () => (calendar.hidden ? openCalendar() : closeCalendar()));
+    display.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openCalendar();
+      } else if (event.key === "Escape") {
+        closeCalendar();
+      }
+    });
+
+    setDisplay();
+    wrap.append(display, calendar, hidden);
     hidden._ltcVisibleElement = wrap;
-    hidden._ltcFocusElement = day;
+    hidden._ltcFocusElement = display;
     return { control: hidden, element: wrap };
   }
 
