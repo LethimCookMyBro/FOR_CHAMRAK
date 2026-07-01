@@ -135,3 +135,21 @@ test("visit month summary lists completed visit dates per beneficiary", async ()
   assert.equal(summary.count, 2);
   assert.deepEqual(summary.dates, ["2026-02-01", "2026-03-05"]);
 });
+
+test("finance summary includes all five income and expense categories", async () => {
+  const DomainService = await loadDomainService();
+  const domain = new DomainService({});
+
+  const summary = domain.summarizeFinance([
+    { "รายรับ5": 100, "รายจ่าย5": 40 },
+    { "รายรับ1": 20, "รายจ่าย2": 5 }
+  ]);
+
+  assert.equal(summary.income.length, 5);
+  assert.equal(summary.expense.length, 5);
+  assert.equal(summary.income[4], 100);
+  assert.equal(summary.expense[4], 40);
+  assert.equal(summary.totalIncome, 120);
+  assert.equal(summary.totalExpense, 45);
+  assert.equal(summary.net, 75);
+});

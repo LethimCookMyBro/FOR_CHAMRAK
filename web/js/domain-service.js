@@ -10,8 +10,8 @@ class DomainService {
   }
 
   summarizeFinance(rows) {
-    const income = [0, 0, 0, 0];
-    const expense = [0, 0, 0, 0];
+    const income = FINANCE_INCOME_FIELDS.map(() => 0);
+    const expense = FINANCE_EXPENSE_FIELDS.map(() => 0);
 
     for (const row of rows) {
       for (let i = 0; i < FINANCE_INCOME_FIELDS.length; i += 1) {
