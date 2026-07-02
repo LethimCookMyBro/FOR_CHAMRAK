@@ -516,3 +516,31 @@ test("visit, supply issue, finance, and unit add/edit/delete paths work", async 
   await app.handleDeleteUnit();
   assert.equal(app.repo.tables.get("t26_unit").length, 0);
 });
+
+test("visit add stops before opening an empty beneficiary dropdown", async () => {
+  let opened = false;
+  let alertMessage = "";
+  const app = await createApp({
+    dialogs: {
+      async openVisitDialog() {
+        opened = true;
+        return null;
+      }
+    },
+    initialTables: {
+      t04_dataj: [],
+      t01_cg: [],
+      t02_cm: [],
+      t27_visits: []
+    }
+  });
+  global.alert = (message) => {
+    alertMessage = String(message || "");
+  };
+
+  await app.handleAddVisit();
+
+  assert.equal(opened, false);
+  assert.match(alertMessage, /ผู้รับบริการ/);
+  assert.equal(app.repo.tables.get("t27_visits").length, 0);
+});

@@ -60,6 +60,24 @@ class EntityDialogService {
       careEnd: row?.["วันสิ้นสุด cp"] || null,
       photoDataUrl: row?.photoDataUrl || ""
     };
+    const unitOptions = unitRows
+      .map((unit) => ({
+        value: unit["รหัสหน่วย"] || "",
+        label: `${unit["รหัสหน่วย"] || "-"} - ${unit["หน่วย"] || "-"}`
+      }))
+      .filter((option) => option.value);
+    const cmOptions = cmRows
+      .map((cm) => ({
+        value: cm["รหัสcm"] || "",
+        label: Format.expandFemalePrefixInText(cm["ชื่อสกุล"] || "-")
+      }))
+      .filter((option) => option.value);
+    const cgOptions = cgRows
+      .map((cg) => ({
+        value: cg["รหัสcg"] || "",
+        label: Format.expandFemalePrefixInText(cg["ชื่อสกุล"] || "-")
+      }))
+      .filter((option) => option.value);
 
     return this.openEntityDialog({
       title: mode === "add" ? "เพิ่มผู้รับบริการ LTC" : "แก้ไขผู้รับบริการ LTC",
@@ -143,33 +161,27 @@ class EntityDialogService {
         {
           name: "unitCode",
           label: "รหัสหน่วย",
-          type: "select",
+          type: unitOptions.length ? "select" : "text",
           required: true,
           value: initial.unitCode,
-          options: unitRows.map((unit) => ({
-            value: unit["รหัสหน่วย"] || "",
-            label: `${unit["รหัสหน่วย"] || "-"} - ${unit["หน่วย"] || "-"}`
-          }))
+          placeholder: unitOptions.length ? "" : "กรอกรหัสหน่วย",
+          options: unitOptions
         },
         {
           name: "cmCode",
           label: "ชื่อ CM",
-          type: "select",
+          type: cmOptions.length ? "select" : "text",
           value: initial.cmCode,
-          options: cmRows.map((cm) => ({
-            value: cm["รหัสcm"] || "",
-            label: Format.expandFemalePrefixInText(cm["ชื่อสกุล"] || "-")
-          }))
+          placeholder: cmOptions.length ? "" : "กรอกรหัส CM",
+          options: cmOptions
         },
         {
           name: "cgCode",
           label: "ชื่อ CG",
-          type: "select",
+          type: cgOptions.length ? "select" : "text",
           value: initial.cgCode,
-          options: cgRows.map((cg) => ({
-            value: cg["รหัสcg"] || "",
-            label: Format.expandFemalePrefixInText(cg["ชื่อสกุล"] || "-")
-          }))
+          placeholder: cgOptions.length ? "" : "กรอกรหัส CG",
+          options: cgOptions
         },
         { name: "careStart", label: "วันเริ่ม Care Plan", type: "date", value: initial.careStart },
         { name: "careEnd", label: "วันสิ้นสุด Care Plan", type: "date", value: initial.careEnd }
@@ -207,6 +219,12 @@ class EntityDialogService {
   async openCgDialog(mode, row = null) {
     const cmRows = await this.repo.getTable("t02_cm");
     const parsedName = NameUtils.parse(row?.["ชื่อสกุล"] || "");
+    const cmOptions = cmRows
+      .map((cm) => ({
+        value: cm["รหัสcm"] || "",
+        label: Format.expandFemalePrefixInText(cm["ชื่อสกุล"] || "-")
+      }))
+      .filter((option) => option.value);
 
     return this.openEntityDialog({
       title: mode === "add" ? "เพิ่ม Care Giver (CG)" : "แก้ไข Care Giver (CG)",
@@ -247,13 +265,11 @@ class EntityDialogService {
         {
           name: "cmCode",
           label: "ชื่อ CM",
-          type: "select",
+          type: cmOptions.length ? "select" : "text",
           required: true,
           value: row?.["รหัสcm"] || "",
-          options: cmRows.map((cm) => ({
-            value: cm["รหัสcm"] || "",
-            label: Format.expandFemalePrefixInText(cm["ชื่อสกุล"] || "-")
-          }))
+          placeholder: cmOptions.length ? "" : "กรอกรหัส CM",
+          options: cmOptions
         }
       ]
     });
@@ -262,6 +278,12 @@ class EntityDialogService {
   async openCmDialog(mode, row = null) {
     const unitRows = await this.repo.getTable("t26_unit");
     const parsedName = NameUtils.parse(row?.["ชื่อสกุล"] || "");
+    const unitOptions = unitRows
+      .map((unit) => ({
+        value: unit["รหัสหน่วย"] || "",
+        label: `${unit["รหัสหน่วย"] || "-"} - ${unit["หน่วย"] || "-"}`
+      }))
+      .filter((option) => option.value);
 
     return this.openEntityDialog({
       title: mode === "add" ? "เพิ่ม Care Manager (CM)" : "แก้ไข Care Manager (CM)",
@@ -289,13 +311,11 @@ class EntityDialogService {
         {
           name: "unitCode",
           label: "รหัสหน่วย",
-          type: "select",
+          type: unitOptions.length ? "select" : "text",
           required: true,
           value: row?.["รหัสหน่วย"] || "",
-          options: unitRows.map((unit) => ({
-            value: unit["รหัสหน่วย"] || "",
-            label: `${unit["รหัสหน่วย"] || "-"} - ${unit["หน่วย"] || "-"}`
-          }))
+          placeholder: unitOptions.length ? "" : "กรอกรหัสหน่วย",
+          options: unitOptions
         },
         {
           name: "phone",

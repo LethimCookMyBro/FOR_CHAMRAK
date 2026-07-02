@@ -893,6 +893,11 @@ class LtcAppActionMethodCarrier {
     await this.runProtected("เพิ่มบันทึกเยี่ยมบ้าน", async () => {
       this.setVisitStatus("กำลังบันทึก...");
       const [rows, lookups] = await Promise.all([this.repo.cloneTable("t27_visits"), this.loadVisitLookups()]);
+      if (!lookups.dependents.length) {
+        alert("กรุณาเพิ่มผู้รับบริการก่อนบันทึกเยี่ยมบ้าน");
+        this.setVisitStatus("ยังไม่มีผู้รับบริการสำหรับบันทึกเยี่ยมบ้าน");
+        return;
+      }
       const form = await this.dialogs.openVisitDialog("add");
       if (!form) return;
 
