@@ -3,6 +3,7 @@
   "productName": "LTC System",
   "version": "1.0.16",
   "private": true,
+  "author": "LethimCookMyBro",
   "description": "LTC Chamrak desktop app with internal Express backend and local JSON storage",
   "main": "desktop/main.js",
   "scripts": {
