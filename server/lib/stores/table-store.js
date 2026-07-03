@@ -48,6 +48,12 @@ class TableStore {
     await fs.mkdir(this.overrideDir, { recursive: true });
   }
 
+  async writeFileAtomic(filePath, text) {
+    const tmpPath = `${filePath}.tmp-${process.pid}-${Date.now()}`;
+    await fs.writeFile(tmpPath, text, "utf8");
+    await fs.rename(tmpPath, filePath);
+  }
+
   async runExclusive(alias, handler) {
     const key = String(alias || "");
     const previous = this.writeChains.get(key) || Promise.resolve();
@@ -281,7 +287,7 @@ class TableStore {
 
       await this.ensureDirectories();
       const targetPath = this.overrideFile(alias);
-      await fs.writeFile(targetPath, `${JSON.stringify(cleaned, null, 2)}\n`, "utf8");
+      await this.writeFileAtomic(targetPath, `${JSON.stringify(cleaned, null, 2)}\n`);
 
       return {
         storedAt: targetPath,
@@ -299,7 +305,7 @@ class TableStore {
       throw error;
     }
 
-    return this.runExclusive(alias, async () => {
+    const result = await this.runExclusive(alias, async () => {
       const loaded = await this.loadTable(alias);
       const expectedVersion = String(options.expectedVersion || "").trim();
       if (expectedVersion && loaded.version !== expectedVersion) {
@@ -326,25 +332,44 @@ class TableStore {
           deleted: 0,
           kept: keptRows.length,
           trashSaved: 0,
-          version: loaded.version
+          version: loaded.version,
+          removedRows
         };
       }
 
       const cleaned = keptRows.map((row) => this.cleanRow(row));
       await this.ensureDirectories();
       const targetPath = this.overrideFile(alias);
-      await fs.writeFile(targetPath, `${JSON.stringify(cleaned, null, 2)}\n`, "utf8");
-
-      const trashed = await trashStore.addDeletedRows(alias, removedRows, actor);
+      await this.writeFileAtomic(targetPath, `${JSON.stringify(cleaned, null, 2)}\n`);
 
       return {
         alias,
         deleted: removedRows.length,
         kept: keptRows.length,
-        trashSaved: trashed.length,
-        version: this.createVersion(cleaned)
+        trashSaved: 0,
+        version: this.createVersion(cleaned),
+        removedRows
       };
     });
+
+    if (!result.deleted) {
+      return {
+        alias: result.alias,
+        deleted: result.deleted,
+        kept: result.kept,
+        trashSaved: result.trashSaved,
+        version: result.version
+      };
+    }
+
+    const trashed = await trashStore.addDeletedRows(alias, result.removedRows, actor);
+    return {
+      alias: result.alias,
+      deleted: result.deleted,
+      kept: result.kept,
+      trashSaved: trashed.length,
+      version: result.version
+    };
   }
 
   async deleteOverride(alias) {

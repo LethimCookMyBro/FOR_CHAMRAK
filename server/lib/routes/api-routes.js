@@ -48,40 +48,48 @@ function registerApiRoutes(app, deps) {
 
   const prefix = String(apiPrefix || "/api").replace(/\/+$/, "") || "/api";
 
-  app.get(routePath(prefix, "/storage"), async (_req, res) => {
-    const trash = await trashStore.list({ includeRestored: false });
-    const ipBlockMetrics = ipSpamBlocker?.metrics?.() || null;
-    res.json({
-      mode: "backend",
-      runtimeMode: config.RUNTIME_MODE,
-      sourceDataDir: config.SOURCE_DATA_DIR,
-      runtimeDir: config.RUNTIME_DIR,
-      overrideDir: config.OVERRIDE_DIR,
-      activityLogFile: config.ACTIVITY_LOG_FILE,
-      trashFile: config.TRASH_FILE,
-      configDir: config.CONFIG_DIR,
-      trashRetentionDays: config.TRASH_RETENTION_DAYS,
-      trashCount: trash.count,
-      ipBlock: ipBlockMetrics,
-      description: "แก้ไขจะถูกเก็บใน local runtime data โดยไม่ทับไฟล์ต้นฉบับที่ bundled มากับโปรแกรม"
-    });
+  app.get(routePath(prefix, "/storage"), async (_req, res, next) => {
+    try {
+      const trash = await trashStore.list({ includeRestored: false });
+      const ipBlockMetrics = ipSpamBlocker?.metrics?.() || null;
+      res.json({
+        mode: "backend",
+        runtimeMode: config.RUNTIME_MODE,
+        sourceDataDir: config.SOURCE_DATA_DIR,
+        runtimeDir: config.RUNTIME_DIR,
+        overrideDir: config.OVERRIDE_DIR,
+        activityLogFile: config.ACTIVITY_LOG_FILE,
+        trashFile: config.TRASH_FILE,
+        configDir: config.CONFIG_DIR,
+        trashRetentionDays: config.TRASH_RETENTION_DAYS,
+        trashCount: trash.count,
+        ipBlock: ipBlockMetrics,
+        description: "แก้ไขจะถูกเก็บใน local runtime data โดยไม่ทับไฟล์ต้นฉบับที่ bundled มากับโปรแกรม"
+      });
+    } catch (error) {
+      return next(error);
+    }
   });
 
-  app.post(routePath(prefix, "/security/scan"), async (req, res) => {
-    const result = securityAudit.run();
-    const actor = getActor(req);
+  app.post(routePath(prefix, "/security/scan"), async (req, res, next) => {
+    try {
+      const result = securityAudit.run();
+      const actor = getActor(req);
 
-    await writeAudit({
-      type: "security",
-      action: "SECURITY_SCAN",
-      resource: routePath(prefix, "/security/scan"),
-      user: actor.username,
-      ip: actor.ip,
-      detail: `${requestTag(req)}, score=${result.score}`,
-      status: result.score >= 70 ? "ok" : "warn"
-    });
+      await writeAudit({
+        type: "security",
+        action: "SECURITY_SCAN",
+        resource: routePath(prefix, "/security/scan"),
+        user: actor.username,
+        ip: actor.ip,
+        detail: `${requestTag(req)}, score=${result.score}`,
+        status: result.score >= 70 ? "ok" : "warn"
+      });
 
-    res.json({ ok: true, ...result });
+      res.json({ ok: true, ...result });
+    } catch (error) {
+      return next(error);
+    }
   });
 
   app.get(routePath(prefix, "/logs/export"), async (req, res, next) => {

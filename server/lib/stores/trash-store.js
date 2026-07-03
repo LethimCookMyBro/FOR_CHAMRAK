@@ -402,8 +402,9 @@ class TrashStore {
       const restoredAliases = new Set();
 
       for (const [alias, recordsByAlias] of byAlias.entries()) {
-        const loaded = await this.tableStore.loadTable(alias);
-        const currentRows = loaded.rows.map((row) => ({ ...row }));
+        let loaded = await this.tableStore.loadTable(alias);
+        let pendingRows = [];
+        const restoredRecords = [];
         let changed = false;
 
         for (const record of recordsByAlias) {
@@ -417,21 +418,37 @@ class TrashStore {
           // without a unique key (e.g. repeated visits, identical payments)
           // share the same identity hash, and skipping "already existing"
           // identities would silently drop every duplicate after the first.
-          currentRows.push({ ...(record.row || {}) });
-          record.restoredAt = restoreTimestamp;
-          record.restoredBy = sanitizeText(actor?.username || "anonymous", 80);
-          record.restoreResult = "restored";
-          restored += 1;
+          pendingRows.push({ ...(record.row || {}) });
+          restoredRecords.push(record);
           changed = true;
         }
 
         if (changed) {
-          await this.tableStore.saveTable(alias, currentRows);
+          // ponytail: bounded optimistic retry avoids a cross-store lock while still honoring table version conflicts.
+          for (let attempt = 0; ; attempt += 1) {
+            const currentRows = loaded.rows.map((row) => ({ ...row }));
+            currentRows.push(...pendingRows.map((row) => ({ ...row })));
+            try {
+              await this.tableStore.saveTable(alias, currentRows, {
+                expectedVersion: loaded.version
+              });
+              break;
+            } catch (error) {
+              if (error?.code !== "VERSION_CONFLICT" || attempt >= 2) throw error;
+              loaded = await this.tableStore.loadTable(alias);
+              pendingRows = restoredRecords.map((record) => ({ ...(record.row || {}) }));
+            }
+          }
+          for (const record of restoredRecords) {
+            record.restoredAt = restoreTimestamp;
+            record.restoredBy = sanitizeText(actor?.username || "anonymous", 80);
+            record.restoreResult = "restored";
+          }
+          restored += restoredRecords.length;
+          await this.writeAll(kept);
           restoredAliases.add(alias);
         }
       }
-
-      await this.writeAll(kept);
 
       return {
         requested: ids.size,

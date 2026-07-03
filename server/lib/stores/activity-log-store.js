@@ -109,9 +109,13 @@ class ActivityLogStore {
   }
 
   async exportCsv(filters = {}) {
-    const rows = await this.query({ ...filters, page: 1, pageSize: 5000 });
+    const rows = this.filterRows(await this.readAll(), filters).sort((a, b) => {
+      const bt = toDateTs(b.timestamp) || 0;
+      const at = toDateTs(a.timestamp) || 0;
+      return bt - at;
+    });
     const header = ["timestamp", "user", "type", "action", "resource", "detail", "status", "ip"].join(",");
-    const body = rows.items
+    const body = rows
       .map((row) =>
         [
           this.escapeCsv(row.timestamp),
