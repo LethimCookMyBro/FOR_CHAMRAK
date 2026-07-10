@@ -17,6 +17,7 @@ class LtcAppRenderMethodCarrier {
   async renderCurrentPage() {
     const renderers = {
       dependents: () => this.renderDependents(),
+      deceased: () => this.renderDeceased(),
       cg: () => this.renderCg(),
       cm: () => this.renderCm(),
       visits: () => this.renderVisits(),
@@ -52,14 +53,15 @@ class LtcAppRenderMethodCarrier {
       this.repo.getTable("t07_gro")
     ]);
 
-    const taiCounts = this.helpers.countBy(dependents, (row) => String(row.TAI || "ไม่ระบุ").toUpperCase());
-    const maleCount = dependents.filter((row) => this.helpers.normalizeGender(row["เพศ"]) === "ชาย").length;
-    const femaleCount = dependents.filter((row) => this.helpers.normalizeGender(row["เพศ"]) === "หญิง").length;
-    const highCount = dependents.filter((row) => HIGH_TAI.has(String(row.TAI || "").toUpperCase())).length;
+    const activeDependents = this.domain.activeDependents(dependents);
+    const taiCounts = this.helpers.countBy(activeDependents, (row) => String(row.TAI || "ไม่ระบุ").toUpperCase());
+    const maleCount = activeDependents.filter((row) => this.helpers.normalizeGender(row["เพศ"]) === "ชาย").length;
+    const femaleCount = activeDependents.filter((row) => this.helpers.normalizeGender(row["เพศ"]) === "หญิง").length;
+    const highCount = activeDependents.filter((row) => HIGH_TAI.has(String(row.TAI || "").toUpperCase())).length;
 
     const financeSummary = this.domain.summarizeFinance(financeRows);
 
-    this.el.statDependents.textContent = Format.number(dependents.length);
+    this.el.statDependents.textContent = Format.number(activeDependents.length);
     this.el.statCg.textContent = Format.number(cgRows.length);
     this.el.statCm.textContent = Format.number(cmRows.length);
     this.el.statHigh.textContent = Format.number(highCount);
@@ -86,7 +88,7 @@ class LtcAppRenderMethodCarrier {
       )
       .join("");
 
-    const coverageRows = this.domain.buildVisitCoverage(dependents, visitRows, groupRows);
+    const coverageRows = this.domain.buildVisitCoverage(activeDependents, visitRows, groupRows);
     const coverageCounts = this.helpers.countBy(coverageRows, (row) => row.statusKey);
     const completedVisits = coverageRows.reduce((sum, row) => sum + row.completedVisits, 0);
     const targetVisits = coverageRows.reduce((sum, row) => sum + (row.targetVisits || 0), 0);
@@ -98,7 +100,7 @@ class LtcAppRenderMethodCarrier {
       { label: "ยังไม่ครบ", display: `${Format.number(coverageCounts.under || 0)} ราย` }
     ]);
 
-    const cpAlerts = this.domain.summarizeCarePlanAlerts(dependents);
+    const cpAlerts = this.domain.summarizeCarePlanAlerts(activeDependents);
     this.el.overviewCpAlertRows.innerHTML = renderInfoRows([
       { label: "CP หมดอายุแล้ว", display: `${Format.number(cpAlerts.expired.length)} ราย` },
       { label: "CP ใกล้หมดใน 30 วัน", display: `${Format.number(cpAlerts.expiring.length)} ราย` },
@@ -137,16 +139,16 @@ class LtcAppRenderMethodCarrier {
       this.repo.getTable("t27_visits"),
       this.repo.getTable("t07_gro")
     ]);
-    const coverageById = new Map(this.domain.buildVisitCoverage(rows, visitRows, groupRows).map((row) => [row.beneficiaryId, row]));
-    if (!rows.some((row) => row.__rowid === this.state.selected.dependents)) {
+    const activeRows = this.domain.activeDependents(rows);
+    if (!activeRows.some((row) => row.__rowid === this.state.selected.dependents)) {
       this.state.selected.dependents = null;
     }
     this.reconcileChecked(
       "dependents",
-      rows.map((row) => row.__rowid)
+      activeRows.map((row) => row.__rowid)
     );
 
-    const filtered = this.helpers.filterRows(rows, this.state.queries.dependents, [
+    const filtered = this.helpers.filterRows(activeRows, this.state.queries.dependents, [
       "เลขประชาชน",
       "นาม",
       "ชื่อ",
@@ -167,10 +169,7 @@ class LtcAppRenderMethodCarrier {
             const tai = String(row.TAI || "ไม่ระบุ").toUpperCase();
             const taiTag = `tag-${tai}`;
             const group = row.G || this.domain.getTaiGroup(tai);
-            const coverage = coverageById.get(this.domain.dependentId(row));
-            const coverageText = coverage?.coveragePercent == null ? coverage?.statusLabel || "ไม่มีเป้าหมาย" : `${coverage.coveragePercent}%`;
-            const remainingText = coverage?.remainingVisits == null ? "-" : `${Format.number(coverage.remainingVisits)} ครั้ง`;
-            const address = `${row["ที่อยู่"] || "-"} หมู่ ${row["หมู่"] || "-"}`;
+            const address = `${row["ที่อยู่"] || "-"} หมู่ ${row["หมู่"] || "-"} ตำบล ${row["ตำบล"] || "-"}`;
             const selectedClass = selectedRowClass(row.__rowid, this.state.selected.dependents);
             return `
               <tr data-rowid="${Format.escapeHtml(row.__rowid)}" class="${selectedClass}">
@@ -183,20 +182,32 @@ class LtcAppRenderMethodCarrier {
                 <td>${Format.number(row.ADL || 0)}</td>
                 <td>${Format.escapeHtml(String(group || "-"))}</td>
                 <td><span class="tag ${taiTag}">${Format.escapeHtml(tai)}</span></td>
-                <td><span class="tag ${coverage?.tagClass || "tag-mixed"}">${Format.escapeHtml(coverageText)}</span></td>
-                <td>${Format.escapeHtml(remainingText)}</td>
                 <td>${Format.escapeHtml(address)}</td>
-                <td>${Format.escapeHtml(row["ตำบล"] || "-")}</td>
                 <td>${Format.escapeHtml(row["อำเภอ"] || "-")}</td>
                 <td><span class="unit-badge">${Format.escapeHtml(row["รหัสหน่วย"] || "-")}</span></td>
               </tr>
             `;
           })
           .join("")
-      : `<tr><td colspan="15" class="empty-row">ไม่พบข้อมูลผู้รับบริการ</td></tr>`;
+      : `<tr><td colspan="13" class="empty-row">ไม่พบข้อมูลผู้รับบริการ</td></tr>`;
 
     this.paintSelection(this.el.dependentsBody, this.state.selected.dependents);
     this.syncSelectAllCheckbox(this.el.dependentsBody, "dependents", this.el.dependentsSelectAll);
+  }
+
+  async renderDeceased() {
+    const rows = this.domain.deceasedDependents(await this.repo.getTable("t04_dataj"));
+    if (!rows.some((row) => row.__rowid === this.state.selected.deceased)) this.state.selected.deceased = null;
+
+    this.el.deceasedBody.innerHTML = rows.length
+      ? rows
+          .map((row, index) => {
+            const address = `${row["ที่อยู่"] || "-"} หมู่ ${row["หมู่"] || "-"} ตำบล ${row["ตำบล"] || "-"}`;
+            return `<tr data-rowid="${Format.escapeHtml(row.__rowid)}" class="${selectedRowClass(row.__rowid, this.state.selected.deceased)}"><td>${index + 1}</td><td>${Format.escapeHtml(row["เลขประชาชน"] || "-")}</td><td>${Format.escapeHtml(this.helpers.fullNameFromDependent(row))}</td><td>${Format.escapeHtml(String(row.TAI || "-"))}</td><td>${Format.escapeHtml(address)}</td><td>${Format.escapeHtml(Format.formatDateCompact(row["วันที่เสียชีวิต"]) || "-")}</td></tr>`;
+          })
+          .join("")
+      : `<tr><td colspan="6" class="empty-row">ยังไม่มีข้อมูลผู้เสียชีวิต</td></tr>`;
+    this.paintSelection(this.el.deceasedBody, this.state.selected.deceased);
   }
 
   async renderCg() {
@@ -239,12 +250,13 @@ class LtcAppRenderMethodCarrier {
   }
 
   async renderCm() {
-    const [cmRows, cgRows, dependentRows, groupRows] = await Promise.all([
+    const [cmRows, cgRows, allDependentRows, groupRows] = await Promise.all([
       this.repo.getTable("t02_cm"),
       this.repo.getTable("t01_cg"),
       this.repo.getTable("t04_dataj"),
       this.repo.getTable("t07_gro")
     ]);
+    const dependentRows = this.domain.activeDependents(allDependentRows);
 
     if (!cmRows.some((row) => row.__rowid === this.state.selected.cm)) {
       this.state.selected.cm = null;
@@ -348,11 +360,12 @@ class LtcAppRenderMethodCarrier {
   }
 
   async renderVisits() {
-    const [visitRows, dependentRows, groupRows] = await Promise.all([
+    const [visitRows, allDependentRows, groupRows] = await Promise.all([
       this.repo.getTable("t27_visits"),
       this.repo.getTable("t04_dataj"),
       this.repo.getTable("t07_gro")
     ]);
+    const dependentRows = this.domain.activeDependents(allDependentRows);
 
     if (!visitRows.some((row) => row.__rowid === this.state.selected.visits)) {
       this.state.selected.visits = null;

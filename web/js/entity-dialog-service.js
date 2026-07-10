@@ -104,7 +104,8 @@ class EntityDialogService {
           type: "select",
           required: true,
           value: initial.prefix,
-          options: ["นาย", "นาง", "นางสาว", "ด.ช.", "ด.ญ."]
+          options: ["นาย", "นาง", "นางสาว", "ด.ช.", "ด.ญ."],
+          wide: true
         },
         { name: "firstName", label: "ชื่อ", type: "text", required: true, value: initial.firstName },
         { name: "lastName", label: "สกุล", type: "text", required: true, value: initial.lastName },
@@ -137,10 +138,10 @@ class EntityDialogService {
           required: true,
           value: String(initial.group || "1"),
           options: [
-            { value: "1", label: "กลุ่ม 1 (I1)" },
-            { value: "2", label: "กลุ่ม 2 (I2)" },
-            { value: "3", label: "กลุ่ม 3 (I3)" },
-            { value: "4", label: "กลุ่ม 4 (B3/C2/C3)" }
+            { value: "1", label: "กลุ่ม 1" },
+            { value: "2", label: "กลุ่ม 2" },
+            { value: "3", label: "กลุ่ม 3" },
+            { value: "4", label: "กลุ่ม 4" }
           ]
         },
         {
@@ -153,9 +154,9 @@ class EntityDialogService {
         },
         { name: "birthDate", label: "วันเดือนปีเกิด", type: "date", value: initial.birthDate },
         { name: "address", label: "บ้านเลขที่", type: "text", required: true, value: initial.address },
+        { name: "subdistrict", label: "ตำบล", type: "text", required: true, value: initial.subdistrict },
         { name: "moo", label: "หมู่", type: "text", value: initial.moo },
         { name: "road", label: "ถนน", type: "text", value: initial.road },
-        { name: "subdistrict", label: "ตำบล", type: "text", required: true, value: initial.subdistrict },
         { name: "district", label: "อำเภอ", type: "text", required: true, value: initial.district },
         { name: "province", label: "จังหวัด", type: "text", required: true, value: initial.province },
         {
@@ -213,6 +214,16 @@ class EntityDialogService {
         });
         paint();
       }
+    });
+  }
+
+  async openDeathDialog(row) {
+    return this.openEntityDialog({
+      title: "ย้ายไปทะเบียนผู้เสียชีวิต",
+      hint: `ระบุวันที่เสียชีวิตของ ${this.helpers.fullNameFromDependent(row) || "ผู้รับบริการ"}`,
+      fields: [
+        { name: "deathDate", label: "วันที่เสียชีวิต", type: "date", required: true, value: row?.["วันที่เสียชีวิต"] || null }
+      ]
     });
   }
 
@@ -362,7 +373,7 @@ class EntityDialogService {
           type: "select",
           required: true,
           value: initial.beneficiaryId,
-          options: dependentRows.map((item) => {
+          options: this.domain.activeDependents(dependentRows).map((item) => {
             const id = this.domain.dependentId(item);
             return {
               value: id,
@@ -500,7 +511,7 @@ class EntityDialogService {
       typeOptions = [{ value: initialTypeCode, label: `${initialTypeCode} - (เดิม)` }, ...typeOptions];
     }
 
-    let dependentOptions = (Array.isArray(dependentRows) ? dependentRows : [])
+    let dependentOptions = this.domain.activeDependents(dependentRows)
       .map((row) => {
         const citizenId = Format.toText(row?.["เลขประชาชน"]);
         if (!citizenId) return null;
@@ -1135,6 +1146,8 @@ class EntityDialogService {
       if (field.placeholder) control.placeholder = field.placeholder;
       if (field.required) control.required = true;
 
+      control.id = `entity-field-${field.name}`;
+      label.htmlFor = control.id;
       control.name = field.name;
       controls[field.name] = control;
       wrap.appendChild(controlElement || control);

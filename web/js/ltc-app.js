@@ -31,6 +31,7 @@ class LtcApp {
       },
       selected: {
         dependents: null,
+        deceased: null,
         cg: null,
         cm: null,
         visits: null,
@@ -73,8 +74,11 @@ class LtcApp {
       dependentsAddBtn: document.getElementById("dependentsAddBtn"),
       dependentsEditBtn: document.getElementById("dependentsEditBtn"),
       dependentsDeleteBtn: document.getElementById("dependentsDeleteBtn"),
+      dependentsMarkDeceasedBtn: document.getElementById("dependentsMarkDeceasedBtn"),
       dependentsDeleteBatchBtn: document.getElementById("dependentsDeleteBatchBtn"),
       dependentsSelectAll: document.getElementById("dependentsSelectAll"),
+      deceasedBody: document.getElementById("deceasedBody"),
+      deceasedRestoreBtn: document.getElementById("deceasedRestoreBtn"),
 
       cgSearch: document.getElementById("cgSearch"),
       cgBody: document.getElementById("cgBody"),
@@ -251,6 +255,7 @@ class LtcApp {
     });
 
     this.bindSelectableTable(this.el.dependentsBody, "dependents", this.el.dependentsSelectAll);
+    this.bindSelectableTable(this.el.deceasedBody, "deceased");
     this.bindSelectableTable(this.el.cgBody, "cg", this.el.cgSelectAll);
     this.bindSelectableTable(this.el.cmBody, "cm", this.el.cmSelectAll);
     this.bindSelectableTable(this.el.visitBody, "visits", this.el.visitSelectAll);
@@ -262,7 +267,9 @@ class LtcApp {
     this.el.dependentsAddBtn.addEventListener("click", () => this.handleAddDependent().catch(this.handleError));
     this.el.dependentsEditBtn.addEventListener("click", () => this.handleEditDependent().catch(this.handleError));
     this.el.dependentsDeleteBtn.addEventListener("click", () => this.handleDeleteDependent().catch(this.handleError));
+    this.el.dependentsMarkDeceasedBtn.addEventListener("click", () => this.handleMarkDependentDeceased().catch(this.handleError));
     this.el.dependentsDeleteBatchBtn.addEventListener("click", () => this.handleDeleteDependentBatch().catch(this.handleError));
+    this.el.deceasedRestoreBtn.addEventListener("click", () => this.handleRestoreDeceasedDependent().catch(this.handleError));
 
     this.el.cgAddBtn.addEventListener("click", () => this.handleAddCg().catch(this.handleError));
     this.el.cgEditBtn.addEventListener("click", () => this.handleEditCg().catch(this.handleError));

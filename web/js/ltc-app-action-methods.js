@@ -128,6 +128,41 @@ class LtcAppActionMethodCarrier {
     });
   }
 
+  async handleMarkDependentDeceased() {
+    await this.runProtected("ย้ายผู้รับบริการไปทะเบียนผู้เสียชีวิต", async () => {
+      const selected = await this.getSelectedRow("t04_dataj", "dependents");
+      if (!selected) {
+        alert("กรุณาเลือกแถวผู้รับบริการก่อน");
+        return;
+      }
+      const form = await this.dialogs.openDeathDialog(selected);
+      if (!form) return;
+      const rows = await this.repo.cloneTable("t04_dataj");
+      const index = rows.findIndex((row) => row.__rowid === selected.__rowid);
+      if (index < 0) return;
+      rows[index] = { ...rows[index], "สถานะ": true, "วันที่เสียชีวิต": form.deathDate };
+      await this.repo.saveTable("t04_dataj", rows);
+      this.state.selected.dependents = null;
+    });
+  }
+
+  async handleRestoreDeceasedDependent() {
+    await this.runProtected("นำผู้รับบริการกลับทะเบียนผู้มีภาวะพึ่งพิง", async () => {
+      const selected = await this.getSelectedRow("t04_dataj", "deceased");
+      if (!selected) {
+        alert("กรุณาเลือกแถวผู้เสียชีวิตก่อน");
+        return;
+      }
+      if (!confirm("ยืนยันการนำผู้รับบริการกลับไปทะเบียนผู้มีภาวะพึ่งพิง?")) return;
+      const rows = await this.repo.cloneTable("t04_dataj");
+      const index = rows.findIndex((row) => row.__rowid === selected.__rowid);
+      if (index < 0) return;
+      rows[index] = { ...rows[index], "สถานะ": false, "วันที่เสียชีวิต": null };
+      await this.repo.saveTable("t04_dataj", rows);
+      this.state.selected.deceased = null;
+    });
+  }
+
   async handleAddCg() {
     await this.runProtected("เพิ่ม CG", async () => {
       const rows = await this.repo.cloneTable("t01_cg");

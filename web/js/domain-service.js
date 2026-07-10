@@ -47,6 +47,19 @@ class DomainService {
     return 4;
   }
 
+  isDeceased(row) {
+    const status = row?.["สถานะ"];
+    return status === true || status === 1 || String(status || "").toLowerCase() === "true";
+  }
+
+  activeDependents(rows) {
+    return (Array.isArray(rows) ? rows : []).filter((row) => !this.isDeceased(row));
+  }
+
+  deceasedDependents(rows) {
+    return (Array.isArray(rows) ? rows : []).filter((row) => this.isDeceased(row));
+  }
+
   firstValue(row, keys) {
     for (const key of keys) {
       const value = row?.[key];

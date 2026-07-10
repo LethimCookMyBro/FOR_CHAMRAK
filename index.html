@@ -31,6 +31,10 @@
           <span class="nav-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
           <span class="nav-label">ผู้ที่มีภาวะพึ่งพิง</span>
         </button>
+        <button class="nav-btn" data-page="deceased" type="button">
+          <span class="nav-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M5 8h14"/><path d="M7 21h10"/></svg></span>
+          <span class="nav-label">ผู้เสียชีวิต</span>
+        </button>
         <button class="nav-btn" data-page="cg" type="button">
           <span class="nav-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg></span>
           <span class="nav-label">Care Giver (CG)</span>
@@ -219,6 +223,7 @@
                 <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                 ลบที่เลือก
               </button>
+              <button id="dependentsMarkDeceasedBtn" class="btn btn-soft" type="button">ย้ายไปผู้เสียชีวิต</button>
               <button id="dependentsDeleteBatchBtn" class="btn btn-danger" type="button">ลบที่ติ๊กหลายรายการ</button>
             </div>
           </div>
@@ -239,15 +244,28 @@
                   <th>ADL</th>
                   <th>กลุ่ม</th>
                   <th>TAI</th>
-                  <th>ความครอบคลุม</th>
-                  <th>คงเหลือ</th>
-                  <th>ที่อยู่</th>
-                  <th>ตำบล</th>
+                  <th>ที่อยู่ / ตำบล</th>
                   <th>อำเภอ</th>
                   <th>รหัสหน่วย</th>
                 </tr>
               </thead>
               <tbody id="dependentsBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="page-deceased" class="page">
+          <div class="section-head">
+            <h2>ทะเบียนผู้เสียชีวิต</h2>
+            <div class="section-tools">
+              <button id="deceasedRestoreBtn" class="btn btn-soft" type="button">นำกลับผู้มีภาวะพึ่งพิง</button>
+            </div>
+          </div>
+          <p class="table-note">แสดงเฉพาะผู้รับบริการที่ระบุวันที่เสียชีวิตแล้ว</p>
+          <div class="table-card table-scroll">
+            <table class="table-selectable">
+              <thead><tr><th>ลำดับ</th><th>เลขประชาชน</th><th>ชื่อ-สกุล</th><th>TAI</th><th>ที่อยู่ / ตำบล</th><th>วันที่เสียชีวิต</th></tr></thead>
+              <tbody id="deceasedBody"></tbody>
             </table>
           </div>
         </section>

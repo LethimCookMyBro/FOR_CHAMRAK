@@ -60,6 +60,47 @@ test("visit coverage counts only completed visits in the care plan window", asyn
   assert.equal(coverage.statusKey, "under");
 });
 
+test("deceased beneficiaries are separated from active LTC beneficiaries", async () => {
+  const DomainService = await loadDomainService();
+  const domain = new DomainService({});
+  const rows = [
+    { ID: 1, "สถานะ": false, "วันที่เสียชีวิต": null },
+    { ID: 2, "สถานะ": true, "วันที่เสียชีวิต": "2026-07-10" }
+  ];
+
+  assert.deepEqual(domain.activeDependents(rows).map((row) => row.ID), [1]);
+  assert.deepEqual(domain.deceasedDependents(rows).map((row) => row.ID), [2]);
+});
+
+test("dependent screen omits visit metrics and exposes the deceased workflow", async () => {
+  const [index, app, actions, dialogs, renderer] = await Promise.all([
+    fs.readFile(path.join(repoRoot, "index.html"), "utf8"),
+    fs.readFile(path.join(repoRoot, "web", "js", "ltc-app.js"), "utf8"),
+    fs.readFile(path.join(repoRoot, "web", "js", "ltc-app-action-methods.js"), "utf8"),
+    fs.readFile(path.join(repoRoot, "web", "js", "entity-dialog-service.js"), "utf8"),
+    fs.readFile(path.join(repoRoot, "web", "js", "ltc-app-render-methods.js"), "utf8")
+  ]);
+
+  assert.match(index, /data-page="deceased"/);
+  assert.match(index, /id="deceasedBody"/);
+  assert.match(index, /id="dependentsMarkDeceasedBtn"/);
+  const dependentsPage = index.match(/<section id="page-dependents"[\s\S]*?<\/section>/)?.[0] || "";
+  assert.doesNotMatch(dependentsPage, /<th>ความครอบคลุม<\/th>/);
+  assert.doesNotMatch(dependentsPage, /<th>คงเหลือ<\/th>/);
+  assert.match(app, /deceased:\s*null/);
+  assert.match(actions, /handleMarkDependentDeceased/);
+  assert.match(actions, /handleRestoreDeceasedDependent/);
+  assert.match(dialogs, /openDeathDialog/);
+  assert.match(dialogs, /label: "กลุ่ม 1"/);
+  assert.doesNotMatch(dialogs, /label: "กลุ่ม 1 \(I1\)"/);
+  assert.match(dialogs, /name: "prefix",[\s\S]*?options: \["นาย", "นาง", "นางสาว", "ด\.ช\.", "ด\.ญ\."\],\r?\n\s*wide: true/);
+  assert.ok(dialogs.indexOf('name: "address"') < dialogs.indexOf('name: "subdistrict"'));
+  assert.match(dialogs, /control\.id = `entity-field-\$\{field\.name\}`/);
+  assert.match(dialogs, /label\.htmlFor = control\.id/);
+  assert.match(renderer, /activeDependents\(rows\)/);
+  assert.match(renderer, /deceasedDependents\(/);
+});
+
 test("domain summaries cover ADL warnings, care plan alerts, workload, and area reports", async () => {
   const DomainService = await loadDomainService();
   const domain = new DomainService({});
