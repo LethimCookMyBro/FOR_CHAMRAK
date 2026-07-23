@@ -36,4 +36,8 @@ test("page switches lazy render the selected page", async () => {
 
   assert.match(body, /this\.renderCurrentPage\(\)\.catch\(this\.handleError\)/);
   assert.doesNotMatch(body, /page === "logs"/);
+  assert.ok(
+    body.indexOf("section.classList.toggle") < body.indexOf("this.renderCurrentPage()"),
+    "the visible page must switch before its data request finishes"
+  );
 });

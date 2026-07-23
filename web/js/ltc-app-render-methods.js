@@ -203,10 +203,11 @@ class LtcAppRenderMethodCarrier {
       ? rows
           .map((row, index) => {
             const address = `${row["ที่อยู่"] || "-"} หมู่ ${row["หมู่"] || "-"} ตำบล ${row["ตำบล"] || "-"}`;
-            return `<tr data-rowid="${Format.escapeHtml(row.__rowid)}" class="${selectedRowClass(row.__rowid, this.state.selected.deceased)}"><td>${index + 1}</td><td>${Format.escapeHtml(row["เลขประชาชน"] || "-")}</td><td>${Format.escapeHtml(this.helpers.fullNameFromDependent(row))}</td><td>${Format.escapeHtml(String(row.TAI || "-"))}</td><td>${Format.escapeHtml(address)}</td><td>${Format.escapeHtml(Format.formatDateCompact(row["วันที่เสียชีวิต"]) || "-")}</td></tr>`;
+            const group = row.G || this.domain.getTaiGroup(row.TAI);
+            return `<tr data-rowid="${Format.escapeHtml(row.__rowid)}" class="${selectedRowClass(row.__rowid, this.state.selected.deceased)}"><td>${index + 1}</td><td>${Format.escapeHtml(row["เลขประชาชน"] || "-")}</td><td>${Format.escapeHtml(this.helpers.fullNameFromDependent(row))}</td><td>${Format.number(row.ADL || 0)}</td><td>${Format.escapeHtml(String(group || "-"))}</td><td>${Format.escapeHtml(String(row.TAI || "-"))}</td><td>${Format.escapeHtml(address)}</td><td>${Format.escapeHtml(Format.formatDateCompact(row["วันที่เสียชีวิต"]) || "-")}</td></tr>`;
           })
           .join("")
-      : `<tr><td colspan="6" class="empty-row">ยังไม่มีข้อมูลผู้เสียชีวิต</td></tr>`;
+      : `<tr><td colspan="8" class="empty-row">ยังไม่มีข้อมูลผู้เสียชีวิต</td></tr>`;
     this.paintSelection(this.el.deceasedBody, this.state.selected.deceased);
   }
 

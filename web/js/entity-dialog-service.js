@@ -69,7 +69,7 @@ class EntityDialogService {
     const cmOptions = cmRows
       .map((cm) => ({
         value: cm["รหัสcm"] || "",
-        label: Format.expandFemalePrefixInText(cm["ชื่อสกุล"] || "-")
+        label: `${cm["รหัสcm"] || "-"} - ${Format.expandFemalePrefixInText(cm["ชื่อสกุล"] || "-")}`
       }))
       .filter((option) => option.value);
     const cgOptions = cgRows
@@ -170,7 +170,7 @@ class EntityDialogService {
         },
         {
           name: "cmCode",
-          label: "ชื่อ CM",
+          label: "รหัส CM",
           type: cmOptions.length ? "select" : "text",
           value: initial.cmCode,
           placeholder: cmOptions.length ? "" : "กรอกรหัส CM",
@@ -233,7 +233,7 @@ class EntityDialogService {
     const cmOptions = cmRows
       .map((cm) => ({
         value: cm["รหัสcm"] || "",
-        label: Format.expandFemalePrefixInText(cm["ชื่อสกุล"] || "-")
+        label: `${cm["รหัสcm"] || "-"} - ${Format.expandFemalePrefixInText(cm["ชื่อสกุล"] || "-")}`
       }))
       .filter((option) => option.value);
 
@@ -275,7 +275,7 @@ class EntityDialogService {
         { name: "province", label: "จังหวัด", type: "text", required: true, value: row?.["จังหวัด"] || "ตราด" },
         {
           name: "cmCode",
-          label: "ชื่อ CM",
+          label: "รหัส CM",
           type: cmOptions.length ? "select" : "text",
           required: true,
           value: row?.["รหัสcm"] || "",

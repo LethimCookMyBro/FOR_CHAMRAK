@@ -1380,10 +1380,8 @@ class LtcAppActionMethodCarrier {
     return inventoryRows.find((row) => row.rowId === rowId) || null;
   }
 
-  generateCgCode(cmCode, rows) {
-    const base = Format.toText(cmCode).replace(/cm\d+$/i, "") || "CG";
-    const escaped = base.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const pattern = new RegExp(`^${escaped}cg(\\d+)$`, "i");
+  generateCgCode(_cmCode, rows) {
+    const pattern = /^cg(\d+)$/i;
     let max = 0;
     for (const row of rows) {
       const code = String(row["รหัสcg"] || "");
@@ -1393,7 +1391,7 @@ class LtcAppActionMethodCarrier {
         if (number > max) max = number;
       }
     }
-    return `${base}cg${max + 1}`;
+    return `CG${max + 1}`;
   }
 
   generateCmCode(unitCode, rows) {

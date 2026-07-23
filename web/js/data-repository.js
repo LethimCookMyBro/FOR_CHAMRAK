@@ -1,10 +1,16 @@
 ﻿import { INTERNAL_KEYS } from "./config.js";
 
+const DEFAULT_REQUEST_TIMEOUT_MS = 15_000;
+
 class DataRepository {
-  constructor(apiBase, dataRoot, storagePrefix) {
+  constructor(apiBase, dataRoot, storagePrefix, options = {}) {
     this.apiBase = apiBase;
     this.dataRoot = dataRoot;
     this.storagePrefix = storagePrefix;
+    const configuredTimeout = Number(options.requestTimeoutMs);
+    this.requestTimeoutMs = Number.isFinite(configuredTimeout) && configuredTimeout > 0
+      ? Math.floor(configuredTimeout)
+      : DEFAULT_REQUEST_TIMEOUT_MS;
     this.workingCache = new Map();
     this.tableVersions = new Map();
     this.mode = "unknown";
@@ -47,32 +53,64 @@ class DataRepository {
       headers.set("X-Requested-With", "XMLHttpRequest");
     }
 
-    let response;
+    const controller = new AbortController();
+    const externalSignal = options.signal;
+    const relayExternalAbort = () => controller.abort();
+    if (externalSignal?.aborted) relayExternalAbort();
+    else externalSignal?.addEventListener("abort", relayExternalAbort, { once: true });
+
+    let timedOut = false;
+    const timeoutId = setTimeout(() => {
+      timedOut = true;
+      controller.abort();
+    }, this.requestTimeoutMs);
+    const { signal: _ignoredSignal, ...fetchOptions } = options;
+
     try {
-      response = await fetch(url, {
-        cache: "no-store",
-        credentials: "same-origin",
-        ...options,
-        headers
-      });
-    } catch {
-      const error = new Error("เชื่อมต่อระบบบันทึกข้อมูลไม่ได้ (network error)");
-      error.networkError = true;
-      throw error;
-    }
+      let response;
+      try {
+        response = await fetch(url, {
+          cache: "no-store",
+          credentials: "same-origin",
+          ...fetchOptions,
+          headers,
+          signal: controller.signal
+        });
+      } catch {
+        if (timedOut) {
+          const error = new Error("ระบบบันทึกข้อมูลไม่ตอบสนองภายใน 15 วินาที กรุณาลองใหม่หรือปิดแล้วเปิดโปรแกรมอีกครั้ง");
+          error.networkError = true;
+          error.timeout = true;
+          throw error;
+        }
 
-    let payload = null;
-    try {
-      payload = await response.json();
-    } catch {
-      payload = null;
-    }
+        const error = new Error("เชื่อมต่อระบบบันทึกข้อมูลไม่ได้ (network error)");
+        error.networkError = true;
+        throw error;
+      }
 
-    if (!response.ok) {
-      throw this.buildRequestError(response, payload);
-    }
+      let payload = null;
+      try {
+        payload = await response.json();
+      } catch {
+        if (timedOut) {
+          const error = new Error("ระบบบันทึกข้อมูลไม่ตอบสนองภายใน 15 วินาที กรุณาลองใหม่หรือปิดแล้วเปิดโปรแกรมอีกครั้ง");
+          error.networkError = true;
+          error.timeout = true;
+          throw error;
+        }
+        payload = null;
+      }
 
-    return payload;
+      if (!response.ok) {
+        throw this.buildRequestError(response, payload);
+      }
+
+      return payload;
+    } finally {
+      clearTimeout(timeoutId);
+      externalSignal?.removeEventListener("abort", relayExternalAbort);
+    }
   }
 
   async getTable(alias) {
