@@ -490,8 +490,8 @@ class LtcAppRenderMethodCarrier {
       inventoryRows.map((row) => row.rowId)
     );
 
-    const sorted = [...inventoryRows].sort(
-      (a, b) => this.domain.severityRank(a.status) - this.domain.severityRank(b.status) || a.balance - b.balance
+    const sorted = [...inventoryRows].sort((a, b) =>
+      String(a.productID || "").localeCompare(String(b.productID || ""), undefined, { numeric: true, sensitivity: "base" })
     );
 
     this.el.suppliesBody.innerHTML = sorted.length

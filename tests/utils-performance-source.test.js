@@ -8,7 +8,9 @@ const test = require("node:test");
 const repoRoot = path.resolve(__dirname, "..");
 
 async function readSource(filePath) {
-  return fs.readFile(path.join(repoRoot, filePath), "utf8");
+  // Normalize CRLF->LF so string markers match on Windows checkouts too.
+  const source = await fs.readFile(path.join(repoRoot, filePath), "utf8");
+  return source.replace(/\r\n/g, "\n");
 }
 
 test("Format.number reuses one Thai number formatter", async () => {

@@ -470,14 +470,21 @@ class DomainService {
       const reorderPointRaw = Number(product.reorderPoint ?? product.threshold ?? 0);
       const reorderPoint = reorderPointRaw > 0 ? reorderPointRaw : Math.max(10, Math.ceil(Math.max(outQty, 10) * 0.2));
 
+      // No receipts and no issues = never stocked yet, not "out of stock".
+      // Only flag หมดคลัง once stock has actually moved and is now depleted.
+      const hasHistory = inQty > 0 || outQty > 0;
       let status = "ปกติ";
-      if (balance <= 0) {
+      if (!hasHistory) {
+        status = "ยังไม่รับเข้า";
+      } else if (balance <= 0) {
         status = "หมดคลัง";
       } else if (balance <= reorderPoint) {
         status = "ใกล้หมด";
       }
 
-      const percent = Math.max(3, Math.min(100, Math.round((Math.max(balance, 0) / Math.max(reorderPoint * 2, 1)) * 100)));
+      const percent = hasHistory
+        ? Math.max(3, Math.min(100, Math.round((Math.max(balance, 0) / Math.max(reorderPoint * 2, 1)) * 100)))
+        : 0;
 
       return {
         rowId: product.__rowid,
@@ -502,12 +509,14 @@ class DomainService {
   severityRank(status) {
     if (status === "หมดคลัง") return 0;
     if (status === "ใกล้หมด") return 1;
-    return 2;
+    if (status === "ปกติ") return 2;
+    return 3; // ยังไม่รับเข้า — least urgent
   }
 
   statusClass(status) {
     if (status === "หมดคลัง") return "tag-danger";
     if (status === "ใกล้หมด") return "tag-warn";
+    if (status === "ยังไม่รับเข้า") return "tag-mixed";
     return "tag-success";
   }
 

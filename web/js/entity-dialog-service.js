@@ -154,10 +154,10 @@ class EntityDialogService {
         },
         { name: "birthDate", label: "วันเดือนปีเกิด", type: "date", value: initial.birthDate },
         { name: "address", label: "บ้านเลขที่", type: "text", required: true, value: initial.address },
-        { name: "subdistrict", label: "ตำบล", type: "text", required: true, value: initial.subdistrict },
+        { name: "subdistrict", label: "ตำบล", type: "text", value: initial.subdistrict },
         { name: "moo", label: "หมู่", type: "text", value: initial.moo },
         { name: "road", label: "ถนน", type: "text", value: initial.road },
-        { name: "district", label: "อำเภอ", type: "text", required: true, value: initial.district },
+        { name: "district", label: "อำเภอ", type: "text", value: initial.district },
         { name: "province", label: "จังหวัด", type: "text", required: true, value: initial.province },
         {
           name: "unitCode",
@@ -270,8 +270,8 @@ class EntityDialogService {
         { name: "birthDate", label: "วันเดือนปีเกิด", type: "date", value: row?.["วดปเกิด"] || null },
         { name: "address", label: "บ้านเลขที่", type: "text", required: true, value: row?.["ที่อยู่"] || "" },
         { name: "moo", label: "หมู่", type: "text", value: row?.["หมู่"] || "" },
-        { name: "subdistrict", label: "ตำบล", type: "text", required: true, value: row?.["ตำบล"] || "" },
-        { name: "district", label: "อำเภอ", type: "text", required: true, value: row?.["อำเภอ"] || "" },
+        { name: "subdistrict", label: "ตำบล", type: "text", value: row?.["ตำบล"] || "" },
+        { name: "district", label: "อำเภอ", type: "text", value: row?.["อำเภอ"] || "" },
         { name: "province", label: "จังหวัด", type: "text", required: true, value: row?.["จังหวัด"] || "ตราด" },
         {
           name: "cmCode",
@@ -338,8 +338,8 @@ class EntityDialogService {
         { name: "birthDate", label: "วันเดือนปีเกิด", type: "date", value: row?.["วดปเกิด"] || null },
         { name: "address", label: "บ้านเลขที่", type: "text", required: true, value: row?.["ที่อยู่"] || "" },
         { name: "moo", label: "หมู่", type: "text", value: row?.["หมู่"] || "" },
-        { name: "subdistrict", label: "ตำบล", type: "text", required: true, value: row?.["ตำบล"] || "" },
-        { name: "district", label: "อำเภอ", type: "text", required: true, value: row?.["อำเภอ"] || "" },
+        { name: "subdistrict", label: "ตำบล", type: "text", value: row?.["ตำบล"] || "" },
+        { name: "district", label: "อำเภอ", type: "text", value: row?.["อำเภอ"] || "" },
         { name: "province", label: "จังหวัด", type: "text", required: true, value: row?.["จังหวัด"] || "ตราด" }
       ]
     });
@@ -751,8 +751,8 @@ class EntityDialogService {
         { name: "addressNo", label: "เลขที่", type: "text", required: true, value: row?.["เลขที่"] || "" },
         { name: "moo", label: "หมู่", type: "text", value: row?.["หมู่"] || "" },
         { name: "road", label: "ถนน", type: "text", value: row?.["ถนน"] || "" },
-        { name: "subdistrict", label: "ตำบล", type: "text", required: true, value: row?.["ตำบล"] || "" },
-        { name: "district", label: "อำเภอ", type: "text", required: true, value: row?.["อำเภอ"] || "" },
+        { name: "subdistrict", label: "ตำบล", type: "text", value: row?.["ตำบล"] || "" },
+        { name: "district", label: "อำเภอ", type: "text", value: row?.["อำเภอ"] || "" },
         { name: "province", label: "จังหวัด", type: "text", required: true, value: row?.["จังหวัด"] || "ตราด" },
         { name: "postcode", label: "รหัสไปรษณีย์", type: "text", value: row?.["รหัส"] || "" },
         {
